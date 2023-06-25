@@ -8,7 +8,17 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.scheduling.annotation.EnableScheduling;
 
 @SpringBootApplication
-@ComponentScan({"br.com.tcc.entidades", "br.com.tcc.service", "br.com.tcc.chatbot", "br.com.tcc.scheduling"})
+@ComponentScan({"br.com.tcc.entidades",
+                "br.com.tcc.service",
+                "br.com.tcc.chatbot",
+                "br.com.tcc.scheduling",
+                "br.com.tcc.security.securityConfig",
+                "br.com.tcc.security.jwtConfig",
+                "br.com.tcc.controller",
+                "br.com.tcc.impl",
+                "br.com.tcc.validation.agendamento.impl",
+                "br.com.tcc.validation.agendamento.interfaces",
+                "br.com.tcc.exceptions"})
 @EntityScan(basePackages = {"br.com.tcc.entity"})
 @EnableJpaRepositories(basePackages = {"br.com.tcc.repository"})
 @EnableScheduling

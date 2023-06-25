@@ -21,7 +21,7 @@ public class ConfirmarConsultaScheduler {
 	
 	@Scheduled(cron = "*/5 * * * * *") //Segundos Minutos Horas DiaDoMês Mês DiaDaSemana
 	public void run() {
-		try {
+	/*	try {
 			if(i == 0) {
 				Paciente p = new Paciente();
 				p.setChatId(6292182354L);
@@ -33,7 +33,7 @@ public class ConfirmarConsultaScheduler {
 			e.printStackTrace();
 		}
 		System.out.println("teste");
-		i = 1;
+		i = 1;*/
 	}
 	
 }

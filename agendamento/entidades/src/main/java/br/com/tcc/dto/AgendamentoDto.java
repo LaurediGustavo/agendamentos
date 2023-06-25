@@ -2,11 +2,10 @@ package br.com.tcc.dto;
 
 import java.util.Date;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
 
 @Data
-public class ConsultaDto {
+public class AgendamentoDto {
 
 	private Date dataHoraInicio;
 

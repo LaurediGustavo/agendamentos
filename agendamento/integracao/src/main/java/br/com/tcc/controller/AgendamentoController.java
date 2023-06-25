@@ -5,11 +5,15 @@ import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import br.com.tcc.dto.ConsultaDto;
+import br.com.tcc.dto.AgendamentoDto;
 import br.com.tcc.interfaces.ConsultaServiceInterface;
+import br.com.tcc.model.Agendamento;
+import jakarta.validation.Valid;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -25,19 +29,17 @@ public class AgendamentoController {
 	private ConsultaServiceInterface consultaService;
 	
 	@PostMapping("/cadastro")
-	//@PreAuthorize("hasRole('ROLE_ATENDENTE')")
-	public ResponseEntity<?> cadastroAgendamento(@RequestBody ConsultaDto consultaDto) {
+	@PreAuthorize("hasRole('ROLE_ATENDENTE')")
+	public ResponseEntity<?> cadastroAgendamento(@Valid @RequestBody Agendamento agendamento) {
 		Map<String, Object> responseMap = new HashMap<>();
         HttpStatus status;
 		
 		try {
-			consultaService.persistir(consultaDto);
+			AgendamentoDto agendamentoDto = new AgendamentoDto();
+			BeanUtils.copyProperties(agendamento, agendamentoDto);
+			consultaService.persistir(agendamentoDto);
 			status = HttpStatus.CREATED;
 		}
-//		catch (ConsistirException e) {
-//			status = HttpStatus.OK;
-//			responseMap = e.getAllErrors();
-//		}
 		catch (Exception e) {
 			status = HttpStatus.INTERNAL_SERVER_ERROR;
 			responseMap.put("error", e);

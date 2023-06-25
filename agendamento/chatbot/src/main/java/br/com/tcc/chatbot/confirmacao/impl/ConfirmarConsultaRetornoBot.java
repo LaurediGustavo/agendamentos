@@ -4,6 +4,7 @@ import br.com.tcc.chatbot.generic.RetornoChatBotInterface;
 import br.com.tcc.entity.MonitorDeChatBot;
 import br.com.tcc.enumerador.StatusDaMensagemChatBotEnum;
 import br.com.tcc.enumerador.TipoChatBotEnum;
+import br.com.tcc.repository.ConsultaRepository;
 import br.com.tcc.repository.MonitorDeChatBotRepository;
 import org.hibernate.annotations.Comment;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,6 +16,9 @@ public class ConfirmarConsultaRetornoBot implements RetornoChatBotInterface {
 
     @Autowired
     private MonitorDeChatBotRepository monitorDeChatBotRepository;
+
+    @Autowired
+    private ConsultaRepository consultaRepository;
 
     public void processarRetorno(Message message, MonitorDeChatBot monitorDeChatBot) {
         String messageText = message.getText().toUpperCase();

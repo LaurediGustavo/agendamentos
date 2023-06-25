@@ -1,6 +1,6 @@
 package br.com.tcc.impl;
 
-import br.com.tcc.dto.ConsultaDto;
+import br.com.tcc.dto.AgendamentoDto;
 import br.com.tcc.entity.Consulta;
 import br.com.tcc.interfaces.ConsultaServiceInterface;
 import br.com.tcc.repository.ConsultaRepository;
@@ -15,9 +15,10 @@ public class ConsultaService implements ConsultaServiceInterface {
 	private ConsultaRepository consultaRepository;
 	
 	@Override
-	public void persistir(ConsultaDto consultaDto) {
+	public void persistir(AgendamentoDto agendamentoDto) {
 		Consulta consulta = new Consulta();
-		BeanUtils.copyProperties(consultaDto, consulta);
+		BeanUtils.copyProperties(agendamentoDto, consulta);
+		consultaRepository.save(consulta);
 	}
 
 }

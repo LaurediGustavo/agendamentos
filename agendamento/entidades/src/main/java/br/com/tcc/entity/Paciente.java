@@ -64,7 +64,7 @@ public class Paciente implements Serializable {
 	@JoinColumn(name = "responsavel_paciente_id", nullable = true)
 	private Paciente responsavelPacienteId;
 	
-	@Column(name = "chatid", length = 50, nullable = true)
+	@Column(name = "chat_id", length = 50, nullable = true)
 	private Long chatId;
 	
 }

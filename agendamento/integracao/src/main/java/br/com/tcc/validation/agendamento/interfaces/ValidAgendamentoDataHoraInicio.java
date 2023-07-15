@@ -15,7 +15,7 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
 @Constraint(validatedBy = ValidDataHoraInicioValidator.class)
 @Target({FIELD, ANNOTATION_TYPE, METHOD})
 @Retention(RUNTIME)
-public @interface ValidDataHoraInicio {
+public @interface ValidAgendamentoDataHoraInicio {
 
     String message() default "{agendamento.dataHoraInicio.formatoInvalido}";
 

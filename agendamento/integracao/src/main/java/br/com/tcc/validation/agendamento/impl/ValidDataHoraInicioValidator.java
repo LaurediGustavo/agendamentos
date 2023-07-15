@@ -1,17 +1,17 @@
 package br.com.tcc.validation.agendamento.impl;
 
-import br.com.tcc.validation.agendamento.interfaces.ValidDataHoraInicio;
+import br.com.tcc.validation.agendamento.interfaces.ValidAgendamentoDataHoraInicio;
 import jakarta.validation.ConstraintValidator;
 import jakarta.validation.ConstraintValidatorContext;
 
 import java.time.LocalDateTime;
 
-public class ValidDataHoraInicioValidator implements ConstraintValidator<ValidDataHoraInicio, LocalDateTime> {
+public class ValidDataHoraInicioValidator implements ConstraintValidator<ValidAgendamentoDataHoraInicio, LocalDateTime> {
 
     private String message;
 
     @Override
-    public void initialize(ValidDataHoraInicio constraintAnnotation) {
+    public void initialize(ValidAgendamentoDataHoraInicio constraintAnnotation) {
         ConstraintValidator.super.initialize(constraintAnnotation);
     }
 

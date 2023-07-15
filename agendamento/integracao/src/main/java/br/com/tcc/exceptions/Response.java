@@ -1,11 +1,13 @@
 package br.com.tcc.exceptions;
 
 import lombok.AllArgsConstructor;
+import lombok.Getter;
 
 import java.util.List;
 
 @AllArgsConstructor
-public class ErrorResponse {
+@Getter
+public class Response {
 
     private final String message;
 
@@ -13,6 +15,6 @@ public class ErrorResponse {
 
     private final String objectName;
 
-    private final List<ErrorObject> errors;
+    private final List<MessageError> errors;
 
 }

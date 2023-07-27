@@ -1,20 +1,22 @@
 package br.com.tcc.dto;
 
+import java.time.LocalDateTime;
 import java.util.Date;
+import java.util.List;
 
 import lombok.Data;
 
 @Data
 public class AgendamentoDto {
 
-	private Date dataHoraInicio;
+	private LocalDateTime dataHoraInicio;
 
-	private Date dataHoraFim;
+	private LocalDateTime dataHoraFim;
 
 	private Long pacienteId;
 
 	private Long doutorId;
 
-	private Long procedimentoId;	
+	private List<Long> procedimentosIds;
 
 }

@@ -1,13 +1,8 @@
 package br.com.tcc.controller;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
 import br.com.tcc.dto.AgendamentoDto;
-import br.com.tcc.interfaces.ConsultaServiceInterface;
-import br.com.tcc.model.Agendamento;
+import br.com.tcc.impl.AgendamentoService;
+import br.com.tcc.model.AgendamentoRequest;
 import jakarta.validation.Valid;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,31 +15,18 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping("/agendamento")
 public class AgendamentoController {
-
-    private static final Logger LOGGER = Logger.getLogger(AgendamentoController.class.getName());
 	
 	@Autowired
-	private ConsultaServiceInterface consultaService;
+	private AgendamentoService agendamentoService;
 	
 	@PostMapping(value = "/cadastro", consumes = MediaType.APPLICATION_JSON_VALUE)
 	@PreAuthorize("hasRole('ROLE_ATENDENTE')")
-	public ResponseEntity<?> cadastroAgendamento(@Valid @RequestBody Agendamento agendamento) {
-		Map<String, Object> responseMap = new HashMap<>();
-        HttpStatus status;
-		
-		try {
-			AgendamentoDto agendamentoDto = new AgendamentoDto();
-			BeanUtils.copyProperties(agendamento, agendamentoDto);
-			consultaService.persistir(agendamentoDto);
-			status = HttpStatus.CREATED;
-		}
-		catch (Exception e) {
-			status = HttpStatus.INTERNAL_SERVER_ERROR;
-			responseMap.put("error", e);
-			LOGGER.log(Level.SEVERE, "Ocorreu uma exceção: ", e);
-		}
-		
-		return ResponseEntity.status(status).body(responseMap);
+	public ResponseEntity<?> cadastroAgendamento(@Valid @RequestBody AgendamentoRequest agendamento) {
+		AgendamentoDto agendamentoDto = new AgendamentoDto();
+		BeanUtils.copyProperties(agendamento, agendamentoDto);
+		agendamentoService.persistir(agendamentoDto);
+
+		return ResponseEntity.status(HttpStatus.CREATED).build();
 	}
 	
 }

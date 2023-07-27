@@ -13,11 +13,6 @@ public class ValidAgendamentoDoutorValidator implements ConstraintValidator<Vali
     private DoutorRepository doutorRepository;
 
     @Override
-    public void initialize(ValidAgendamentoDoutor constraintAnnotation) {
-        ConstraintValidator.super.initialize(constraintAnnotation);
-    }
-
-    @Override
     public boolean isValid(Long value, ConstraintValidatorContext context) {
         if(doutorRepository.findById(value).isEmpty()) {
             return false;

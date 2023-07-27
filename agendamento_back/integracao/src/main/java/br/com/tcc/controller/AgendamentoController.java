@@ -1,6 +1,7 @@
 package br.com.tcc.controller;
 
 import br.com.tcc.dto.AgendamentoDto;
+import br.com.tcc.enumerador.StatusConsultaEnum;
 import br.com.tcc.impl.AgendamentoService;
 import br.com.tcc.model.AgendamentoRequest;
 import jakarta.validation.Valid;
@@ -27,6 +28,17 @@ public class AgendamentoController {
 		agendamentoService.persistir(agendamentoDto);
 
 		return ResponseEntity.status(HttpStatus.CREATED).build();
+	}
+
+	@PutMapping(value = "/atualizar", consumes = MediaType.APPLICATION_JSON_VALUE)
+	@PreAuthorize("hasRole('ROLE_ATENDENTE')")
+	public ResponseEntity<?> atualizaAgendamento(@Valid @RequestBody AgendamentoRequest agendamento) {
+		AgendamentoDto agendamentoDto = new AgendamentoDto();
+		BeanUtils.copyProperties(agendamento, agendamentoDto);
+		agendamentoDto.setStatus(StatusConsultaEnum.valueOf(agendamento.getStatus()));
+		agendamentoService.persistir(agendamentoDto);
+
+		return ResponseEntity.status(HttpStatus.OK).build();
 	}
 	
 }

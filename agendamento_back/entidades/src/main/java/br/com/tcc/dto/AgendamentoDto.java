@@ -4,10 +4,15 @@ import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.List;
 
+import br.com.tcc.enumerador.StatusConsultaEnum;
 import lombok.Data;
 
 @Data
 public class AgendamentoDto {
+
+	private Long id;
+
+	private StatusConsultaEnum status;
 
 	private LocalDateTime dataHoraInicio;
 

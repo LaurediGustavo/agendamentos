@@ -37,12 +37,13 @@ public class AgendamentoService {
 
 	private Consulta gerarConsulta(AgendamentoDto agendamento) {
 		Consulta consulta = new Consulta();
+		consulta.setId(agendamento.getId());
 		consulta.setDoutor(getDoutor(agendamento.getDoutorId()));
 		consulta.setPaciente(getPaciente(agendamento.getPacienteId()));
 		consulta.setProcedimento(getProcedimento(agendamento.getProcedimentosIds()));
 		consulta.setDataHoraInicio(agendamento.getDataHoraInicio());
 		consulta.setDataHoraFinal(agendamento.getDataHoraFim());
-		consulta.setStatus(StatusConsultaEnum.AGUARDANDO);
+		consulta.setStatus(agendamento.getStatus());
 
 		return consulta;
 	}

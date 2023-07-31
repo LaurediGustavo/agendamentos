@@ -5,15 +5,17 @@ import br.com.tcc.entity.Consulta;
 import br.com.tcc.entity.Doutor;
 import br.com.tcc.entity.Paciente;
 import br.com.tcc.entity.Procedimento;
-import br.com.tcc.enumerador.StatusConsultaEnum;
 import br.com.tcc.repository.ConsultaRepository;
 import br.com.tcc.repository.DoutorRepository;
 import br.com.tcc.repository.PacienteRepository;
 import br.com.tcc.repository.ProcedimentoRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import uteis.DataUteis;
 
+import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 @Service("AgendamentoService")
 public class AgendamentoService {
@@ -46,6 +48,22 @@ public class AgendamentoService {
 		consulta.setStatus(agendamento.getStatus());
 
 		return consulta;
+	}
+
+	public Optional<List<Consulta>> consultarPorHorarioDoutorPaciente(Long doutorId, Long pacienteId, String horario) {
+		LocalDateTime dataHora = DataUteis.getLocalDateTime(horario);
+
+		if(dataHora.getHour() == 0 && dataHora.getMinute() == 0) {
+			return consultaRepository.consultarPorDataDoutorPaciente(doutorId, pacienteId,
+					dataHora.getYear(), dataHora.getMonthValue(), dataHora.getDayOfMonth());
+		}
+		else {
+			return consultaRepository.consultarPorHorarioDoutorPaciente(dataHora, doutorId, pacienteId);
+		}
+	}
+
+	public Optional<Consulta> consultarPorId(Long id) {
+		return consultaRepository.findById(id);
 	}
 
 	private Procedimento getProcedimento(List<Long> procedimentosIds) {

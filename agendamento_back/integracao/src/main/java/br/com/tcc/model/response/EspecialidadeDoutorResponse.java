@@ -1,4 +1,4 @@
-package response;
+package br.com.tcc.model.response;
 
 public class EspecialidadeDoutorResponse {
     private Long especialidade_id;

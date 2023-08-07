@@ -1,4 +1,4 @@
-package br.com.tcc.model.agendamento;
+package br.com.tcc.model.response;
 
 import br.com.tcc.validation.agendamento.interfaces.*;
 import br.com.tcc.validation.generic.interfaces.ValidObrigatorio;

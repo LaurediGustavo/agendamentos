@@ -1,4 +1,4 @@
-package request;
+package br.com.tcc.model.request;
 
 public class EspecialidadeDoutorRequest {
     private Long especialidade_id;

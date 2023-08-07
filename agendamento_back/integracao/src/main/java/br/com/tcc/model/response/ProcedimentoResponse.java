@@ -1,4 +1,4 @@
-package response;
+package br.com.tcc.model.response;
 
 import java.math.BigDecimal;
 

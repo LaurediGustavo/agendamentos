@@ -1,6 +1,6 @@
-package request;
+package br.com.tcc.model.response;
 
-public class FuncionarioRequest {
+public class PacienteResponse {
     private Long id;
     private String nome;
     private String sobrenome;
@@ -8,9 +8,11 @@ public class FuncionarioRequest {
     private String cpf;
     private String genero;
     private String telefone;
+    private String informacoesAdicionais;
     private String logradouro;
     private String bairro;
-    private String numero;
+    private Integer numero;
     private String bloco;
-    private Long tipo_funcionario_id;
+    private String parentesco;
+    private Long responsavel_paciente_id;
 }

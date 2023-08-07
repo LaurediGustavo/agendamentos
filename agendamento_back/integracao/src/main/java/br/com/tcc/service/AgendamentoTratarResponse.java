@@ -2,7 +2,7 @@ package br.com.tcc.service;
 
 import br.com.tcc.entity.Consulta;
 import br.com.tcc.impl.AgendamentoService;
-import br.com.tcc.model.agendamento.AgendamentoResponse;
+import br.com.tcc.model.response.AgendamentoResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 

@@ -1,7 +1,7 @@
 package br.com.tcc.validation.agendamento.impl;
 
 import br.com.tcc.entity.Consulta;
-import br.com.tcc.model.agendamento.AgendamentoRequest;
+import br.com.tcc.model.request.AgendamentoRequest;
 import br.com.tcc.repository.ConsultaRepository;
 import br.com.tcc.validation.agendamento.interfaces.ValidAgendamentoDataHoraFinal;
 import jakarta.validation.ConstraintValidator;

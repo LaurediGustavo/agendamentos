@@ -1,8 +1,8 @@
-package request;
+package br.com.tcc.model.response;
 
 import java.time.LocalDateTime;
 
-public class ConsultaRequest {
+public class ConsultaResponse {
     private Long id;
     private LocalDateTime dataHoraInicio;
     private LocalDateTime dataHoraFinal;
@@ -10,4 +10,5 @@ public class ConsultaRequest {
     private Long doutor_id;
     private Long procedimento_id;
     private String status;
+
 }

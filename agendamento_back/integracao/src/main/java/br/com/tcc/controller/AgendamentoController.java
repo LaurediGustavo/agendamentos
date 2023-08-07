@@ -3,8 +3,8 @@ package br.com.tcc.controller;
 import br.com.tcc.dto.AgendamentoDto;
 import br.com.tcc.enumerador.StatusConsultaEnum;
 import br.com.tcc.impl.AgendamentoService;
-import br.com.tcc.model.agendamento.AgendamentoRequest;
-import br.com.tcc.model.agendamento.AgendamentoResponse;
+import br.com.tcc.model.request.AgendamentoRequest;
+import br.com.tcc.model.response.AgendamentoResponse;
 import br.com.tcc.service.AgendamentoTratarResponse;
 import jakarta.validation.Valid;
 import org.springframework.beans.BeanUtils;
@@ -58,6 +58,7 @@ public class AgendamentoController {
 
 		return ResponseEntity.status(HttpStatus.OK).body(agendamentos);
 	}
+
 
 	@GetMapping(value = "/consultar/{id}")
 	public ResponseEntity<?> consultarPorId(@PathVariable("id") Long id) {

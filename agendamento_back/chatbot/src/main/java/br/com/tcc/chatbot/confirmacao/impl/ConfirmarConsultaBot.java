@@ -4,7 +4,7 @@ import java.util.List;
 
 import br.com.tcc.chatbot.confirmacao.interfaces.ConfirmarConsultaInterface;
 import br.com.tcc.chatbot.generic.Bot;
-import br.com.tcc.entity.Paciente;
+import br.com.tcc.entity.Consulta;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboardMarkup;
@@ -16,12 +16,12 @@ import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 public class ConfirmarConsultaBot extends Bot implements ConfirmarConsultaInterface {
 	
 	@Override
-	public void iniciarConversa(Paciente paciente) throws TelegramApiException {
-    	SendMessage message = createYesOrNoKeyboard(paciente.getChatId());
+	public void iniciarConversa(Consulta consulta) throws TelegramApiException {
+    	SendMessage message = createYesOrNoKeyboard(consulta);
         execute(message);
     }
 	
-    public SendMessage createYesOrNoKeyboard(Long chatId) {
+    public SendMessage createYesOrNoKeyboard(Consulta consulta) {
         // Criação do teclado
         ReplyKeyboardMarkup teclado = new ReplyKeyboardMarkup();
         teclado.setResizeKeyboard(true);  // Redimensiona o teclado
@@ -43,18 +43,26 @@ public class ConfirmarConsultaBot extends Bot implements ConfirmarConsultaInterf
 
         // Criação da mensagem com o teclado
         SendMessage sendMessage = new SendMessage();
-        sendMessage.setChatId(chatId.toString());
-        sendMessage.setText(montarMensagem());
+        sendMessage.setChatId(consulta.getPaciente().getChatId().toString());
+        sendMessage.setText(montarMensagem(consulta));
         sendMessage.setReplyMarkup(teclado);
 
         return sendMessage;
     }
     
-    private String montarMensagem() {
+    private String montarMensagem(Consulta consulta) {
     	StringBuilder string = new StringBuilder();
-    	string.append("Bom dia, Lauredi Gustavo!\n")
-    		  .append("Você possui uma consulta agendada para amanhã às 10h e 20min.\n")
-    		  .append("Deseja confirmar ela?");
+    	string.append("Bom dia, ")
+                .append(consulta.getPaciente().getNome())
+                .append(" ")
+                .append(consulta.getPaciente().getSobrenome())
+                .append(". ")
+    		    .append("Você possui uma consulta agendada para amanhã às ")
+                .append(consulta.getDataHoraInicio().getHour())
+                .append(":")
+                .append(consulta.getDataHoraFinal().getMinute())
+                .append(". ")
+    		    .append("Deseja confirmar ela?");
     	
     	return string.toString();
     }

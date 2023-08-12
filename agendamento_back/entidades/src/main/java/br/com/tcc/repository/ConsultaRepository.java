@@ -47,4 +47,26 @@ public interface ConsultaRepository extends JpaRepository<Consulta, Long> {
 															@Param("mes") Integer mes,
 															@Param("dia") Integer dia);
 
+	@Query("SELECT c FROM Consulta c " +
+			"INNER JOIN c.paciente p " +
+			"WHERE c.status = :status " +
+			"AND dataHoraInicio BETWEEN :dataInicio AND :dataFim " +
+			"AND p.chatId IS NOT NULL " +
+			"ORDER BY c.dataHoraInicio ASC")
+	Optional<List<Consulta>> consultarProximosAgendamentos(@Param("status") StatusConsultaEnum status,
+														   @Param("dataInicio") LocalDateTime dataInicio,
+														   @Param("dataFim") LocalDateTime dataFim);
+
+	@Query("SELECT c FROM Consulta c " +
+			"INNER JOIN c.paciente p " +
+			"WHERE c.status = :status " +
+			"AND p.chatId = :chatId " +
+			"AND YEAR(c.dataHoraInicio) = :ano " +
+			"AND MONTH(c.dataHoraInicio) = :mes " +
+			"AND DAY(c.dataHoraInicio) = :dia ")
+	Optional<Consulta> consultarAgendamentoPendente(@Param("status") StatusConsultaEnum status,
+													@Param("chatId") Long chatId,
+													@Param("ano") Integer ano,
+													@Param("mes") Integer mes,
+													@Param("dia") Integer dia);
 }

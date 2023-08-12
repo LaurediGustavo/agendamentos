@@ -5,6 +5,7 @@ import br.com.tcc.entity.Consulta;
 import br.com.tcc.entity.Doutor;
 import br.com.tcc.entity.Paciente;
 import br.com.tcc.entity.Procedimento;
+import br.com.tcc.enumerador.StatusConsultaEnum;
 import br.com.tcc.repository.ConsultaRepository;
 import br.com.tcc.repository.DoutorRepository;
 import br.com.tcc.repository.PacienteRepository;
@@ -45,7 +46,7 @@ public class AgendamentoService {
 		consulta.setProcedimento(getProcedimento(agendamento.getProcedimentosIds()));
 		consulta.setDataHoraInicio(agendamento.getDataHoraInicio());
 		consulta.setDataHoraFinal(agendamento.getDataHoraFim());
-		consulta.setStatus(agendamento.getStatus());
+		consulta.setStatus(agendamento.getStatus() == null? StatusConsultaEnum.AGUARDANDO : agendamento.getStatus());
 
 		return consulta;
 	}

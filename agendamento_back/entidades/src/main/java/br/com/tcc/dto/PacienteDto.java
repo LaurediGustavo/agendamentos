@@ -1,25 +1,37 @@
-package br.com.tcc.model.response;
+package br.com.tcc.dto;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.Setter;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import lombok.Data;
 
-@AllArgsConstructor
-@Getter
-@Setter
-public class PacienteResponse {
+@Data
+public class PacienteDto {
+
     private Long id;
+
     private String nome;
+
     private String sobrenome;
+
     private Integer idade;
+
     private String cpf;
+
     private String genero;
+
     private String telefone;
+
     private String informacoesAdicionais;
+
     private String logradouro;
+
     private String bairro;
+
     private Integer numero;
+
     private String bloco;
+
     private String parentesco;
-    private PacienteResponse responsavel;
+
+    private Long responsavel_paciente_id;
+
 }

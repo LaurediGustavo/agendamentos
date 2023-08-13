@@ -58,7 +58,7 @@ public class AuthenticationController {
         				.collect(Collectors.toList());
                 
                 responseMap.put("message", "Usuário logado com sucesso");
-                responseMap.put("jwt token", token);
+                responseMap.put("jwt_token", token);
                 responseMap.put("roles", roles);
                 status = HttpStatus.OK;
             } else {

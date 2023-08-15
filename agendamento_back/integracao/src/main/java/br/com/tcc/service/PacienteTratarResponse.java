@@ -20,6 +20,7 @@ public class PacienteTratarResponse {
     public List<PacienteResponse> consultarPorCpfNome(String cpf, String nome) {
         Optional<List<Paciente>> optionalPacienteList = pacienteRepository.findByCpfNome(cpf, nome);
 
+
         List<PacienteResponse> pacienteResponseList = optionalPacienteList
                 .map(pacientes -> pacientes.stream()
                         .map(this::montarPacienteResponse)
@@ -32,7 +33,7 @@ public class PacienteTratarResponse {
     public PacienteResponse consultarPorId(Long id) {
         Optional<Paciente> pacienteOptional = pacienteRepository.findById(id);
 
-        return pacienteOptional.map(paciente -> montarPacienteResponse(paciente)).orElse(null);
+        return pacienteOptional.map(this::montarPacienteResponse).orElse(null);
     }
 
     private PacienteResponse montarPacienteResponse(Paciente paciente) {

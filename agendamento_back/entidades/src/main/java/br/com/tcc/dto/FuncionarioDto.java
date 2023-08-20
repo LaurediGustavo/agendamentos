@@ -1,23 +1,34 @@
-package br.com.tcc.model.response;
+package br.com.tcc.dto;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.Data;
 
-@AllArgsConstructor
-@Getter
-@Setter
-public class FuncionarioResponse {
+@Data
+public class FuncionarioDto {
+
     private Long id;
+
     private String nome;
+
     private String sobrenome;
+
     private Integer idade;
+
     private String cpf;
+
     private String genero;
+
     private String telefone;
+
     private String logradouro;
+
     private String bairro;
+
     private Integer numero;
+
     private String bloco;
-    private TipoFuncionarioResponse tipoFuncionarioResponse;
+
+    private Long tipo_funcionario_id;
+
+    private String cro;
+
 }

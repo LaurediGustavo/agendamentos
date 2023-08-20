@@ -32,7 +32,7 @@ public class ValidCroValidator implements ConstraintValidator<ValidCro, Funciona
                 return false;
             }
             else {
-                if(StringUtils.isNotBlank(value.getCro())) {
+                if(!TIPO_FUNCIONARIO_DOUTOR.equalsIgnoreCase(tipoFuncionario.getNome()) && StringUtils.isNotBlank(value.getCro())) {
                     context.disableDefaultConstraintViolation();
                     context.buildConstraintViolationWithTemplate("{funcionario.cro.naoDeveSerInformado}")
                             .addConstraintViolation();

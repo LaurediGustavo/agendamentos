@@ -21,6 +21,7 @@ public class PacienteTratarResponse {
         Optional<List<Paciente>> optionalPacienteList = pacienteRepository.findByCpfNome(cpf, nome);
 
 
+
         List<PacienteResponse> pacienteResponseList = optionalPacienteList
                 .map(pacientes -> pacientes.stream()
                         .map(this::montarPacienteResponse)

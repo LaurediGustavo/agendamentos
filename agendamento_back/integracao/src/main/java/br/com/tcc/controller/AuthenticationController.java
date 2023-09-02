@@ -6,6 +6,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 import br.com.tcc.dto.UsuarioDto;
+import br.com.tcc.model.response.LoginResponse;
 import br.com.tcc.security.jwtConfig.JwtTokenUtil;
 import br.com.tcc.security.securityConfig.UserDetailsServiceImpl;
 import org.apache.commons.logging.Log;
@@ -18,6 +19,7 @@ import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.DisabledException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -41,45 +43,30 @@ public class AuthenticationController {
 	
 	@PostMapping("/login")
     public ResponseEntity<?> loginUser(@RequestBody UsuarioDto usuarioDto) {
-        Map<String, Object> responseMap = new HashMap<>();
+        LoginResponse loginResponse = new LoginResponse();
         HttpStatus status;
-        
-        try {
-            Authentication auth = authenticationManager
-            		.authenticate(new UsernamePasswordAuthenticationToken(usuarioDto.getUserName(), 
-            					  usuarioDto.getPassword()));
-            
-            if (auth.isAuthenticated()) {
-                UserDetails userDetails = userDetailsService.loadUserByUsername(usuarioDto.getUserName());
-                String token = jwtTokenUtil.generateToken(userDetails);
-                
-        		List<String> roles = userDetails.getAuthorities().stream()
-        				.map(item -> item.getAuthority())
-        				.collect(Collectors.toList());
-                
-                responseMap.put("message", "Usuário logado com sucesso");
-                responseMap.put("jwt_token", token);
-                responseMap.put("roles", roles);
-                status = HttpStatus.OK;
-            } else {
-                responseMap.put("message", "Credenciáis inválidas");
-                status = HttpStatus.UNAUTHORIZED;
-            }
-        } catch (DisabledException e) {
-            responseMap.put("message", "Usuário bloqueado");
+
+        Authentication auth = authenticationManager
+                .authenticate(new UsernamePasswordAuthenticationToken(usuarioDto.getUserName(),
+                              usuarioDto.getPassword()));
+
+        if (auth.isAuthenticated()) {
+            UserDetails userDetails = userDetailsService.loadUserByUsername(usuarioDto.getUserName());
+            String token = jwtTokenUtil.generateToken(userDetails);
+
+            List<String> roles = userDetails.getAuthorities().stream()
+                    .map(GrantedAuthority::getAuthority)
+                    .collect(Collectors.toList());
+
+            loginResponse.setTokenJwt(token);
+            loginResponse.setRoles(roles);
+            status = HttpStatus.OK;
+        } else {
+            loginResponse.setMessage("{credenciais.invalidas}");
             status = HttpStatus.UNAUTHORIZED;
-            logger.error(e);
-        } catch (BadCredentialsException e) {
-            responseMap.put("message", "Credenciáis inválidas");
-            status = HttpStatus.UNAUTHORIZED;
-            logger.error(e);
-        } catch (Exception e) {
-            responseMap.put("message", "Erro inespesado! Contate o administrador");
-            status = HttpStatus.INTERNAL_SERVER_ERROR;
-            logger.error(e);
         }
-        
-        return ResponseEntity.status(status).body(responseMap);
+
+        return ResponseEntity.status(status).body(loginResponse);
     }
 	
 }

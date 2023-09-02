@@ -5,6 +5,8 @@ import jakarta.ws.rs.InternalServerErrorException;
 import jakarta.ws.rs.Produces;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.*;
+import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.authentication.DisabledException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
@@ -31,11 +33,13 @@ public class RestExceptionHandler {
     }
 
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
-    @ExceptionHandler(Exception.class)
+    @ExceptionHandler({Exception.class, DisabledException.class, BadCredentialsException.class})
     public ResponseEntity<?> handleInternalServerError(Exception ex) {
         List<MessageError> errors = tratarMensagemExceptions.getErrors(ex);
         Response errorResponse = tratarMensagemExceptions.getErrorResponse(ex, HttpStatus.INTERNAL_SERVER_ERROR, errors);
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorResponse);
     }
+
+
 
 }

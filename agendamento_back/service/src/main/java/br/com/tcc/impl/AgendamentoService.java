@@ -14,9 +14,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import uteis.DataUteis;
 
+import java.math.BigDecimal;
+import java.time.Duration;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service("AgendamentoService")
 public class AgendamentoService {
@@ -43,12 +47,34 @@ public class AgendamentoService {
 		consulta.setId(agendamento.getId());
 		consulta.setDoutor(getDoutor(agendamento.getDoutorId()));
 		consulta.setPaciente(getPaciente(agendamento.getPacienteId()));
-		consulta.setProcedimento(getProcedimento(agendamento.getProcedimentosIds()));
+		consulta.setProcedimentos(getProcedimentos(agendamento.getProcedimentosIds()));
 		consulta.setDataHoraInicio(agendamento.getDataHoraInicio());
 		consulta.setDataHoraFinal(agendamento.getDataHoraFim());
 		consulta.setStatus(agendamento.getStatus() == null? StatusConsultaEnum.AGUARDANDO : agendamento.getStatus());
 
+		calcularValorTotal(consulta);
+		caçciçarTempoAproximado(consulta);
+
 		return consulta;
+	}
+
+	private void caçciçarTempoAproximado(Consulta consulta) {
+		consulta.setTempoAproximado(LocalTime.of(0, 0));
+
+		consulta.getProcedimentos().forEach(procedimento -> {
+			Duration duration = Duration.ofMinutes(Integer.parseInt(procedimento.getTempo()));
+			LocalTime tempo = consulta.getTempoAproximado().plus(duration);
+			consulta.setTempoAproximado(tempo);
+		});
+	}
+
+	private void calcularValorTotal(Consulta consulta) {
+		consulta.setValorTotal(BigDecimal.ZERO);
+
+		consulta.getProcedimentos().forEach(procedimento -> {
+			BigDecimal valorTotal = consulta.getValorTotal().add(procedimento.getValor());
+			consulta.setValorTotal(valorTotal);
+		});
 	}
 
 	public Optional<List<Consulta>> consultarPorHorarioDoutorPaciente(Long doutorId, Long pacienteId, String horario) {
@@ -67,8 +93,10 @@ public class AgendamentoService {
 		return consultaRepository.findById(id);
 	}
 
-	private Procedimento getProcedimento(List<Long> procedimentosIds) {
-		return procedimentoRepository.findById(1L).get();
+	private List<Procedimento> getProcedimentos(List<Long> procedimentosIds) {
+		return procedimentosIds.stream().map(
+						id -> procedimentoRepository.findById(id).get()
+				).collect(Collectors.toList());
 	}
 
 	private Paciente getPaciente(Long pacienteId) {

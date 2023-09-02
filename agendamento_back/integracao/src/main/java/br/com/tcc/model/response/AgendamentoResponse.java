@@ -5,7 +5,9 @@ import br.com.tcc.validation.generic.interfaces.ValidObrigatorio;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.*;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.List;
 
 @AllArgsConstructor
@@ -26,6 +28,10 @@ public class AgendamentoResponse {
 
     private Long doutorId;
 
-    private List<Long> procedimentosIds;
+    private List<ProcedimentoResponse> procedimentos;
+
+    private BigDecimal valorTotal;
+
+    private LocalTime tempoAproximado;
 
 }

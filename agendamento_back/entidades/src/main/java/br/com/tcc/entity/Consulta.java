@@ -5,7 +5,10 @@ import jakarta.persistence.*;
 import lombok.Data;
 
 import java.io.Serializable;
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.util.List;
 
 @Data
 @Entity
@@ -31,13 +34,23 @@ public class Consulta implements Serializable {
 	@ManyToOne
 	@JoinColumn(name = "doutor_id", nullable = false)
 	private Doutor doutor;
-	
-	@ManyToOne
-	@JoinColumn(name = "procedimento_id", nullable = false)
-	private Procedimento procedimento;
+
+	@ManyToMany
+	@JoinTable(
+			name = "consulta_procedimento",
+			joinColumns = @JoinColumn(name = "consulta_id"),
+			inverseJoinColumns = @JoinColumn(name = "procedimento_id")
+	)
+	private List<Procedimento> procedimentos;
 	
 	@Enumerated(EnumType.STRING)
 	@Column(name = "status", nullable = false)
 	private StatusConsultaEnum status;
+
+	@Column(name = "valortotal", nullable = false)
+	private BigDecimal valorTotal;
+
+	@Column(name = "tempoaproximado", nullable = false)
+	private LocalTime tempoAproximado;
 
 }

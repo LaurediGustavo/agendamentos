@@ -11,6 +11,7 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 @ComponentScan({"br.com.tcc.entidades",
                 "br.com.tcc.service",
                 "br.com.tcc.chatbot",
+                "uteis",
                 "br.com.tcc.scheduling",
                 "br.com.tcc.security.securityConfig",
                 "br.com.tcc.security.jwtConfig",

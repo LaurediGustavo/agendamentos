@@ -1,4 +1,4 @@
-package br.com.tcc.chatbot.generic;
+package br.com.tcc.chatbot;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.event.ContextRefreshedEvent;
@@ -12,7 +12,7 @@ import org.telegram.telegrambots.updatesreceivers.DefaultBotSession;
 public class BotInitializer {
 	
     @Autowired
-    private Bot bot;
+    private BotListener bot;
 
     @EventListener({ContextRefreshedEvent.class})
     public void init() throws TelegramApiException {

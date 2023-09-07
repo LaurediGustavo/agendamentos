@@ -1,6 +1,6 @@
 package br.com.tcc.chatbot.confirmacao.impl;
 
-import br.com.tcc.chatbot.generic.RetornoChatBotInterface;
+import br.com.tcc.chatbot.RetornoChatBotInterface;
 import br.com.tcc.entity.Consulta;
 import br.com.tcc.entity.MonitorDeChatBot;
 import br.com.tcc.enumerador.StatusConsultaEnum;
@@ -10,13 +10,14 @@ import br.com.tcc.repository.ConsultaRepository;
 import br.com.tcc.repository.MonitorDeChatBotRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.Message;
 
 import java.time.LocalDateTime;
 import java.util.Optional;
 
 @Component
-public class ConfirmarConsultaRetornoBot implements RetornoChatBotInterface {
+public class ConfirmarConsultaRetornoBot extends RetornoChatBotInterface {
 
     @Autowired
     private MonitorDeChatBotRepository monitorDeChatBotRepository;
@@ -24,12 +25,13 @@ public class ConfirmarConsultaRetornoBot implements RetornoChatBotInterface {
     @Autowired
     private ConsultaRepository consultaRepository;
 
-    public void processarRetorno(Message message, MonitorDeChatBot monitorDeChatBot) {
+    public SendMessage processarRetorno(Message message, MonitorDeChatBot monitorDeChatBot) {
         String messageText = message.getText().toUpperCase();
         Optional<Consulta> consultaOptional = consultas(monitorDeChatBot);
 
         atualizarConsulta(consultaOptional, messageText);
         atualizarMonitor(monitorDeChatBot);
+        return null;
     }
 
     void atualizarMonitor(MonitorDeChatBot monitorDeChatBot) {

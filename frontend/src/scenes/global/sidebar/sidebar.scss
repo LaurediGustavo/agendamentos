@@ -1,0 +1,33 @@
+
+/* Estilos para a barra lateral */
+.box-sidebar {
+    height: 100vh;
+    display: flex;
+  }
+  
+  /* Estilos para o menu */
+  .menu-item {
+    margin: 5px 0 0px 0;
+  }
+  
+  .menu-item-title {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-left: 15px;
+
+  }
+  
+  .menu-item-title-text {
+    color: #A3A3A3;
+  }
+
+  .custom-icon {
+    color: #A3A3A3;
+  }
+
+  .sidebar-background {
+    background-color: #f9f9f9b3; /* Defina a cor de fundo desejada */
+  }
+
+  

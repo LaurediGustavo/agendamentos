@@ -1,0 +1,20 @@
+/* navbar.css */
+.navbar {
+    display: flex;
+    justify-content: flex-start; /* Alterado para alinhar à esquerda */
+    align-items: center;
+    padding: 16px;
+    background-color: #3bf790;
+    color: #fff;
+  }
+  
+  .navbar-username {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    flex: 1;
+  }
+  
+  .navbar-username-text {
+    font-size: 16px;
+  }

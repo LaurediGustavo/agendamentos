@@ -1,0 +1,27 @@
+@import url("https://fonts.googleapis.com/css2?family=Source+Sans+Pro:wght@400;600;700&display=swap");
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+a{
+  text-decoration: none;
+  color: inherit;
+}
+
+.container{
+  display: flex;
+}
+
+.contentContainer {
+  padding: 5px 20px;
+  overflow-x: auto; /* Adiciona uma barra de rolagem horizontal se necessário */
+}
+
+
+body {
+  font-family: "Source Sans Pro", sans-serif;
+  overflow-x: hidden; /* Impede a rolagem horizontal do corpo */
+}

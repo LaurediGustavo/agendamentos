@@ -1,15 +1,14 @@
 package uteis;
 
+import org.springframework.stereotype.Service;
+
 import java.util.List;
 
+@Service
 public class Uteis {
 
     public static boolean isNotNullOrNotEmpty(List<?> lista) {
-        if(lista != null && !lista.isEmpty()) {
-            return true;
-        }
-
-        return false;
+        return lista != null && !lista.isEmpty();
     }
 
     public static boolean cpfValido(String cpf) {

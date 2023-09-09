@@ -3,7 +3,7 @@ package br.com.tcc.chatbot.confirmacao.impl;
 import java.util.List;
 
 import br.com.tcc.chatbot.confirmacao.interfaces.ConfirmarConsultaInterface;
-import br.com.tcc.chatbot.generic.Bot;
+import br.com.tcc.chatbot.BotListener;
 import br.com.tcc.entity.Consulta;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
@@ -13,7 +13,7 @@ import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.Keyboard
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 
 @Component("ConfirmarConsultaBot")
-public class ConfirmarConsultaBot extends Bot implements ConfirmarConsultaInterface {
+public class ConfirmarConsultaBot extends BotListener implements ConfirmarConsultaInterface {
 	
 	@Override
 	public void iniciarConversa(Consulta consulta) throws TelegramApiException {

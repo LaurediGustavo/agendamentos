@@ -32,5 +32,8 @@ public class MonitorDeChatBot implements Serializable {
 	@Enumerated(EnumType.STRING)
 	@Column(name = "statusdamensagem", nullable = false)
 	private StatusDaMensagemChatBotEnum statusDaMensagemChatBotEnum;
-	
+
+	@Column(name = "passo", nullable = false)
+	private Integer passo;
+
 }

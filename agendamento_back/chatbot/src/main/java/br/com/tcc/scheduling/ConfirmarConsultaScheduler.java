@@ -1,9 +1,8 @@
 package br.com.tcc.scheduling;
 
-import br.com.tcc.chatbot.confirmacao.impl.MonitorDeMensagensChatBot;
+import br.com.tcc.chatbot.confirmacao.impl.ConfirmarConsultaMonitorDeMensagensBot;
 import br.com.tcc.chatbot.confirmacao.interfaces.ConfirmarConsultaInterface;
 import br.com.tcc.entity.Consulta;
-import br.com.tcc.entity.Paciente;
 import br.com.tcc.enumerador.StatusConsultaEnum;
 import br.com.tcc.repository.ConsultaRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,7 +26,7 @@ public class ConfirmarConsultaScheduler {
 	private ConfirmarConsultaInterface confirmarConsultaBot;
 
 	@Autowired
-	private MonitorDeMensagensChatBot monitorChatBot;
+	private ConfirmarConsultaMonitorDeMensagensBot monitorChatBot;
 	
 	@Scheduled(cron = "*/5 * * * * *") //Segundos Minutos Horas DiaDoMês Mês DiaDaSemana
 	public void run() {

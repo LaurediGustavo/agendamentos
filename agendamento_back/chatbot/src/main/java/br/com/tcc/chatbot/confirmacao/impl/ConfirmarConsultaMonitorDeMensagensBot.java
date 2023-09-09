@@ -15,7 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @Service("MonitorDeMensagensChatBot")
-public class MonitorDeMensagensChatBot {
+public class ConfirmarConsultaMonitorDeMensagensBot {
 
 	@Autowired
 	private MonitorDeChatBotRepository monitorDeChatBotRepository;

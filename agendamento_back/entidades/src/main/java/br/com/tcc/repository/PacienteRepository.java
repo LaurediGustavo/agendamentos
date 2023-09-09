@@ -20,4 +20,6 @@ public interface PacienteRepository extends JpaRepository<Paciente, Long> {
             "AND p.cpf LIKE %:cpf%")
     Optional<List<Paciente>> findByCpfNome(@Param("cpf") String cpf, @Param("nome") String nome);
 
+    Optional<Paciente> findByCpf(String cpf);
+
 }

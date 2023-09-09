@@ -193,204 +193,48 @@ export const doctorsData = [
   }
 ]
 
-export const proceduresData = [{
+export const proceduresData = [ {
   "id": 1,
-  "procedimento": "Procedimento 1"
+  "procedimento": "Avaliação de rotina"
 },
 {
   "id": 2,
-  "procedimento": "Procedimento 2"
+  "procedimento": "Extração de Dente"
 },
 {
   "id": 3,
-  "procedimento": "Procedimento 3"
+  "procedimento": "Limpeza Dental"
 },
 {
   "id": 4,
-  "procedimento": "Procedimento 4"
+  "procedimento": "Tratamento de Canal"
 },
 {
   "id": 5,
-  "procedimento": "Procedimento 5"
+  "procedimento": "Coroa Dentária"
 },
 {
   "id": 6,
-  "procedimento": "Procedimento 6"
+  "procedimento": "Implante Dentário"
 },
 {
   "id": 7,
-  "procedimento": "Procedimento 7"
+  "procedimento": "Aparelho Ortodôntico"
 },
 {
   "id": 8,
-  "procedimento": "Procedimento 8"
+  "procedimento": "Clareamento Dental"
 },
 {
   "id": 9,
-  "procedimento": "Procedimento 9"
+  "procedimento": "Prótese Dentária"
 },
 {
   "id": 10,
-  "procedimento": "Procedimento 10"
+  "procedimento": "Periodontia (Tratamento de Gengivas)"
 },
 {
   "id": 11,
-  "procedimento": "Procedimento 11"
-},
-{
-  "id": 12,
-  "procedimento": "Procedimento 12"
-},
-{
-  "id": 13,
-  "procedimento": "Procedimento 13"
-},
-{
-  "id": 14,
-  "procedimento": "Procedimento 14"
-},
-{
-  "id": 15,
-  "procedimento": "Procedimento 15"
-},
-{
-  "id": 16,
-  "procedimento": "Procedimento 16"
-},
-{
-  "id": 17,
-  "procedimento": "Procedimento 17"
-},
-{
-  "id": 18,
-  "procedimento": "Procedimento 18"
-},
-{
-  "id": 19,
-  "procedimento": "Procedimento 19"
-},
-{
-  "id": 20,
-  "procedimento": "Procedimento 20"
-},
-{
-  "id": 21,
-  "procedimento": "Procedimento 21"
-},
-{
-  "id": 22,
-  "procedimento": "Procedimento 22"
-},
-{
-  "id": 23,
-  "procedimento": "Procedimento 23"
-},
-{
-  "id": 24,
-  "procedimento": "Procedimento 24"
-},
-{
-  "id": 25,
-  "procedimento": "Procedimento 25"
-},
-{
-  "id": 26,
-  "procedimento": "Procedimento 26"
-},
-{
-  "id": 27,
-  "procedimento": "Procedimento 27"
-},
-{
-  "id": 28,
-  "procedimento": "Procedimento 28"
-},
-{
-  "id": 29,
-  "procedimento": "Procedimento 29"
-},
-{
-  "id": 30,
-  "procedimento": "Procedimento 30"
-},
-{
-  "id": 31,
-  "procedimento": "Procedimento 31"
-},
-{
-  "id": 32,
-  "procedimento": "Procedimento 32"
-},
-{
-  "id": 33,
-  "procedimento": "Procedimento 33"
-},
-{
-  "id": 34,
-  "procedimento": "Procedimento 34"
-},
-{
-  "id": 35,
-  "procedimento": "Procedimento 35"
-},
-{
-  "id": 36,
-  "procedimento": "Procedimento 36"
-},
-{
-  "id": 37,
-  "procedimento": "Procedimento 37"
-},
-{
-  "id": 38,
-  "procedimento": "Procedimento 38"
-},
-{
-  "id": 39,
-  "procedimento": "Procedimento 39"
-},
-{
-  "id": 40,
-  "procedimento": "Procedimento 40"
-},
-{
-  "id": 41,
-  "procedimento": "Procedimento 41"
-},
-{
-  "id": 42,
-  "procedimento": "Procedimento 42"
-},
-{
-  "id": 43,
-  "procedimento": "Procedimento 43"
-},
-{
-  "id": 44,
-  "procedimento": "Procedimento 44"
-},
-{
-  "id": 45,
-  "procedimento": "Procedimento 45"
-},
-{
-  "id": 46,
-  "procedimento": "Procedimento 46"
-},
-{
-  "id": 47,
-  "procedimento": "Procedimento 47"
-},
-{
-  "id": 48,
-  "procedimento": "Procedimento 48"
-},
-{
-  "id": 49,
-  "procedimento": "Procedimento 49"
-},
-{
-  "id": 50,
-  "procedimento": "Procedimento 50"
+  "procedimento": "Obturação Dentária"
 }
 ]

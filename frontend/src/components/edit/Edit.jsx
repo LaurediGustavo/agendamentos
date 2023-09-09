@@ -148,7 +148,7 @@ export function Edit(props) {
                           mask="999.999.999-99"
                           placeholder={column.headerName}
                           name={column.field}
-                          value={formData[column.field] || ''}
+                          defaultValue={formData[column.field] || ''} // Use defaultValue em vez de value
                           onChange={handleInputChange}
                           disabled 
                           style={{

@@ -14,4 +14,10 @@ public class DataUteis {
         }
     }
 
+    public static String getLocalDateTime_ddMMaaaaHHMM(LocalDateTime localDateTime) {
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");
+
+        return localDateTime.format(formatter);
+    }
+
 }

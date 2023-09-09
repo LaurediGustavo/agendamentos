@@ -1,7 +1,7 @@
-package br.com.tcc.chatbot.cadastro.passos;
+package br.com.tcc.chatbot.agendamento.passos;
 
-import br.com.tcc.chatbot.cadastro.enumerador.CadastroPassosEnum;
-import br.com.tcc.chatbot.cadastro.interfaces.CadastroPassosInterface;
+import br.com.tcc.chatbot.agendamento.enumerador.AgendamentoPassosEnum;
+import br.com.tcc.chatbot.agendamento.interfaces.AgendamentoPassosInterface;
 import br.com.tcc.entity.MonitorDeChatBot;
 import br.com.tcc.repository.MonitorDeChatBotRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,13 +12,13 @@ import org.telegram.telegrambots.meta.api.objects.Message;
 import java.time.LocalDateTime;
 
 @Component
-public class CadastroPassoUm implements CadastroPassosInterface {
+public class AgendamentoPassoUm implements AgendamentoPassosInterface {
 
     @Autowired
     private MonitorDeChatBotRepository monitorDeChatBotRepository;
 
     @Override
-    public SendMessage processarPassosDeCadastro(MonitorDeChatBot monitorDeChatBot, Message message) {
+    public SendMessage processarPassosDeAgendamento(MonitorDeChatBot monitorDeChatBot, Message message) {
         atualizarMonitor(monitorDeChatBot);
         return montarMensagem(message.getChatId(), "Por favor informe o seu CPF");
     }
@@ -39,7 +39,7 @@ public class CadastroPassoUm implements CadastroPassosInterface {
     }
 
     @Override
-    public CadastroPassosEnum getPasso() {
-        return CadastroPassosEnum.PASSO_UM;
+    public AgendamentoPassosEnum getPasso() {
+        return AgendamentoPassosEnum.PASSO_UM;
     }
 }

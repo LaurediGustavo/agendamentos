@@ -1,7 +1,7 @@
-package br.com.tcc.chatbot.cadastro;
+package br.com.tcc.chatbot.agendamento;
 
 import br.com.tcc.chatbot.RetornoChatBotInterface;
-import br.com.tcc.chatbot.cadastro.enumerador.CadastroPassosEnum;
+import br.com.tcc.chatbot.agendamento.enumerador.AgendamentoPassosEnum;
 import br.com.tcc.entity.MonitorDeChatBot;
 import br.com.tcc.enumerador.TipoChatBotEnum;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,33 +12,33 @@ import org.telegram.telegrambots.meta.api.objects.Message;
 import java.util.Arrays;
 
 @Component
-public class CadastroRetornoBot extends RetornoChatBotInterface {
+public class AgendamentoRetornoBot extends RetornoChatBotInterface {
 
     @Autowired
-    private CadastroPassosFactory cadastroPassosFactory;
+    private AgendamentoPassosFactory agendamentoPassosFactory;
 
     @Override
     public SendMessage processarRetorno(Message message, MonitorDeChatBot monitorDeChatBot) {
         SendMessage sendMessage = null;
 
         if(monitorDeChatBot == null) {
-            monitorDeChatBot = super.cadastrarMonitor(message, TipoChatBotEnum.CADASTRO);
+            monitorDeChatBot = super.cadastrarMonitor(message, TipoChatBotEnum.AGENDAMENTO);
         }
 
-        sendMessage = cadastroPassosFactory.processar(getPasso(monitorDeChatBot))
-                .processarPassosDeCadastro(monitorDeChatBot, message);
+        sendMessage = agendamentoPassosFactory.processar(getPasso(monitorDeChatBot))
+                .processarPassosDeAgendamento(monitorDeChatBot, message);
 
         return sendMessage;
     }
 
-    private CadastroPassosEnum getPasso(MonitorDeChatBot monitorDeChatBot) {
-        return Arrays.stream(CadastroPassosEnum.values())
+    private AgendamentoPassosEnum getPasso(MonitorDeChatBot monitorDeChatBot) {
+        return Arrays.stream(AgendamentoPassosEnum.values())
                 .filter(passo -> passo.getPASSO().equals(monitorDeChatBot.getPasso())).findFirst()
-                .orElse(CadastroPassosEnum.PASSO_UM);
+                .orElse(AgendamentoPassosEnum.PASSO_UM);
     }
 
     @Override
     public TipoChatBotEnum getTipoChatBot() {
-        return TipoChatBotEnum.CADASTRO;
+        return TipoChatBotEnum.AGENDAMENTO;
     }
 }

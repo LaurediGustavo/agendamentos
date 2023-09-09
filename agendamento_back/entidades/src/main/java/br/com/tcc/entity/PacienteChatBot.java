@@ -26,7 +26,7 @@ public class PacienteChatBot implements Serializable {
     @Column(name = "telefone", length = 15)
     private String telefone;
 
-    @Column(name = "chat_id", length = 50)
+    @Column(name = "chat_id")
     private Long chatId;
 
 }

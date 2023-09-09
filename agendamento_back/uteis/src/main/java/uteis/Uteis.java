@@ -2,7 +2,10 @@ package uteis;
 
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
+import java.text.NumberFormat;
 import java.util.List;
+import java.util.Locale;
 
 @Service
 public class Uteis {
@@ -52,6 +55,14 @@ public class Uteis {
         }
 
         return segundoDigito == numeros[10];
+    }
+
+    public static String formatarMoedaParaReal(BigDecimal valor) {
+        Locale locale = new Locale.Builder().setLanguage("pt").setRegion("BR").build();
+
+        NumberFormat formatoMoeda = NumberFormat.getCurrencyInstance(locale);
+
+        return formatoMoeda.format(valor);
     }
 
 }

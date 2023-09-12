@@ -47,12 +47,9 @@ public class AgendamentoPassoTres implements AgendamentoPassosInterface {
 
     private void persistirAgendamento(Procedimento procedimento, Long chatId) {
         Optional<AgendamentoChatBot> agendamentoChatBotOptional = agendamentoChatBotRepository.findByChatId(chatId);
-
-        AgendamentoChatBot agendamentoChatBot = null;
-        agendamentoChatBot = agendamentoChatBotOptional.orElseGet(AgendamentoChatBot::new);
+        AgendamentoChatBot agendamentoChatBot = agendamentoChatBotOptional.get();
 
         agendamentoChatBot.setProcedimento(procedimento);
-        agendamentoChatBot.setChatId(chatId);
         agendamentoChatBotRepository.save(agendamentoChatBot);
     }
 

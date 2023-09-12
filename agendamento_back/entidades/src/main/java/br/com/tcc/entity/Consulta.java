@@ -35,7 +35,7 @@ public class Consulta implements Serializable {
 	@JoinColumn(name = "doutor_id", nullable = false)
 	private Doutor doutor;
 
-	@ManyToMany
+	@ManyToMany(fetch = FetchType.EAGER)
 	@JoinTable(
 			name = "consulta_procedimento",
 			joinColumns = @JoinColumn(name = "consulta_id"),

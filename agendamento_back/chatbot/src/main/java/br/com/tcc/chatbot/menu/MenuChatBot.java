@@ -21,12 +21,16 @@ public class MenuChatBot {
     private void montarMensagem(SendMessage message, Long chatId) {
         String string = """
                 Olá! Sou o Odo, o robô de atendimento da clinica odontológida Xpto.
+                
                 Como eu poderia te ajudar?
                 1. Cadastro;
                 2. Agendar Consulta;
                 3. Remarcar Consulta;
                 4. Cancelar Consulta;
                 5. Consultar Agendamentos;
+                
+                Para cancelar qualquer operação digite: CANCELAR
+                
                 Digite apenas o número da opção desejada""";
 
         message.setChatId(chatId.toString());
@@ -44,9 +48,10 @@ public class MenuChatBot {
         KeyboardButton btnDois = new KeyboardButton("2");
         KeyboardButton btnTres = new KeyboardButton("3");
         KeyboardButton btnQuatro = new KeyboardButton("4");
+        KeyboardButton btnCinco = new KeyboardButton("5");
 
-        linhaUm.addAll(List.of(btnUm, btnDois));
-        linhaDois.addAll(List.of(btnTres, btnQuatro));
+        linhaUm.addAll(List.of(btnUm, btnDois, btnTres));
+        linhaDois.addAll(List.of(btnQuatro, btnCinco));
 
         teclado.setKeyboard(List.of(linhaUm, linhaDois));
 

@@ -39,6 +39,7 @@ public class ConfirmarConsultaMonitorDeMensagensBot {
 		monitor.setTipoChatBotEnum(TipoChatBotEnum.CONFIRMACAO);
 		monitor.setStatusDaMensagemChatBotEnum(StatusDaMensagemChatBotEnum.AGUARDANDO);
 		monitor.setChatId(paciente.getChatId());
+		monitor.setPasso(0);
 
 		monitorDeChatBotRepository.save(monitor);
 	}

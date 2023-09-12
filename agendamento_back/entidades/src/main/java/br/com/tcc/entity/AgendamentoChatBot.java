@@ -31,4 +31,7 @@ public class AgendamentoChatBot implements Serializable {
 	@Column(name = "chat_id")
 	private Long chatId;
 
+	@Column(name = "cpf", length = 14)
+	private String cpf;
+
 }

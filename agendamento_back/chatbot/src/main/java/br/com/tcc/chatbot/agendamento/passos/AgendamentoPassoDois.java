@@ -2,7 +2,10 @@ package br.com.tcc.chatbot.agendamento.passos;
 
 import br.com.tcc.chatbot.agendamento.enumerador.AgendamentoPassosEnum;
 import br.com.tcc.chatbot.agendamento.interfaces.AgendamentoPassosInterface;
+import br.com.tcc.entity.AgendamentoChatBot;
 import br.com.tcc.entity.MonitorDeChatBot;
+import br.com.tcc.entity.Procedimento;
+import br.com.tcc.repository.AgendamentoChatBotRepository;
 import br.com.tcc.repository.MonitorDeChatBotRepository;
 import br.com.tcc.repository.PacienteRepository;
 import br.com.tcc.repository.ProcedimentoRepository;
@@ -13,6 +16,7 @@ import org.telegram.telegrambots.meta.api.objects.Message;
 import uteis.Uteis;
 
 import java.time.LocalDateTime;
+import java.util.Optional;
 
 @Component
 public class AgendamentoPassoDois implements AgendamentoPassosInterface {
@@ -26,17 +30,32 @@ public class AgendamentoPassoDois implements AgendamentoPassosInterface {
     @Autowired
     private ProcedimentoRepository procedimentoRepository;
 
+    @Autowired
+    private AgendamentoChatBotRepository agendamentoChatBotRepository;
+
     @Override
     public SendMessage processarPassosDeAgendamento(MonitorDeChatBot monitorDeChatBot, Message message) {
         String mensagem = message.getText();
 
         if(Uteis.cpfValido(mensagem) && cpfUtilizado(mensagem)) {
             atualizarMonitor(monitorDeChatBot);
+            persistirAgendamento(message);
             return montarMensagem(message.getChatId(), getTextoMensagem());
         }
         else {
             return montarMensagem(message.getChatId(), "CPF inválido ou nao cadastrado! Por favor informe seu CPF");
         }
+    }
+
+    private void persistirAgendamento(Message message) {
+        Optional<AgendamentoChatBot> agendamentoChatBotOptional = agendamentoChatBotRepository.findByChatId(message.getChatId());
+
+        AgendamentoChatBot agendamentoChatBot = null;
+        agendamentoChatBot = agendamentoChatBotOptional.orElseGet(AgendamentoChatBot::new);
+
+        agendamentoChatBot.setCpf(message.getText());
+        agendamentoChatBot.setChatId(message.getChatId());
+        agendamentoChatBotRepository.save(agendamentoChatBot);
     }
 
     private String getTextoMensagem() {

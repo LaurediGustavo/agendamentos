@@ -69,4 +69,12 @@ public interface ConsultaRepository extends JpaRepository<Consulta, Long> {
 													@Param("ano") Integer ano,
 													@Param("mes") Integer mes,
 													@Param("dia") Integer dia);
+
+	@Query("SELECT c FROM Consulta c " +
+			"INNER JOIN c.paciente p " +
+			"WHERE c.status IN ('CONFIRMADO', 'AGUARDANDO') " +
+			"AND p.cpf = :cpf " +
+			"AND c.dataHoraInicio >= CURRENT_TIMESTAMP")
+	List<Consulta> findConsultasByStatusAndCpfAndDataHoraInicio(@Param("cpf") String cpf);
+
 }

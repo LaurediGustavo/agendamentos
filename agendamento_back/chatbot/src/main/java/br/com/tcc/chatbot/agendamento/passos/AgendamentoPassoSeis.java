@@ -97,9 +97,8 @@ public class AgendamentoPassoSeis implements AgendamentoPassosInterface {
         Optional<AgendamentoChatBot> agendamentoChatBotOptional = agendamentoChatBotRepository.findByChatId(chatId);
 
         if(agendamentoChatBotOptional.isPresent()) {
-            Paciente paciente = pacienteRepository.findByChatId(chatId).get();
-
             AgendamentoChatBot agendamentoChatBot = agendamentoChatBotOptional.get();
+            Optional<Paciente> paciente = pacienteRepository.findByCpf(agendamentoChatBot.getCpf());
 
             int minutos = Integer.parseInt(agendamentoChatBot.getProcedimento().getTempo());
             int horas = minutos / 60;
@@ -111,7 +110,7 @@ public class AgendamentoPassoSeis implements AgendamentoPassosInterface {
             consulta.setValorTotal(agendamentoChatBot.getProcedimento().getValor());
             consulta.setDataHoraInicio(agendamentoChatBot.getHorario());
             consulta.setDataHoraFinal(agendamentoChatBot.getHorario().plusMinutes(Long.parseLong(agendamentoChatBot.getProcedimento().getTempo())));
-            consulta.setPaciente(paciente);
+            consulta.setPaciente(paciente.get());
             consulta.setDoutor(getDoutorDisponivel(agendamentoChatBot));
             consulta.setProcedimentos(getProcedimentos(agendamentoChatBot.getProcedimento()));
 

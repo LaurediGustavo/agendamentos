@@ -57,6 +57,7 @@ public class CadastroPassoQuatro implements CadastroPassosInterface {
             pacienteSistema.setSobrenome(paciente.getSobrenome());
             pacienteSistema.setCpf(paciente.getCpf());
             pacienteSistema.setTelefone(paciente.getTelefone());
+            pacienteSistema.setChatId(paciente.getChatId());
 
             pacienteRepository.save(pacienteSistema);
             pacienteChatBotRepository.delete(paciente);

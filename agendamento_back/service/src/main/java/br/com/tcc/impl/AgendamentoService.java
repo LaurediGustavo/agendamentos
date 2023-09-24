@@ -80,9 +80,9 @@ public class AgendamentoService {
 	public Optional<List<Consulta>> consultarPorHorarioDoutorPaciente(Long doutorId, Long pacienteId, String horario) {
 		LocalDateTime dataHora = DataUteis.getLocalDateTime(horario);
 
-		if(dataHora.getHour() == 0 && dataHora.getMinute() == 0) {
+		if(dataHora != null) {
 			return consultaRepository.consultarPorDataDoutorPaciente(doutorId, pacienteId,
-					dataHora.getYear(), dataHora.getMonthValue(), dataHora.getDayOfMonth());
+					dataHora.getYear(), dataHora.getMonthValue());
 		}
 		else {
 			return consultaRepository.consultarPorHorarioDoutorPaciente(dataHora, doutorId, pacienteId);

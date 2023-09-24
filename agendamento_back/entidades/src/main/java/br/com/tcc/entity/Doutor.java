@@ -1,10 +1,9 @@
 package br.com.tcc.entity;
 
 import java.io.Serializable;
+import java.util.List;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -17,6 +16,14 @@ public class Doutor extends Funcionario implements Serializable {
 
 	@Column(name = "cro", length = 20, nullable = false, unique = true)
 	private String cro;
+
+	@ManyToMany(fetch = FetchType.EAGER)
+	@JoinTable(
+			name = "doutor_procedimento",
+			joinColumns = @JoinColumn(name = "doutor_id"),
+			inverseJoinColumns = @JoinColumn(name = "procedimento_id")
+	)
+	private List<Procedimento> procedimentos;
 
 	public Doutor(Long id, String nome, String sobrenome, Integer idade, String cpf, String genero, String telefone, String logradouro, String bairro, Integer numero, String bloco, TipoFuncionario tipoFuncionario, String cro) {
 		super(id, nome, sobrenome, idade, cpf, genero, telefone, logradouro, bairro, numero, bloco, tipoFuncionario);

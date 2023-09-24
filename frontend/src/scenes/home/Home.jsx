@@ -1,14 +1,26 @@
 // components/Home.jsx
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { Box } from "@mui/material";
 import Header from "../../components/headers/Headers";
 import { Calendar } from '../../components/calendar/Calendar';
 import { BookingForm } from '../../components/bookingForm/BookingForm';
 import { doctorsData, patientsData, proceduresData } from '../../data/dados';
-
+import api from '../../services/api';
 
 
 export const Home = () => {
+
+  const [procedimentos, setProcedimentos] = useState();
+
+  useEffect(() => {
+    api
+      .get("procedimento/consultar?tratamento")
+      .then((response) => setProcedimentos(response.data))
+      .catch((err) => {
+        console.error("ops! ocorreu um erro" + err);
+      });
+  }, []);
+
   const [modalOpen, setModalOpen] = useState(false);
   const [selectedEvent, setSelectedEvent] = useState(null);
   const [selectedDate, setSelectedDate] = useState(null);
@@ -51,9 +63,10 @@ export const Home = () => {
         calendarRef={calendarRef}
         selectedDate={selectedDate}
         doctorsData={doctorsData}
-        proceduresData={proceduresData}
+        proceduresData={procedimentos}
         patientsData={patientsData}
       />
     </Box>
+
   );
 }

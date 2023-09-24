@@ -3,7 +3,9 @@ package br.com.tcc.controller;
 import br.com.tcc.dto.FuncionarioDto;
 import br.com.tcc.impl.DoutorService;
 import br.com.tcc.impl.FuncionarioService;
+import br.com.tcc.model.request.DoutorAgendamentoRequest;
 import br.com.tcc.model.request.FuncionarioRequest;
+import br.com.tcc.model.response.DoutorAgendamentoResponse;
 import br.com.tcc.model.response.DoutorResponse;
 import br.com.tcc.model.response.FuncionarioResponse;
 import br.com.tcc.model.response.PacienteResponse;
@@ -65,6 +67,14 @@ public class DoutorController {
                 .consultarPorId(id);
 
         return ResponseEntity.status(HttpStatus.OK).body(doutorResponse);
+    }
+
+    @PostMapping(value = "/consultar/agendamento")
+    public ResponseEntity<?> consultarDoutorParaAgendamento(@RequestBody DoutorAgendamentoRequest request) {
+        List<DoutorAgendamentoResponse> doutorResponseList = doutorTratarResponse
+                .consultarPorNomeEProcedimento(request.getNome(), request.getProcedimentos());
+
+        return ResponseEntity.status(HttpStatus.OK).body(doutorResponseList);
     }
 
 }

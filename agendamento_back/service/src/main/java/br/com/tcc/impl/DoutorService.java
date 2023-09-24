@@ -3,6 +3,7 @@ package br.com.tcc.impl;
 import br.com.tcc.dto.FuncionarioDto;
 import br.com.tcc.entity.Doutor;
 import br.com.tcc.entity.Funcionario;
+import br.com.tcc.entity.Procedimento;
 import br.com.tcc.entity.TipoFuncionario;
 import br.com.tcc.repository.DoutorRepository;
 import br.com.tcc.repository.FuncionarioRepository;
@@ -10,6 +11,8 @@ import br.com.tcc.repository.TipoFuncionarioRepository;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import java.util.*;
 
 @Service("DoutorService")
 public class DoutorService {
@@ -71,6 +74,34 @@ public class DoutorService {
 
     private TipoFuncionario getTipoFuncionario(Long id) {
         return tipoFuncionarioRepository.findById(id).get();
+    }
+
+    public void validarDoutoresPorProcedimento(Optional<List<Doutor>> optionalDoutorList, Long[] procedimentos) {
+        if(optionalDoutorList.isPresent()) {
+            List<Doutor> doutors = optionalDoutorList.get();
+            List<Doutor> listaRetorno = new ArrayList<>();
+
+            for (Doutor doutor : doutors) {
+                List<Procedimento> procedimentoList = doutor.getProcedimentos();
+
+                int qtdProcedimentos = 0;
+                for (Procedimento procedimento : procedimentoList) {
+                    for (Long procedimentoId : procedimentos) {
+                        if(Objects.equals(procedimentoId, procedimento.getId())) {
+                            qtdProcedimentos++;
+                            break;
+                        }
+                    }
+                }
+
+                if(qtdProcedimentos == procedimentos.length) {
+                    listaRetorno.add(doutor);
+                }
+            }
+
+            doutors.clear();
+            doutors.addAll(listaRetorno);
+        }
     }
 
 }

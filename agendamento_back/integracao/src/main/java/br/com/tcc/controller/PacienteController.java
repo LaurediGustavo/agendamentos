@@ -3,6 +3,7 @@ package br.com.tcc.controller;
 import br.com.tcc.dto.PacienteDto;
 import br.com.tcc.impl.PacienteService;
 import br.com.tcc.model.request.PacienteRequest;
+import br.com.tcc.model.response.PacienteAgendamentoResponse;
 import br.com.tcc.model.response.PacienteResponse;
 import br.com.tcc.service.PacienteTratarResponse;
 import jakarta.validation.Valid;
@@ -61,6 +62,14 @@ public class PacienteController {
                 .consultarPorId(id);
 
         return ResponseEntity.status(HttpStatus.OK).body(pacienteResponse);
+    }
+
+    @GetMapping(value = "/consultar/agendamento")
+    public ResponseEntity<?> consultarParaAgendamento(@Param("nome") String nome) {
+        List<PacienteAgendamentoResponse> pacienteResponseList = pacienteTratarResponse
+                .consultarPorNome(nome);
+
+        return ResponseEntity.status(HttpStatus.OK).body(pacienteResponseList);
     }
 
 }

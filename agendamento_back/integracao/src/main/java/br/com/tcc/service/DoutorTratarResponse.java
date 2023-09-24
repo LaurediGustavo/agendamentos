@@ -2,6 +2,8 @@ package br.com.tcc.service;
 
 import br.com.tcc.entity.Doutor;
 import br.com.tcc.entity.TipoFuncionario;
+import br.com.tcc.impl.DoutorService;
+import br.com.tcc.model.response.DoutorAgendamentoResponse;
 import br.com.tcc.model.response.DoutorResponse;
 import br.com.tcc.model.response.FuncionarioResponse;
 import br.com.tcc.model.response.TipoFuncionarioResponse;
@@ -18,6 +20,9 @@ public class DoutorTratarResponse {
 
     @Autowired
     private DoutorRepository doutorRepository;
+
+    @Autowired
+    private DoutorService doutorService;
 
     public List<DoutorResponse> consultarPorNome(String nome) {
         Optional<List<Doutor>> optionalDoutorList = doutorRepository
@@ -77,4 +82,27 @@ public class DoutorTratarResponse {
         );
     }
 
+    public List<DoutorAgendamentoResponse> consultarPorNomeEProcedimento(String nome, Long[] procedimentos) {
+        Optional<List<Doutor>> optionalDoutorList = doutorRepository
+                .findByNomeAndProcedimentoId(nome, procedimentos);
+
+        doutorService.validarDoutoresPorProcedimento(optionalDoutorList, procedimentos);
+
+        return optionalDoutorList.map(doutores -> doutores.stream()
+                .map(this::montarDoutorAgendamentoResponse)
+                .collect(Collectors.toList()))
+                .orElse(null);
+    }
+
+    private DoutorAgendamentoResponse montarDoutorAgendamentoResponse(Doutor doutor) {
+        if(doutor != null) {
+            return new DoutorAgendamentoResponse(
+                    doutor.getId(),
+                    doutor.getNome(),
+                    doutor.getSobrenome()
+            );
+        }
+
+        return null;
+    }
 }

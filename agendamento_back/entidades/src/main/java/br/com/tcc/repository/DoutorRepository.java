@@ -21,4 +21,10 @@ public interface DoutorRepository extends JpaRepository<Doutor, Long> {
             "WHERE (:dataInicio BETWEEN c.dataHoraInicio AND c.dataHoraFinal) " +
             "AND (:dataFim BETWEEN c.dataHoraInicio AND c.dataHoraFinal))")
     List<Doutor> findDoutoresDisponiveis(@Param("dataInicio") LocalDateTime dataInicio, @Param("dataFim") LocalDateTime dataFim);
+
+    @Query("SELECT d FROM Doutor d " +
+            "JOIN d.procedimentos p " +
+            "WHERE p.id in (:procedimentosId) " +
+            "AND d.nome like %:nome%")
+    Optional<List<Doutor>> findByNomeAndProcedimentoId(@Param("nome") String nome, @Param("procedimentosId") Long[] procedimentoId);
 }

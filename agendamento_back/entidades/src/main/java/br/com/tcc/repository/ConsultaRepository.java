@@ -39,13 +39,11 @@ public interface ConsultaRepository extends JpaRepository<Consulta, Long> {
 			" WHERE (:doutorId IS NULL OR c.doutor.id = :doutorId) " +
 			" AND (:pacienteId IS NULL OR c.paciente.id = :pacienteId) " +
 			" AND YEAR(c.dataHoraInicio) = :ano " +
-			" AND MONTH(c.dataHoraInicio) = :mes " +
-			" AND DAY(c.dataHoraInicio) = :dia ")
+			" AND MONTH(c.dataHoraInicio) = :mes")
 	Optional<List<Consulta>> consultarPorDataDoutorPaciente(@Param("doutorId") Long doutorId,
 															@Param("pacienteId") Long pacienteId,
 															@Param("ano") Integer ano,
-															@Param("mes") Integer mes,
-															@Param("dia") Integer dia);
+															@Param("mes") Integer mes);
 
 	@Query("SELECT c FROM Consulta c " +
 			"INNER JOIN c.paciente p " +

@@ -5,6 +5,7 @@ import CloseIcon from '@mui/icons-material/Close';
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
 import './bookingForm.scss'
 import api from '../../services/api';
+import moment from 'moment';
 
 import {
     Box,
@@ -59,24 +60,21 @@ export const BookingForm = ({ modalOpen, handleCloseModal, selectedEvent, calend
     const [patient, setPatient] = useState('');
     const [startTime, setStartTime] = useState(null);
     const [endTime, setEndTime] = useState(null);
-    const [selectedDetails, setSelectedDetails] = useState(null);
 
     useEffect(() => {
         getDoutores();
     }, [procedure]);
 
-    const handleAgendar = () => {
-        console.log("Agendado:", { doctor, procedure, patient, startTime, endTime, selectedDate });
+    const handleAgendar = async (e) => {
+        e.preventDefault();
 
-        if (!selectedDate || !startTime || !endTime) {
-            console.error("Data e/ou horário não selecionados.");
+        if (!validarFormulario()) {
             return;
         }
 
         const [year, month, day] = selectedDate.split('-').map(Number);
         const dataInicio = new Date(year, month - 1, day);
         const dataFinal = new Date(year, month - 1, day);
-        const informa = patient.nome
 
         dataInicio.setHours(startTime.getHours());
         dataInicio.setMinutes(startTime.getMinutes());
@@ -84,37 +82,85 @@ export const BookingForm = ({ modalOpen, handleCloseModal, selectedEvent, calend
         dataFinal.setHours(endTime.getHours());
         dataFinal.setMinutes(endTime.getMinutes());
 
-        calendarRef.current.getApi().addEvent({
-            title: 'Agendado',
-            start: dataInicio,
-        });
-
-        setSelectedDetails({ doctor, procedure, patient, dataInicio, dataFinal, selectedDate });
-
         const startTimeFormatada = format(dataInicio, 'yyyy-MM-dd HH:mm:ss');
         const endTimeFormatada = format(dataFinal, 'yyyy-MM-dd HH:mm:ss');
-        api.post("/agendamento/cadastro", {
-            status: null,
-            dataHoraInicio: startTimeFormatada,
-            dataHoraFim: endTimeFormatada,
-            doutorId: doctor,
-            pacienteId: patient,
-            procedimentosIds: procedure
-        }).then((response) => {
-            console.log("Resposta do servidor:", response.data);
-        })
-        .catch((error) => {
-            console.error("Erro na requisição:", error);
+
+        try {
+            const response = await api.post("/agendamento/cadastro", {
+                status: null,
+                dataHoraInicio: startTimeFormatada,
+                dataHoraFim: endTimeFormatada,
+                doutorId: doctor,
+                pacienteId: patient,
+                procedimentosIds: procedure
+            });
+    
+            calendarRef.current.getApi().addEvent({
+                title: pacientes.find((paciente) => paciente.id === patient)?.nome,
+                start: dataInicio,
+                end: dataFinal
+            });
+            
+            setDoctor('');
+            setProcedure([]);
+            setPatient('');
+            setStartTime(null);
+            setEndTime(null);
+            setErros({});
+            handleCloseModal();
+        } catch (error) {
+            if (error.response && error.response.data) {
+                tratarErrosDeIntegracao(error.response.data.errors);
+            } else {
+                console.log(error);
+            }
+        }
+    }
+
+    const [erros, setErros] = useState({ procedimento: '', doutor: '', paciente: '',
+                                        horarioInicio: '', horarioFim: '' });
+  
+    const validarFormulario = () => {
+      const novosErros = {};
+  
+      if (procedure.length === 0) {
+        novosErros.procedimento = 'Deve ser informado';
+      }
+  
+      if (!Number.isInteger(doctor) || doctor <= 0) {
+        novosErros.doutor = 'Deve ser informado';
+      }
+
+      if (!Number.isInteger(patient) || patient <= 0) {
+        novosErros.paciente = 'Deve ser informado';
+      }
+
+      if (!moment(startTime).isValid()) {
+        novosErros.startTime = 'Campo inválido';
+      }
+  
+      if (!moment(endTime).isValid()) {
+        novosErros.endTime = 'Campo inválido';
+      }
+  
+      if (moment(startTime).isAfter(endTime)) {
+        novosErros.startTime = 'A data de início deve ser anterior à data de término';
+      }
+  
+      setErros(novosErros);
+
+      return Object.keys(novosErros).length === 0;
+    };
+
+    const tratarErrosDeIntegracao = (erros) => {
+        const novosErros = {};
+
+        erros.forEach((erro) => {
+            novosErros.startTime = erro.message;
+            console.log(erro)
         });
 
-        // Resetar os estados do formulário
-        setDoctor('');
-        setProcedure([]);
-        setPatient('');
-        setStartTime(null);
-        setEndTime(null);
-
-        handleCloseModal();
+        setErros(novosErros);
     }
 
     return (
@@ -153,7 +199,10 @@ export const BookingForm = ({ modalOpen, handleCloseModal, selectedEvent, calend
                         <form onSubmit={handleAgendar}>
 
                             <div className="item">
-                                <label>Procedimento:</label>
+                                <div className="label">
+                                    <label>Procedimento:</label>
+                                    {erros.procedimento && <div className="error-message">{erros.procedimento}</div>}
+                                </div>
                                 <Select
                                     fullWidth
                                     value={procedure}
@@ -176,7 +225,10 @@ export const BookingForm = ({ modalOpen, handleCloseModal, selectedEvent, calend
                             </div>
 
                             <div className="item">
-                                <label>Doutor:</label>
+                                <div className="label">
+                                    <label>Doutor:</label>
+                                    {erros.doutor && <div className="error-message">{erros.doutor}</div>}
+                                </div>
                                 <Select
                                     fullWidth
                                     value={doctor}
@@ -193,7 +245,10 @@ export const BookingForm = ({ modalOpen, handleCloseModal, selectedEvent, calend
                             </div>
 
                             <div className="item">
-                                <label>Paciente:</label>
+                                <div className="label">
+                                    <label>Paciente:</label>
+                                    {erros.paciente && <div className="error-message">{erros.paciente}</div>}
+                                </div>
                                 <Select
                                     fullWidth
                                     value={patient}
@@ -210,8 +265,9 @@ export const BookingForm = ({ modalOpen, handleCloseModal, selectedEvent, calend
                             </div>
                             
                             <div className="item2">
-                                <div className="label">
-                                <label>Horário de Início:</label>
+                                <div className="label label-data">
+                                    <label>Horário de Início:</label>
+                                    {erros.startTime && <div className="error-message">{erros.startTime}</div>}
                                 </div>
                                 <LocalizationProvider dateAdapter={AdapterDateFns} >
                                     <TimePicker
@@ -233,8 +289,9 @@ export const BookingForm = ({ modalOpen, handleCloseModal, selectedEvent, calend
                             </div>
 
                             <div className="item2">
-                            <div className="label">
-                                <label>Horário de Término:</label>
+                                <div className="label label-data">
+                                    <label>Horário de Término:</label>
+                                    {erros.endTime && <div className="error-message">{erros.endTime}</div>}
                                 </div>
                                 <LocalizationProvider dateAdapter={AdapterDateFns} >
                                     <TimePicker

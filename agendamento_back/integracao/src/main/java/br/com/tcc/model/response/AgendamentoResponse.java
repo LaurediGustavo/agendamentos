@@ -26,6 +26,8 @@ public class AgendamentoResponse {
 
     private Long pacienteId;
 
+    private String pacienteNome;
+
     private Long doutorId;
 
     private List<ProcedimentoResponse> procedimentos;

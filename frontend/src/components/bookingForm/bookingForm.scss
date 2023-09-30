@@ -1,7 +1,7 @@
 /* BookingForm.css */
 
 .md {
-    width: 400px;
+    width: 500px;
     padding: 16px;
     background-color: #fff;
     box-shadow: 4px 4px 4px rgba(0, 0, 0, 0.2);
@@ -58,9 +58,25 @@
   form .btn{
     margin-top: 30px;
   }
-  .item2{
-    margin-bottom: 10px;
-  }
-  .label{
-  margin-bottom: 15px;
+
+.item2{
+  margin-bottom: 10px;
+}
+
+.label{
+  display: flex;
+  align-items: center;
+}
+
+.label-data {
+  margin-bottom: 10px;
+}
+
+.label label {
+  margin-right: 10px;
+}
+
+.error-message {
+  font-size: 12px;
+  color: red;
 }

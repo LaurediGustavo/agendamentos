@@ -26,6 +26,7 @@
     "axios": "^1.5.0",
     "cpf-check": "^3.0.0",
     "date-fns": "^2.30.0",
+    "moment": "^2.29.4",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-input-mask": "^2.0.4",

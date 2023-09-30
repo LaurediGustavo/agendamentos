@@ -20,8 +20,9 @@ export const Calendar = ({ calendarRef, handleEventClick, handleEventSelect }) =
 
         response.data.map((consulta) => (
           calendarRef.current.getApi().addEvent({
-            title: 'Agendamento',
-            start: consulta.dataHoraInicio
+            title: consulta.pacienteNome,
+            start: consulta.dataHoraInicio,
+            end: consulta.dataHoraFim
           })
         ))
     } catch (error) {

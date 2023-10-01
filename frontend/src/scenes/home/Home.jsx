@@ -4,27 +4,15 @@ import { Box } from "@mui/material";
 import Header from "../../components/headers/Headers";
 import { Calendar } from '../../components/calendar/Calendar';
 import { BookingForm } from '../../components/bookingForm/BookingForm';
-import { doctorsData, patientsData, proceduresData } from '../../data/dados';
-import api from '../../services/api';
+import moment from 'moment';
 
 
 export const Home = () => {
-
-  const [procedimentos, setProcedimentos] = useState();
-
-  useEffect(() => {
-    api
-      .get("procedimento/consultar?tratamento")
-      .then((response) => setProcedimentos(response.data))
-      .catch((err) => {
-        console.error("ops! ocorreu um erro" + err);
-      });
-  }, []);
-
   const [modalOpen, setModalOpen] = useState(false);
   const [selectedEvent, setSelectedEvent] = useState(null);
   const [selectedDate, setSelectedDate] = useState(null);
   const calendarRef = useRef();
+  const childRef = useRef(null);
 
   const handleOpenModal = () => {
     setModalOpen(true);
@@ -39,9 +27,30 @@ export const Home = () => {
     handleOpenModal();
   };
 
+  useEffect(() => {
+    if (calendarRef.current) {
+      const calendarApi = calendarRef.current.getApi();
+
+      calendarApi.setOption('eventClick', function(info) {
+        const idConsulta = info.event.extendedProps.consulta_id;
+        
+        if (childRef.current) {
+          childRef.current.carregarDados(idConsulta);
+        }
+
+        setSelectedDate(moment(info.event.startStr).format("YYYY-MM-DD"))
+        handleEventClick(info);
+      });
+    }
+  }, [calendarRef]);
+
   const handleEventSelect = (arg) => {
     setSelectedDate(arg.startStr);
     handleEventClick(arg);
+
+    if (childRef.current) {
+      childRef.current.limparDados();
+    }
   };
 
   return (
@@ -62,9 +71,7 @@ export const Home = () => {
         selectedEvent={selectedEvent}
         calendarRef={calendarRef}
         selectedDate={selectedDate}
-        doctorsData={doctorsData}
-        proceduresData={procedimentos}
-        patientsData={patientsData}
+        ref={childRef}
       />
     </Box>
 

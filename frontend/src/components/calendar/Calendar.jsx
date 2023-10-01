@@ -22,7 +22,8 @@ export const Calendar = ({ calendarRef, handleEventClick, handleEventSelect }) =
           calendarRef.current.getApi().addEvent({
             title: consulta.pacienteNome,
             start: consulta.dataHoraInicio,
-            end: consulta.dataHoraFim
+            end: consulta.dataHoraFim,
+            consulta_id: consulta.id
           })
         ))
     } catch (error) {
@@ -35,7 +36,7 @@ export const Calendar = ({ calendarRef, handleEventClick, handleEventSelect }) =
       ref={calendarRef}
       plugins={[dayGridPlugin, timeGridPlugin, listPlugin, interactionPlugin]}
       initialView="dayGridMonth"
-      locale={ptBrLocale} // Adicione esta linha
+      locale={ptBrLocale}
       headerToolbar={{
         left: 'prev,next today',
         center: 'title',
@@ -45,7 +46,7 @@ export const Calendar = ({ calendarRef, handleEventClick, handleEventSelect }) =
       dayMaxEventRows={true}
       select={handleEventSelect}
       eventClick={handleEventClick}
-      editable={false} // Adicione esta linha para habilitar a interação com os eventos
+      editable={false}
       datesSet={(dateInfo) => {
         getConsultas(dateInfo.view.currentStart)
     }}

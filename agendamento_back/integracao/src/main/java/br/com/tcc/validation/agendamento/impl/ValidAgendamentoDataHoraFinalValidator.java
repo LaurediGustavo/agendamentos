@@ -40,12 +40,12 @@ public class ValidAgendamentoDataHoraFinalValidator implements ConstraintValidat
 
     private boolean validarHorario(LocalDateTime dataInicio, LocalDateTime dataFinal, AgendamentoRequest agendamento) {
         if(agendamento.getId() == null || agendamento.getId() == 0 || mudancaDeData(agendamento, dataInicio, dataFinal)) {
-            Long possuiAgendamento = consultaRepository.consultarPorDataEDoutor(dataInicio, agendamento.getDoutorId()).get();
+            Long possuiAgendamento = consultaRepository.consultarPorDataEDoutor(dataInicio, dataFinal, agendamento.getDoutorId(), agendamento.getId()).get();
             if(possuiAgendamento > 0) {
                 return false;
             }
 
-            possuiAgendamento = consultaRepository.consultarPorDataEDoutor(dataFinal, agendamento.getDoutorId()).get();
+            possuiAgendamento = consultaRepository.consultarPorDataEDoutor(dataInicio, dataFinal, agendamento.getDoutorId(), agendamento.getId()).get();
             if(possuiAgendamento > 0) {
                 return false;
             }

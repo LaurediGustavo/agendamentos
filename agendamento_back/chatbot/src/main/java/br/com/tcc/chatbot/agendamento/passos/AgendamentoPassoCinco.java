@@ -140,10 +140,10 @@ public class AgendamentoPassoCinco implements AgendamentoPassosInterface {
                 dataFinal = dataFinal.minusSeconds(1);
 
                 boolean horarioLivre = false;
-                long possuiAgendamento = consultaRepository.consultarPorDataEDoutor(dataInicio, doutor.getId()).get();
+                long possuiAgendamento = consultaRepository.consultarPorDataEDoutor(dataInicio, dataFinal, doutor.getId(), 0L).get();
                 horarioLivre = possuiAgendamento == 0;
 
-                possuiAgendamento = consultaRepository.consultarPorDataEDoutor(dataFinal, doutor.getId()).get();
+                possuiAgendamento = consultaRepository.consultarPorDataEDoutor(dataInicio, dataFinal, doutor.getId(), 0L).get();
                 horarioLivre = possuiAgendamento == 0;
 
                 if(horarioLivre) {

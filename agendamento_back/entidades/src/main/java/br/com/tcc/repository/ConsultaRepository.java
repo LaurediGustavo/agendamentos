@@ -15,10 +15,15 @@ import java.util.Optional;
 public interface ConsultaRepository extends JpaRepository<Consulta, Long> {
 
 	@Query("SELECT COUNT(c.id) FROM Consulta c " +
-		   " WHERE :data BETWEEN c.dataHoraInicio AND c.dataHoraFinal " +
-		   " AND c.doutor.id = :doutor_id")
-	Optional<Long> consultarPorDataEDoutor(@Param("data") LocalDateTime dataHora,
-												  @Param("doutor_id") Long doutor_id);
+		   " WHERE ((:dataInicio BETWEEN c.dataHoraInicio AND c.dataHoraFinal) " +
+		   " OR (c.dataHoraInicio BETWEEN :dataInicio AND :dataFim) " +
+		   " OR (c.dataHoraFinal BETWEEN :dataInicio AND :dataFim)) " +
+		   " AND c.doutor.id = :doutor_id " +
+		   " AND (c.id <> :consulta_id OR :consulta_id IS NULL)")
+	Optional<Long> consultarPorDataEDoutor(@Param("dataInicio") LocalDateTime dataHoraInicio,
+										   @Param("dataFim") LocalDateTime dataHoraFim,
+										   @Param("doutor_id") Long doutor_id,
+										   @Param("consulta_id") Long consulta_id);
 
 	@Query("SELECT c FROM Consulta c " +
 			"INNER JOIN c.paciente p " +

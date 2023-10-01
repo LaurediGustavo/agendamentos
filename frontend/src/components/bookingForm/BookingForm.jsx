@@ -105,7 +105,19 @@ export const BookingForm = forwardRef(({ modalOpen, handleCloseModal, selectedEv
             console.error("Ops! Ocorreu um erro: " + error);
         }
     };
+
+    const statusOpcoes = [
+        { key: 'AGUARDANDO', label: 'Aguardando' },
+        { key: 'ENVIADO', label: 'Enviado' },
+        { key: 'CONFIRMADO', label: 'Confirmado' },
+        { key: 'CANCELADO', label: 'Cancelado' },
+        { key: 'REMARCADO', label: 'Remarcado' },
+        { key: 'FINALIZADO', label: 'Finalizado' },
+    ];
     
+    const [erros, setErros] = useState({ procedimento: '', doutor: '', paciente: '',
+        horarioInicio: '' });
+
     const [consultaForm, setConsultaForm] = useState({ status: '', dataHoraInicio: null, dataHoraFim: null,
         doutorId: '', pacienteId: '', procedimentosIds: [],
         valorTotal: '', tempoAproximado: '' });
@@ -118,8 +130,60 @@ export const BookingForm = forwardRef(({ modalOpen, handleCloseModal, selectedEv
     };
 
     useEffect(() => {
+        const calcular = async () => {
+          const tempoAproximado = calcularTempo();
+          const valorTotal = calcularValor();
+      
+          setConsultaForm((prevConsultaForm) => ({
+            ...prevConsultaForm,
+            tempoAproximado,
+            valorTotal,
+          }));
+        };
+      
         getDoutores();
+        calcular();
     }, [consultaForm.procedimentosIds]);
+      
+
+    const calcularTempo = () => {
+        const procedimentosSelecionados = procedimentos?.filter((proc) =>
+          consultaForm.procedimentosIds.includes(proc.id)
+        );
+      
+        const somaDosTemposEmSegundos = procedimentosSelecionados?.reduce((total, proc) => {
+          const tempoEmSegundos = parseFloat(proc.tempo) * 60;
+          return isNaN(tempoEmSegundos) ? total : total + tempoEmSegundos;
+        }, 0);
+      
+        const horas = Math.floor(somaDosTemposEmSegundos / 3600);
+        const minutos = Math.floor((somaDosTemposEmSegundos % 3600) / 60);
+        const segundos = somaDosTemposEmSegundos % 60;
+      
+        const tempoFormatado = `${horas.toString().padStart(2, '0')}:${minutos.toString().padStart(2, '0')}:${segundos.toString().padStart(2, '0')}`;
+      
+        return tempoFormatado;
+    };
+      
+      const calcularValor = () => {
+        const procedimentosSelecionados = procedimentos?.filter((proc) =>
+          consultaForm.procedimentosIds.includes(proc.id)
+        );
+      
+        const somaDosValores = procedimentosSelecionados?.reduce((total, proc) => {
+          const valor = parseFloat(proc.valor);
+          return isNaN(valor) ? total : total + valor;
+        }, 0);
+      
+        const valorFormatado = somaDosValores?.toLocaleString('pt-BR', {
+          style: 'currency',
+          currency: 'BRL',
+          minimumFractionDigits: 2,
+          maximumFractionDigits: 2,
+        });
+      
+        return valorFormatado;
+    };
 
     const handleAgendar = async (e) => {
         e.preventDefault();
@@ -170,8 +234,8 @@ export const BookingForm = forwardRef(({ modalOpen, handleCloseModal, selectedEv
 
             calendarRef.current.getApi().addEvent({
                 title: pacientes.find((paciente) => paciente.id === consultaForm.pacienteId)?.nome,
-                start: dataInicio,
-                end: dataFinal
+                start: args1,
+                end: args2
             });
             
             limparDados();
@@ -212,9 +276,6 @@ export const BookingForm = forwardRef(({ modalOpen, handleCloseModal, selectedEv
             }
         }
     }
-
-    const [erros, setErros] = useState({ procedimento: '', doutor: '', paciente: '',
-                                        horarioInicio: '', horarioFim: '' });
   
     const validarFormulario = () => {
       const novosErros = {};
@@ -232,11 +293,11 @@ export const BookingForm = forwardRef(({ modalOpen, handleCloseModal, selectedEv
       }
 
       if (!moment(consultaForm.dataHoraInicio).isValid()) {
-        novosErros.startTime = 'Campo inválido';
+        novosErros.startTime = 'Campo Horário de Inicio é inválido';
       }
   
       if (!moment(consultaForm.dataHoraFim).isValid()) {
-        novosErros.endTime = 'Campo inválido';
+        novosErros.startTime = 'Campo Horário de Término é inválido';
       }
   
       if (moment(consultaForm.dataHoraInicio).isAfter(consultaForm.dataHoraFim)) {
@@ -268,6 +329,26 @@ export const BookingForm = forwardRef(({ modalOpen, handleCloseModal, selectedEv
                         Agendar Horário
                     </Typography>
                     <form onSubmit={handleAgendar}>
+                        {consultaId > 0 && (
+                            <div className="item">
+                                <div className="label">
+                                    <label>Situação:</label>
+                                </div>
+                                <Select
+                                    fullWidth
+                                    value={consultaForm.status}
+                                    onChange={(e) => atualizarConsulta('status', e.target.value)}
+                                    label="Situação"
+                                    sx={{ my: 2, color: '#333' }}
+                                    >
+                                    {statusOpcoes.map((option) => (
+                                        <MenuItem key={option.key} value={option.key}>
+                                        {option.label}
+                                        </MenuItem>
+                                    ))}
+                                </Select>
+                            </div>
+                        )}
                         <div className="item">
                             <div className="label">
                                 <label>Procedimento:</label>
@@ -282,7 +363,10 @@ export const BookingForm = forwardRef(({ modalOpen, handleCloseModal, selectedEv
                                 sx={{ my: 2, color: '#333' }}
                                 input={<Input />}
                                 renderValue={(selected) => (
-                                    selected.length === procedimentos?.length ? 'Todos' : `${selected.length} selecionados`
+                                    (selected.length === procedimentos?.length ? 
+                                    'Todos ' : `${selected.length} selecionados`) +
+                                    ' - Valor: ' + consultaForm.valorTotal +
+                                    ' - Tempo aproximado: ' +  consultaForm.tempoAproximado
                                 )}
                             >
                                 {procedimentos?.map((proc) => (
@@ -335,52 +419,52 @@ export const BookingForm = forwardRef(({ modalOpen, handleCloseModal, selectedEv
                             </Select>
                         </div>
                         
-                        <div className="item2">
+                        <div>
                             <div className="label label-data">
-                                <label>Horário de Início:</label>
+                                <label>Horários:</label>
                                 {erros.startTime && <div className="error-message">{erros.startTime}</div>}
                             </div>
-                            <LocalizationProvider dateAdapter={AdapterDateFns} >
-                                <TimePicker
-                                    label="Horário de Início"
-                                    value={consultaForm.dataHoraInicio}
-                                    onChange={(newTime) => atualizarConsulta('dataHoraInicio', newTime)}
-                                    renderInput={(params) => (
-                                        <TextField
-                                            {...params}
-                                            variant="outlined"
-                                            fullWidth
-                                            sx={{ my: 2 }}
-                                            InputLabelProps={{ shrink: true, color: '#333' }}
+                            <div className="item-container">
+                                <div className="item2">
+                                    <LocalizationProvider dateAdapter={AdapterDateFns}>
+                                        <TimePicker
                                             label="Horário de Início"
+                                            value={consultaForm.dataHoraInicio}
+                                            onChange={(newTime) => atualizarConsulta('dataHoraInicio', newTime)}
+                                            renderInput={(params) => (
+                                            <TextField
+                                                {...params}
+                                                variant="outlined"
+                                                fullWidth
+                                                sx={{ my: 2 }}
+                                                InputLabelProps={{ shrink: true, color: '#333' }}
+                                                label="Horário de Início"
+                                            />
+                                            )}
                                         />
-                                    )}
-                                />
-                            </LocalizationProvider>
-                        </div>
+                                    </LocalizationProvider>
+                                </div>
 
-                        <div className="item2">
-                            <div className="label label-data">
-                                <label>Horário de Término:</label>
-                                {erros.endTime && <div className="error-message">{erros.endTime}</div>}
-                            </div>
-                            <LocalizationProvider dateAdapter={AdapterDateFns} >
-                                <TimePicker
-                                    label="Horário de Término"
-                                    value={consultaForm.dataHoraFim}
-                                    onChange={(newTime) => atualizarConsulta('dataHoraFim', newTime)}
-                                    renderInput={(params) => (
-                                        <TextField
-                                            {...params}
-                                            variant="outlined"
-                                            fullWidth
-                                            sx={{ my: 2 }}
-                                            InputLabelProps={{ shrink: true, color: '#333' }}
+                                <div>
+                                    <LocalizationProvider dateAdapter={AdapterDateFns}>
+                                        <TimePicker
                                             label="Horário de Término"
+                                            value={consultaForm.dataHoraFim}
+                                            onChange={(newTime) => atualizarConsulta('dataHoraFim', newTime)}
+                                            renderInput={(params) => (
+                                            <TextField
+                                                {...params}
+                                                variant="outlined"
+                                                fullWidth
+                                                sx={{ my: 2 }}
+                                                InputLabelProps={{ shrink: true, color: '#333' }}
+                                                label="Horário de Término"
+                                            />
+                                            )}
                                         />
-                                    )}
-                                />
-                            </LocalizationProvider>
+                                    </LocalizationProvider>
+                                </div>
+                            </div>
                         </div>
                         
                         <Button className="btn" variant="contained" color="primary" type="submit">Gravar</Button>

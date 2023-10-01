@@ -1,7 +1,7 @@
 /* BookingForm.css */
 
 .md {
-    width: 500px;
+    width: 550px;
     padding: 16px;
     background-color: #fff;
     box-shadow: 4px 4px 4px rgba(0, 0, 0, 0.2);
@@ -59,8 +59,14 @@
     margin-top: 30px;
   }
 
-.item2{
+.item-container {
+  display: flex;
+  justify-content: space-between;
   margin-bottom: 10px;
+}
+
+.item2{
+  margin-right: 5px;
 }
 
 .label{

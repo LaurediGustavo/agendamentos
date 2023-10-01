@@ -320,6 +320,14 @@ export const BookingForm = forwardRef(({ modalOpen, handleCloseModal, selectedEv
         setErros(novosErros);
     }
 
+    const formatarCPF = (cpf) => {
+        if (!cpf || typeof cpf !== 'string') {
+          return 'CPF Inválido';
+        }
+      
+        return cpf.replace(/(\d{3})(\d{3})(\d{3})(\d{2})/, '$1.$2.$3-$4');
+    };
+
     return (
         <Modal open={modalOpen} onClose={handleCloseModal}>
             <Box className="md">
@@ -413,7 +421,7 @@ export const BookingForm = forwardRef(({ modalOpen, handleCloseModal, selectedEv
                             >
                                 {pacientes?.map((paciente) => (
                                     <MenuItem key={paciente.id} value={paciente.id}>
-                                        {paciente.nome} - {paciente.cpf}
+                                        {paciente.nome} - {formatarCPF(paciente.cpf)}
                                     </MenuItem>
                                 ))}
                             </Select>

@@ -24,6 +24,7 @@ export const BookingForm = forwardRef(({ modalOpen, handleCloseModal, selectedEv
     const [consultaId, setConsultaId] = useState()
     const carregarDados = (id) => {
         setConsultaId(id)
+        setErros({});
 
         api.get("/agendamento/consultar/" + id)
             .then((response) => preencherForm(response.data))
@@ -46,6 +47,7 @@ export const BookingForm = forwardRef(({ modalOpen, handleCloseModal, selectedEv
     
         setConsultaForm(formulario);
         setConsultaId('')
+        setErros({});
     }
 
     useImperativeHandle(ref, () => ({
@@ -221,7 +223,7 @@ export const BookingForm = forwardRef(({ modalOpen, handleCloseModal, selectedEv
         novosErros.procedimento = 'Deve ser informado';
       }
   
-      if (!Number.isInteger(consultaForm.doutorId) || consultaForm.doutorId <= 0) {
+      if (!Number.isInteger(consultaForm.doutorId) || consultaForm.doutorId <= 0 || doutores.length === 0) {
         novosErros.doutor = 'Deve ser informado';
       }
 
@@ -381,7 +383,7 @@ export const BookingForm = forwardRef(({ modalOpen, handleCloseModal, selectedEv
                             </LocalizationProvider>
                         </div>
                         
-                        <Button className="btn" variant="contained" color="primary" type="submit">Cadastrar</Button>
+                        <Button className="btn" variant="contained" color="primary" type="submit">Gravar</Button>
                     </form>
                 </>
             </Box>

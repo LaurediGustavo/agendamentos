@@ -19,7 +19,8 @@ public interface ConsultaRepository extends JpaRepository<Consulta, Long> {
 		   " OR (c.dataHoraInicio BETWEEN :dataInicio AND :dataFim) " +
 		   " OR (c.dataHoraFinal BETWEEN :dataInicio AND :dataFim)) " +
 		   " AND c.doutor.id = :doutor_id " +
-		   " AND (c.id <> :consulta_id OR :consulta_id IS NULL)")
+		   " AND (c.id <> :consulta_id OR :consulta_id IS NULL) " +
+		   " AND c.status NOT IN ('CANCELADO', 'REMARCADO')")
 	Optional<Long> consultarPorDataEDoutor(@Param("dataInicio") LocalDateTime dataHoraInicio,
 										   @Param("dataFim") LocalDateTime dataHoraFim,
 										   @Param("doutor_id") Long doutor_id,

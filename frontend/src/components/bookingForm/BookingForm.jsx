@@ -241,6 +241,7 @@ export const BookingForm = forwardRef(({ modalOpen, handleCloseModal, selectedEv
             limparDados();
             setErros({});
             handleCloseModal();
+            window.location.reload();
         } catch (error) {
             if (error.response && error.response.data) {
                 tratarErrosDeIntegracao(error.response.data.errors);

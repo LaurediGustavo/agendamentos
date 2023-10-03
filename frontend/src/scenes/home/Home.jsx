@@ -45,11 +45,19 @@ export const Home = () => {
   }, [calendarRef]);
 
   const handleEventSelect = (arg) => {
-    setSelectedDate(arg.startStr);
-    handleEventClick(arg);
+    const selectedDate = new Date(arg.start);
+    selectedDate.setHours(0, 0, 0, 0);
 
-    if (childRef.current) {
-      childRef.current.limparDados();
+    const currentDate = new Date();
+    currentDate.setHours(0, 0, 0, 0);
+
+    if (selectedDate >= currentDate) {
+      setSelectedDate(arg.startStr);
+      handleEventClick(arg);
+  
+      if (childRef.current) {
+        childRef.current.limparDados();
+      }
     }
   };
 

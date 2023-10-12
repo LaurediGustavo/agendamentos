@@ -18,7 +18,7 @@ public class MenuChatBot {
         return message;
     }
 
-    private void montarMensagem(SendMessage message, Long chatId) {
+    public void montarMensagem(SendMessage message, Long chatId) {
         String string = """
                 Olá! Sou o Odo, o robô de atendimento da clinica odontológida Xpto.
                 
@@ -33,8 +33,9 @@ public class MenuChatBot {
                 
                 Digite apenas o número da opção desejada""";
 
+        String texto = message.getText() == null? "" : message.getText();
         message.setChatId(chatId.toString());
-        message.setText(string);
+        message.setText(texto + string);
     }
 
     private SendMessage criarOpcoesDeResposta() {

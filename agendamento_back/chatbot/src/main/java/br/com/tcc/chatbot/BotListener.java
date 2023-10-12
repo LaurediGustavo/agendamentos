@@ -4,7 +4,9 @@ import br.com.tcc.chatbot.confirmacao.impl.ConfirmarConsultaMonitorDeMensagensBo
 import br.com.tcc.chatbot.menu.MenuChatBot;
 import br.com.tcc.entity.MonitorDeChatBot;
 import br.com.tcc.enumerador.StatusDaMensagemChatBotEnum;
+import br.com.tcc.enumerador.TipoChatBotEnum;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.Message;
@@ -16,6 +18,8 @@ import java.util.List;
 import java.util.Optional;
 
 public class BotListener extends TelegramLongPollingBot {
+
+	private final String CANCELAR = "CANCELAR";
 
 	@Autowired
 	private MenuChatBot menuChatBot;
@@ -38,10 +42,7 @@ public class BotListener extends TelegramLongPollingBot {
 				SendMessage message = null;
 				if(optionalMonitor.isPresent()) {
 					MonitorDeChatBot monitor = optionalMonitor.get();
-
-					message = retornoChatBotInterface.stream()
-							.filter(p -> p.getTipoChatBot().equals(monitor.getTipoChatBotEnum()))
-							.findFirst().get().processarRetorno(update.getMessage(), monitor);
+					message = chamarOperacao(update.getMessage(), monitor);
 
 					removeKeyboard(message);
 				}
@@ -55,6 +56,27 @@ public class BotListener extends TelegramLongPollingBot {
 				e.printStackTrace();
 			}
         }
+	}
+
+	private SendMessage chamarOperacao(Message message, MonitorDeChatBot monitor) {
+		TipoChatBotEnum tipo = getTipoChatBot(message, monitor);
+
+		return retornoChatBotInterface.stream()
+				.filter(p -> p.getTipoChatBot().equals(tipo))
+				.findFirst().get().processarRetorno(message, monitor);
+	}
+
+	private TipoChatBotEnum getTipoChatBot(Message message, MonitorDeChatBot monitor) {
+		TipoChatBotEnum tipo = null;
+
+		if(this.CANCELAR.equals(message.getText().toUpperCase())) {
+			tipo = TipoChatBotEnum.CANCELAR;
+		}
+		else {
+			tipo = monitor.getTipoChatBotEnum();
+		}
+
+		return tipo;
 	}
 
 	private SendMessage naoPossuiOperacaoCadastrada(Message message, Update update) {

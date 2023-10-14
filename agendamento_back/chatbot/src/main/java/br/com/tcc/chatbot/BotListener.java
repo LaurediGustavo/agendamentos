@@ -6,7 +6,6 @@ import br.com.tcc.entity.MonitorDeChatBot;
 import br.com.tcc.enumerador.StatusDaMensagemChatBotEnum;
 import br.com.tcc.enumerador.TipoChatBotEnum;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.Message;
@@ -70,7 +69,7 @@ public class BotListener extends TelegramLongPollingBot {
 		TipoChatBotEnum tipo = null;
 
 		if(this.CANCELAR.equals(message.getText().toUpperCase())) {
-			tipo = TipoChatBotEnum.CANCELAR;
+			tipo = TipoChatBotEnum.CANCELAR_OPERACAO;
 		}
 		else {
 			tipo = monitor.getTipoChatBotEnum();

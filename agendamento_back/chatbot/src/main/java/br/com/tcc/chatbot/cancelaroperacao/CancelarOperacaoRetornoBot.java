@@ -1,8 +1,6 @@
-package br.com.tcc.chatbot.cancelar;
+package br.com.tcc.chatbot.cancelaroperacao;
 
 import br.com.tcc.chatbot.RetornoChatBotInterface;
-import br.com.tcc.chatbot.cadastro.CadastroPassosFactory;
-import br.com.tcc.chatbot.cadastro.enumerador.CadastroPassosEnum;
 import br.com.tcc.chatbot.menu.MenuChatBot;
 import br.com.tcc.entity.MonitorDeChatBot;
 import br.com.tcc.enumerador.StatusDaMensagemChatBotEnum;
@@ -14,10 +12,9 @@ import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.Message;
 
 import java.time.LocalDateTime;
-import java.util.Arrays;
 
 @Component
-public class CancelarRetornoBot extends RetornoChatBotInterface {
+public class CancelarOperacaoRetornoBot extends RetornoChatBotInterface {
 
     @Autowired
     private MonitorDeChatBotRepository monitorDeChatBotRepository;
@@ -60,6 +57,6 @@ public class CancelarRetornoBot extends RetornoChatBotInterface {
 
     @Override
     public TipoChatBotEnum getTipoChatBot() {
-        return TipoChatBotEnum.CANCELAR;
+        return TipoChatBotEnum.CANCELAR_OPERACAO;
     }
 }

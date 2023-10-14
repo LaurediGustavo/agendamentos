@@ -7,8 +7,8 @@ import java.io.Serializable;
 
 @Data
 @Entity
-@Table(name = "consultar_chatbot")
-public class ConsultarChatBot implements Serializable {
+@Table(name = "cancelar_agendamento_chatbot")
+public class CancelarAgendamentoChatBot implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -17,7 +17,12 @@ public class ConsultarChatBot implements Serializable {
     @Column(name = "cpf", length = 14)
     private String cpf;
 
+    @Column(name = "agendamento_id")
+    private Long agendamentoId;
+
     @Column(name = "chat_id")
     private Long chatId;
 
+    @Transient
+    private Consulta consulta;
 }

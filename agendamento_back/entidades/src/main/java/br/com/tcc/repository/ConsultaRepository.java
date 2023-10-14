@@ -81,4 +81,11 @@ public interface ConsultaRepository extends JpaRepository<Consulta, Long> {
 			"AND c.dataHoraInicio >= CURRENT_TIMESTAMP")
 	List<Consulta> findConsultasByStatusAndCpfAndDataHoraInicio(@Param("cpf") String cpf);
 
+	@Query("SELECT COUNT(c) FROM Consulta c " +
+			"INNER JOIN c.paciente p " +
+			"WHERE c.status IN ('CONFIRMADO', 'AGUARDANDO') " +
+			"AND p.cpf = :cpf " +
+			"AND c.dataHoraInicio >= CURRENT_TIMESTAMP")
+	Long hasConsultasByStatusAndCpfAndDataHoraInicio(@Param("cpf") String cpf);
+
 }

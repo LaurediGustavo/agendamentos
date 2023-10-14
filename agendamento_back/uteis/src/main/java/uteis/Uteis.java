@@ -65,4 +65,13 @@ public class Uteis {
         return formatoMoeda.format(valor);
     }
 
+    public static boolean isValorNumerico(String mensagem) {
+        try {
+            Integer.parseInt(mensagem);
+            return true;
+        }
+        catch (Exception e) {
+            return false;
+        }
+    }
 }

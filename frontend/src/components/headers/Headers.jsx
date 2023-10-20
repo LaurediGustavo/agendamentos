@@ -5,12 +5,12 @@ import "./headers.scss"
 const Header = ({ title, subtitle }) => {
   return (
     <Box mb="30px">
-      <Typography className="Header-title" fontWeight="bold" sx={{ mb: "5px" }}>
+      <div className="Header-title">
         {title}
-      </Typography>
-      <Typography className="Header-subtitle" sx={{ color: "grey.400" }}>
+      </div>
+      <div className="Header-subtitle">
         {subtitle}
-      </Typography>
+      </div>
     </Box>
   );
 };

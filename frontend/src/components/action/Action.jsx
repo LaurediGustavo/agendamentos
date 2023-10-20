@@ -1,12 +1,34 @@
-import React, { useState } from 'react';
-import './add.scss';
+import React, { useState, useEffect } from 'react';
+import './action.scss';
 import Button from '@mui/material/Button';
 import CloseIcon from '@mui/icons-material/Close';
 import InputMask from 'react-input-mask';
 
-export function Add(props) {
-  const [formData, setFormData] = useState({});
+const Action = (props) => {
+  const [formData, setFormData] = useState(props.initialData || {});
   const [errors, setErrors] = useState({});
+
+  useEffect(() => {
+    setFormData(props.initialData || {}); // Atualiza dados do formulário com props iniciais
+  }, [props.initialData]); // Apenas quando as props iniciais mudam
+
+  const handleInputChange = (e) => {
+    const { name, value } = e.target; 
+    if (name !== 'cpf') {
+      setFormData({
+        ...formData, // Mantém os dados existentes
+        [name]: value // Atualiza o campo específico
+      });
+    } else {
+      // Remove a formatação do CPF antes de definir o valor no estado
+      const cleanedCPF = value.replace(/[^\d]/g, '');
+      setFormData({
+        ...formData,
+        [name]: cleanedCPF
+      });
+    }
+  }
+  
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -15,21 +37,14 @@ export function Add(props) {
     }
   }
 
-  const handleInputChange = (e) => {
-    const { name, value } = e.target;
-    setFormData({
-      ...formData,
-      [name]: value
-    });
-  }
+    // Função para validar o formulário
+    const validateForm = () => {
+    let valid = true; // Assume que o formulário é válido
+    const newErrors = {}; // Cria um novo objeto para erros
 
-  const validateForm = () => {
-    let valid = true;
-    const newErrors = {};
-  
     props.columns.forEach(column => {
       const { field, headerName } = column;
-  
+
       if (!formData[field]) {
         newErrors[field] = `O campo ${headerName} é obrigatório`;
         valid = false;
@@ -47,7 +62,7 @@ export function Add(props) {
         valid = false;
       }
     });
-  
+
     setErrors(newErrors);
     return valid;
   }
@@ -121,21 +136,31 @@ export function Add(props) {
   }
 
   return (
-    <div className="add">
+    <div className="activated">
       <div className="modal">
         <span className="close" onClick={() => props.setOpen(false)}><CloseIcon /></span>
-        <h1>Cadastrar um novo {props.slug}</h1>
+        <h1>{props.isEditing ? `Editar ${props.slug}` : `Cadastrar um novo ${props.slug}`}</h1>
         <form onSubmit={handleSubmit}>
           {props.columns.map(column => (
             <div className="item" key={column.field}>
               <label>{column.headerName}:</label>
               {column.field === 'cpf' ? (
                 <InputMask
+                  className="cpf-input"
                   mask="999.999.999-99"
                   placeholder={column.headerName}
                   name={column.field}
-                  value={formData[column.field] || ''}
+                  defaultValue={formData[column.field] || ''}
                   onChange={handleInputChange}
+                  disabled={props.isEditing}
+                  style={
+                    props.isEditing
+                      ? {
+                          pointerEvents: 'none', // Desabilita eventos de clique
+                          backgroundColor: '#eeeeee' // Define a cor de fundo cinza
+                        }
+                      : {}
+                  }
                 >
                   {(inputProps) => (
                     <input
@@ -151,15 +176,9 @@ export function Add(props) {
                   name={column.field}
                   value={formData[column.field] || ''}
                   onChange={handleInputChange}
-                >
-                  {(inputProps) => (
-                    <input
-                      {...inputProps}
-                      style={{ width: '100%' }}
-                      className={errors[column.field] ? 'error' : ''}
-                    />
-                  )}
-                </InputMask>
+                  style={{ width: '100%' }}
+                  className={errors[column.field] ? 'error' : ''}
+                />
               ) : column.field === 'dataDeNascimento' ? (
                 <InputMask
                   mask="99/99/9999"
@@ -167,15 +186,9 @@ export function Add(props) {
                   name={column.field}
                   value={formData[column.field] || ''}
                   onChange={handleInputChange}
-                >
-                  {(inputProps) => (
-                    <input
-                      {...inputProps}
-                      style={{ width: '100%' }}
-                      className={errors[column.field] ? 'error' : ''}
-                    />
-                  )}
-                </InputMask>
+                  style={{ width: '100%' }}
+                  className={errors[column.field] ? 'error' : ''}
+                />
               ) : column.field === 'informacoesAdicionais' || column.field === 'procedimento' ? (
                 <textarea
                   placeholder={column.headerName}
@@ -198,9 +211,13 @@ export function Add(props) {
               {errors[column.field] && <span className="error-message">{errors[column.field]}</span>}
             </div>
           ))}
-          <Button variant="contained" color="primary" type="submit">Cadastrar</Button>
+          <Button variant="contained" color="primary" type="submit">
+            {props.isEditing ? 'Salvar' : 'Cadastrar'}
+          </Button>
         </form>
       </div>
     </div>
   );
 }
+
+export default Action;

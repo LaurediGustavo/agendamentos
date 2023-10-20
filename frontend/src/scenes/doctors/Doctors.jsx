@@ -1,14 +1,12 @@
+import React, { useState } from "react";
 import { Box, Fab } from "@mui/material";
 import { Add as AddIcon } from "@mui/icons-material"; 
 import Header from "../../components/headers/Headers";
-import React, { useState } from "react";
 import { DataTable } from "../../components/dataTable/dataTable";
 import "./doctors.scss";
 import { doctorsData } from "../../data/dados";
-import { Add } from "../../components/add/Add"; 
-import { Edit } from "../../components/edit/Edit";
+import Action from "../../components/action/Action"; 
 
-// Definindo as colunas para a tabela
 const columns = [
   {
     field: 'nome',
@@ -56,29 +54,24 @@ const columns = [
 
 const Doctors = () => {
 
-  // Definindo os estados usando o Hook do React
   const [open, setOpen] = useState(false);
   const [editDoctor, setEditDoctor] = useState(null);
   const [isEditing, setIsEditing] = useState(false);
   const [initialDoctorsData, setInitialDoctorsData] = useState(doctorsData);
 
-  // Função para abrir o modal de editar
   const handleEditClick = (doctor) => {
     setIsEditing(true);
     setEditDoctor(doctor);
     setOpen(true);
   };
 
-  // Função para abrir o modal de adicionar
   const handleAddClick = () => {
     setIsEditing(false); 
     setOpen(true);
   };
 
-  // Função para salvar as informações do médico
   const handleSaveDoctor = (data) => {
     if (isEditing) {
-      // Lógica para atualizar a lista de doutores
       const updatedDoctors = initialDoctorsData.map(doctor => {
         if (doctor.id === editDoctor.id) {
           return {
@@ -91,7 +84,6 @@ const Doctors = () => {
 
       setInitialDoctorsData(updatedDoctors);
     } else {
-      // Lógica para adicionar um novo doutor
       const newDoctor = {
         id: Math.random(),
         ...data
@@ -105,22 +97,24 @@ const Doctors = () => {
   return (
     <Box m="20px">
       <Box display="flex" justifyContent="space-between" alignItems="center">
-        <Header title="Doutores" subtitle="Veja todos os nossos doutores" />
+        <Header title="Doutores" subtitle="Registre e gerencie seus doutores." />
       </Box>
 
-      {/* Componente da tabela */}
       <DataTable slug="doctor" columns={columns} rows={initialDoctorsData} onEditClick={handleEditClick} />
       
-      {/* Renderização condicional do modal de edição ou adição */}
-      {open && isEditing ? (
-        <Edit slug="doutor" columns={columns} setOpen={setOpen} onSave={handleSaveDoctor} isEditing={isEditing} doctor={editDoctor} />
-      ) : open && !isEditing ? (
-          <Add slug="doutor" columns={columns} setOpen={setOpen} onSave={handleSaveDoctor} />
-      ) : null}
+      {open && (
+        <Action
+          slug="doutor"
+          columns={columns}
+          setOpen={setOpen}
+          onSave={handleSaveDoctor}
+          isEditing={isEditing}
+          initialData={isEditing ? editDoctor : null}
+        />
+      )}
       
       <Box display="flex" justifyContent="flex-end">
-        {/* Botão de adição */}
-        <Fab onClick={handleAddClick} size="large" color="primary" aria-label="add" style={{ marginTop: '30px', marginRight: '20px'}}>
+        <Fab onClick={handleAddClick} size="large" color="primary" aria-label="adicionar doutores" style={{ marginTop: '30px', marginRight: '20px', backgroundColor:"#3fbabf"}}>
           <AddIcon />
         </Fab>
       </Box>

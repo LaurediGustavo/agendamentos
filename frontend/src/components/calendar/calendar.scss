@@ -1,5 +1,8 @@
-.fc-button {
-    color: #add8e6;
-    background-color: red;
-  }
-  
+/* calendar.css */
+
+.fc-button-group .fc-prev-button,
+.fc-button-group .fc-next-button {
+  background-color: #8db1b3; /* Cor para os botões de navegação */
+  border: #8d1a1a; /* Cor do texto nos botões */
+}
+

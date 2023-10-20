@@ -1,12 +1,11 @@
 import { useState } from "react";
 import "./patients.scss";
 import { DataTable } from "../../components/dataTable/dataTable";
-import { Add } from "../../components/add/Add";
 import { Box, Fab } from "@mui/material";
 import { Add as AddIcon } from "@mui/icons-material";
 import Header from "../../components/headers/Headers";
 import { patientsData } from "../../data/dados";
-import { Edit } from "../../components/edit/Edit";
+import Action from "../../components/action/Action"; 
 
 const columns = [
   {
@@ -97,19 +96,24 @@ const Patients = () => {
   return (
     <Box m="20px">
       <Box display="flex" justifyContent="space-between" alignItems="center">
-        <Header title="Pacientes" subtitle="Veja todos os nossos pacientes" />
+        <Header title="Pacientes" subtitle="Registre e gerencie seus pacientes." />
       </Box>
 
       <DataTable slug="patients" columns={columns} rows={initialPatientsData} onEditClick={handleEditClick} />
       
-      {open && isEditing ? (
-        <Edit slug="paciente" columns={columns} setOpen={setOpen} onSave={handleSavePatient} isEditing={isEditing} doctor={editPatient} />
-      ) : open && !isEditing ? (
-        <Add slug="paciente" columns={columns} setOpen={setOpen} onSave={handleSavePatient} />
-      ) : null}
+      {open && (
+        <Action
+          slug="paciente"
+          columns={columns}
+          setOpen={setOpen}
+          onSave={handleSavePatient}
+          isEditing={isEditing}
+          initialData={isEditing ? editPatient : null}
+        />
+      )}
       
       <Box display="flex" justifyContent="flex-end">
-        <Fab onClick={handleAddClick} size="large" color="primary" aria-label="add" style={{ marginTop: '30px', marginRight: '20px'}}>
+        <Fab onClick={handleAddClick} size="large" color="primary" aria-label="adicionar pacientes" style={{ marginTop: '30px', marginRight: '20px', backgroundColor:"#3fbabf"}}>
           <AddIcon />
         </Fab>
       </Box>

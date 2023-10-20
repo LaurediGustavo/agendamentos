@@ -21,11 +21,14 @@ import {
 } from "@mui/material";
 
 export const BookingForm = forwardRef(({ modalOpen, handleCloseModal, selectedEvent, selectedDate, calendarRef }, ref) => {
+    // Estado local do componente
     const [consultaId, setConsultaId] = useState()
+    // Função para carregar dados de uma consulta específica
     const carregarDados = (id) => {
         setConsultaId(id)
         setErros({});
 
+        // Chama a API para obter os detalhes da consulta
         api.get("/agendamento/consultar/" + id)
             .then((response) => preencherForm(response.data))
             .catch((err) => {
@@ -33,6 +36,7 @@ export const BookingForm = forwardRef(({ modalOpen, handleCloseModal, selectedEv
         });
     };
 
+    // Função para limpar os dados do formulário
     const limparDados = () => {
         const formulario = {};
     

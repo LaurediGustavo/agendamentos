@@ -4,9 +4,9 @@ import { Box, Fab } from "@mui/material";
 import { Add as AddIcon } from "@mui/icons-material";
 import Header from "../../components/headers/Headers";
 import { DataTable } from "../../components/dataTable/dataTable";
-import { Add } from "../../components/add/Add";
 import { proceduresData } from "../../data/dados";
-import { Edit } from "../../components/edit/Edit"; // Adicionei a importação do componente Edit
+import Action from "../../components/action/Action";
+
 
 const columns = [
   {
@@ -19,9 +19,10 @@ const columns = [
 
 const Procedures = () => {
   const [open, setOpen] = useState(false);
-  const [editProcedure, setEditProcedure] = useState(null); // Novo estado para o procedimento em edição
+  const [editProcedure, setEditProcedure] = useState(null); 
   const [isEditing, setIsEditing] = useState(false);
   const [initialProceduresData, setInitialProceduresData] = useState(proceduresData);
+  
 
   const handleEditClick = (procedure) => {
     setIsEditing(true);
@@ -61,21 +62,31 @@ const Procedures = () => {
   return (
     <Box m="20px">
       <Box display="flex" justifyContent="space-between" alignItems="center">
-        <Header title="Procedimentos" subtitle="Veja todos os nossos Procedimentos" />
+        <Header title="Procedimentos" subtitle="Registre e gerencie seus procedimentos." />
       </Box>
       <DataTable slug="procedures" columns={columns} rows={initialProceduresData} onEditClick={handleEditClick} />
-      {open && isEditing ? (
-        <Edit slug="procedimento" columns={columns} setOpen={setOpen} onSave={handleSaveProcedure} isEditing={isEditing} procedure={editProcedure} />
-      ) : open && !isEditing ? (
-          <Add slug="procedimento" columns={columns} setOpen={setOpen} onSave={handleSaveProcedure} />
-      ) : null}
+      {open && (
+        <Action
+          slug="procedimento"
+          columns={columns}
+          setOpen={setOpen}
+          onSave={handleSaveProcedure}
+          isEditing={isEditing}
+          initialData={isEditing ? editProcedure : null}
+        />
+      )}
       <Box display="flex" justifyContent="flex-end">
-        <Fab onClick={handleAddClick} size="large" color="primary" aria-label="add" style={{ marginTop: '30px', marginRight: '20px'}}>
-          <AddIcon />
-        </Fab>
+      <Fab onClick={handleAddClick} size="large" color="primary" aria-label="adicionar procedimento" style={{ marginTop: '30px', marginRight: '20px', backgroundColor:"#3fbabf"}}>
+        <AddIcon />
+      </Fab>
       </Box>
     </Box>
   );
 };
 
 export default Procedures;
+
+
+
+
+

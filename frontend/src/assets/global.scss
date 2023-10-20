@@ -19,6 +19,10 @@ a{
   padding: 5px 20px;
   width: 100%;
   overflow-x: auto; /* Adiciona uma barra de rolagem horizontal se necessário */
+  min-height: calc(100vh - 100px); /* Garante que o conteúdo tenha pelo menos 100px de altura menos o tamanho do navbar */
+
+
+
 }
 
 

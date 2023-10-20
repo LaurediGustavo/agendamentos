@@ -1,7 +1,10 @@
 import React, { useState } from 'react';
 import { Box, IconButton, Typography, Menu, MenuItem } from "@mui/material";
-import { AccountCircle } from "@mui/icons-material";
+import AccountCircle from '@mui/icons-material/AccountCircle';
 import './navbar.scss'; 
+import Logo from '../../../assets/logo.png'; // Importe a imagem da logo
+
+
 export const Navbar = () => {
   const username = "Usuário";
   const [anchorEl, setAnchorEl] = useState(null); // Estado para controlar a abertura do menu
@@ -21,23 +24,26 @@ export const Navbar = () => {
 
   return (
     <Box className="navbar">
-      {/* Nome do usuário */}
-      <Box className="navbar-username">
-        <Typography variant="subtitle1" className="navbar-username-text">{username}</Typography>
-        <IconButton
-          className="navbar-icon-button"
-          onClick={handleMenuClick}
-        >
-          <AccountCircle />
-        </IconButton>
-        <Menu
-          anchorEl={anchorEl}
-          open={Boolean(anchorEl)}
-          onClose={handleClose}
-        >
-          <MenuItem onClick={handleLogout}>Sair</MenuItem>
-        </Menu>
-      </Box>
-    </Box>
+  {/* Logo */}
+  <img src={Logo} alt="Logo" className="navbar-logo" />
+
+  {/* Nome do usuário */}
+  <Box className="navbar-username">
+    <Typography variant="subtitle1" className="navbar-username-text">{username}</Typography>
+    <IconButton
+      className="navbar-icon-button"
+      onClick={handleMenuClick}
+    >
+      <AccountCircle />
+    </IconButton>
+    <Menu
+      anchorEl={anchorEl}
+      open={Boolean(anchorEl)}
+      onClose={handleClose}
+    >
+      <MenuItem onClick={handleLogout}>Sair</MenuItem>
+    </Menu>
+  </Box>
+</Box>
   );
 };

@@ -3,9 +3,10 @@
     align-items: center;
     justify-content: space-between;
     padding: 30px;
-    background-color: blanchedalmond;
+    background-color: #3fbabf;
   
     span {
+      color: white;
       &:first-child {
         font-weight: bold;
       }
@@ -14,9 +15,6 @@
         font-size: 14px;
       }
   
-      &:hover {
-        background-color: red;
-      }
     }
   }
   

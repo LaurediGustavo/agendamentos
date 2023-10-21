@@ -6,6 +6,7 @@ import { Home } from "./scenes/home/Home"
 import  Sidebar  from './scenes/global/sidebar/Sidebar';
 import {Login} from './scenes/auth/login/Login';
 import { Footer } from './scenes/global/footer/Footer';
+import { ProtectedRoute } from './components/protectedRoute/ProtectedRoute';
 import "./assets/global.scss"
 import {
   createBrowserRouter,
@@ -43,19 +44,19 @@ function App() {
       children: [
         {
           path: "/",
-          element: <Home />,
+          element: <ProtectedRoute element={<Home />} />,
         },
         {
           path: "doutores",
-          element: <Doutores />,
+          element: <ProtectedRoute element={<Doutores />} />,
         },
         {
           path: "pacientes",
-          element: <Pacientes />,
+          element: <ProtectedRoute element={<Pacientes />} />,
         },
         {
           path: "procedimentos",
-          element: <Procedimentos />,
+          element: <ProtectedRoute element={<Procedimentos />} />,
         },
       ]
     },
@@ -65,10 +66,9 @@ function App() {
     }
   ]);
 
-
   return (
     <RouterProvider router={router} />
   )
 }
 
-export default App
+export default App;

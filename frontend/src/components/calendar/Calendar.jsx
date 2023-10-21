@@ -32,24 +32,27 @@ export const Calendar = ({ calendarRef, handleEventClick, handleEventSelect }) =
   };
 
   return (
-    <FullCalendar
-      ref={calendarRef}
-      plugins={[dayGridPlugin, timeGridPlugin, listPlugin, interactionPlugin]}
-      initialView="dayGridMonth"
-      locale={ptBrLocale}
-      headerToolbar={{
-        left: 'prev,next today',
-        center: 'title',
-        right: 'dayGridMonth,listMonth'
-      }}
-      selectable={true}
-      dayMaxEventRows={true}
-      select={handleEventSelect}
-      eventClick={handleEventClick}
-      editable={false}
-      datesSet={(dateInfo) => {
-        getConsultas(dateInfo.view.currentStart)
-    }}
-    />
+    <div className="calendar-container">
+      <FullCalendar
+        ref={calendarRef}
+        plugins={[dayGridPlugin, timeGridPlugin, listPlugin, interactionPlugin]}
+        initialView="dayGridMonth"
+        locale={ptBrLocale}
+        headerToolbar={{
+          left: 'prev,next today',
+          center: 'title',
+          right: 'dayGridMonth,listMonth'
+        }}
+        selectable={true}
+        dayMaxEventRows={true}
+        select={handleEventSelect}
+        eventClick={handleEventClick}
+        editable={false}
+        datesSet={(dateInfo) => {
+          getConsultas(dateInfo.view.currentStart)
+        }}
+      />
+    </div>
   );
+  
 }

@@ -15,11 +15,7 @@ import {
 } from "react-router-dom";
 
 
-
-
-
 function App() {
-
   const Global = () => {
     return (
       <div className="main">
@@ -38,6 +34,10 @@ function App() {
   }
 
   const router = createBrowserRouter([
+    {
+      path:"/login",
+      element:<Login/>
+    },
     {
       path: "/",
       element: <Global />,
@@ -59,10 +59,6 @@ function App() {
           element: <ProtectedRoute element={<Procedimentos />} />,
         },
       ]
-    },
-    {
-      path:"/login",
-      element:<Login/>
     }
   ]);
 

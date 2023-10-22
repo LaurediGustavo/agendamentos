@@ -24,7 +24,7 @@
   border-color: #2d8f92;
 }
 
-/* Define a cor de fundo e borda para o botão primário quando ativo */
+/* Define a cor de fundo e borda para botões primários quando ativo */
 .fc-button-primary:not(:disabled).fc-button:active {
   background-color: #2d8f92;
   border-color: #2d8f92;
@@ -42,9 +42,78 @@
   border-color: #2d8f92 ;
 }
 
-/* calendar.scss */
+/* Define a largura do contêiner do calendário e centraliza-o horizontalmente na tela */
 .calendar-container {
   width: 90%; /* Defina a largura desejada */
   margin: 0 auto; /* Centralize o calendário horizontalmente na tela */
 }
 
+/* Define as cores de fundo para os eventos com base em seu status */
+.event-aguardando {
+  background-color: rgba(0, 191, 255, 0.637);
+}
+.event-enviado {
+  background-color: rgba(208, 8, 248, 0.767);
+}
+.event-confirmado {
+  background-color: rgba(231, 235, 26, 0.582);
+}
+.event-cancelado {
+  background-color: rgba(235, 14, 14, 0.589);
+}
+.event-finalizado {
+  background-color: rgba(0, 128, 0, 0.61);
+}
+.event-remarcado {
+  background-color: rgb(255, 136, 0);
+}
+
+/* Remove o ponto que aparece ao lado dos eventos no modo DayGrid e Lista */
+.fc-daygrid-event-dot {
+  display: none;
+}
+.fc-list-event-graphic{
+  display: none;
+}
+
+/* Define o layout da legenda para ser uma linha com espaço uniforme entre os itens */
+.legend {
+  display: flex;
+  justify-content: space-between;
+  max-width: 650px; /* Ajuste este valor conforme necessário */
+}
+
+/* Define o estilo dos pontos da legenda */
+.bullet-point {
+  display: inline-block;
+  height: 10px;
+  width: 10px;
+  border-radius: 50%;
+  margin-right: 10px;
+}
+
+/* Define as cores de fundo para os eventos quando o mouse passa por cima ou quando são clicados */
+.event-aguardando:hover,
+.event-aguardando:active {
+    background-color: rgba(0,191,255,0.8);
+}
+.event-enviado:hover,
+.event-enviado:active {
+    background-color: rgba(208,8,248,0.9);
+}
+.event-confirmado:hover,
+.event-confirmado:active {
+    background-color: rgba(231,235,26,0.7);
+}
+.event-cancelado:hover,
+.event-cancelado:active {
+    background-color: rgba(235,14,14,0.7);
+}
+.event-finalizado:hover,
+.event-finalizado:active {
+    background-color: rgba(0,128,0,0.7);
+}
+.event-remarcado:hover,
+.event-remarcado:active {
+    background-color: rgb(255,136,0,0.7);
+}

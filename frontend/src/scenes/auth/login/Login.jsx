@@ -9,27 +9,17 @@ import MuiAlert from '@mui/material/Alert';
 import Slide from '@mui/material/Slide';
 import api from '../../../services/api';
 import { login } from '../../../services/auth_service';
+import './login.scss'; 
 
 const Alert = forwardRef(function Alert(props, ref) {
     return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />;
-})
+});
 
 const darkTheme = createTheme({
     palette: {
         mode: "dark",
     },
 });
-
-const boxsyle = {
-    position: "absolute",
-    top: "50%",
-    left: "50%",
-    transform: "translate(-50%, -50%)",
-    width: "75%",
-    height: "70%",
-    bgcolor: "background.paper",
-    boxShadow: 24,
-}
 
 export const Login = () => {
     const navigate = useNavigate();
@@ -43,32 +33,42 @@ export const Login = () => {
     }
 
     const handleSubmit = async (event) => {
-      event.preventDefault();
-  
-      const username = event.target.username.value;
-      const password = event.target.password.value;
-  
-      if (!username || !password) {
-          setErrorMessage("Falha no login! Entre com o usuário e senha corretos.");
-          setOpen(true);
-      } else {
-          try {
-              const result = await api.post("auth/login", {
-                  userName: username,
-                  password: password
-              });
-              login(result.data.tokenJwt, result.data.roles); // Certifique-se de acessar tokenJwt e roles de result.data
-              navigate("/");
-          } catch (error) {
-              if (error.response && error.response.status === 401) {
-                  setErrorMessage("Falha no login! Entre com o usuário e senha corretos.");
-              } else {
-                  setErrorMessage("Erro no serviço de login!");
-              }
-              setOpen(true);
-          }
-      }
-  };
+        event.preventDefault();
+
+        const username = event.target.username.value;
+        const password = event.target.password.value;
+
+        // Validar o formato do e-mail
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+        if (!emailRegex.test(username)) {
+            setErrorMessage("Por favor, digite um endereço de e-mail válido.");
+            setOpen(true);
+            return;
+        }
+
+        if (!username || !password) {
+            setErrorMessage("Falha no login! Entre com o usuário e senha corretos.");
+            setOpen(true);
+            return;
+        }
+
+        try {
+            const result = await api.post("auth/login", {
+                userName: username,
+                password: password
+            });
+            login(result.data.tokenJwt, result.data.roles);
+            navigate("/");
+        } catch (error) {
+            if (error.response && error.response.status === 401) {
+                setErrorMessage("Falha no login! Entre com o usuário e senha corretos.");
+            } else {
+                setErrorMessage("Erro no serviço de login!");
+            }
+            setOpen(true);
+        }
+    };
 
     const handleClose = (event, reason) => {
         if (reason === "clickaway") {
@@ -93,39 +93,27 @@ export const Login = () => {
 
             <div
                 style={{
-                    backgroundColor: "white",
-                    backgroundSize: "cover",
+                    backgroundColor: "#c5edf5",
                     height: "100vh",
                     color: "#f5f5f5"
                 }}
             >
-                <Box sx={boxsyle}>
+                <Box className="boxStyle">
                     <Grid container>
-                        <Grid item xs={12} sm={12} lg={6}>
+                        <Grid item xs={12} sm={12} lg={7}>
                             <Box
+                                className="backgroundImage"
                                 style={{
                                     backgroundImage: `url(${loginImage})`,
-                                    backgroundSize: "cover",
-                                    backgroundPosition: 'center',
-                                    height: "63vh",
-                                    color: "#f5f5f5",
-                                    marginTop: '30px',
                                 }}
                             >
                             </Box>
                         </Grid>
-                        <Grid item xs={12} sm={12} lg={6}>
-                            <Box
-                                style={{
-                                    backgroundSize: "cover",
-                                    height: "103%",
-                                    minHeight: "100%",
-                                    backgroundColor: "#3b33d5",
-                                }}
-                            >
+                        <Grid item xs={12} sm={12} lg={5}>
+                            <Box className="rightBox">
                                 <ThemeProvider theme={darkTheme}>
                                     <Container>
-                                        <Box height={65} />
+                                        <Box  />
                                         <Box
                                             display="flex"
                                             flexDirection="column"
@@ -148,10 +136,10 @@ export const Login = () => {
                                                     <TextField
                                                         fullWidth
                                                         id="username"
-                                                        label="Username"
+                                                        label="E-mail"
                                                         name="username"
-                                                        autoComplete="username"
-                                                    />
+                                                        autoComplete="email"
+                                                        />
                                                 </Grid>
                                                 <Grid item xs={12} sx={{ ml: "3em", mr: "3em" }}>
                                                     <TextField

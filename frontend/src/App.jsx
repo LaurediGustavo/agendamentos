@@ -43,7 +43,7 @@ function App() {
       element: <Global />,
       children: [
         {
-          path: "/",
+          path: "",
           element: <ProtectedRoute element={<Home />} />,
         },
         {

@@ -9,15 +9,17 @@ import moment from 'moment';
 
 import {
     Box,
-    Typography,
     Modal,
+    Chip,
     Select,
     MenuItem,
     Button,
     Checkbox,
     ListItemText,
     Input,
+    Tooltip,
     TextField,
+    Autocomplete
 } from "@mui/material";
 
 
@@ -278,7 +280,7 @@ export const BookingForm = forwardRef(({ modalOpen, handleCloseModal, selectedEv
             limparDados();
             setErros({});
             handleCloseModal();
-            window.location.reload(); 
+            window.location.reload();
         } catch (error) {
             if (error.response && error.response.data) {
                 tratarErrosDeIntegracao(error.response.data.errors);
@@ -340,30 +342,39 @@ export const BookingForm = forwardRef(({ modalOpen, handleCloseModal, selectedEv
     };
 
     const eventColor = (status) => {
-        switch(status) {
-          case 'CANCELADO':
-            return 'rgba(235, 14, 14, 0.589)';
-          case 'REMARCADO':
-            return 'rgb(255, 136, 0)';
-          case 'FINALIZADO':
-            return 'rgba(0, 128, 0, 0.61)';
-          case 'CONFIRMADO':
-            return 'rgba(231, 235, 26, 0.582)'
-          case 'ENVIADO':
-            return 'rgba(208, 8, 248, 0.767)'
-          case 'AGUARDANDO':
-            return 'rgba(0, 191, 255, 0.637)'
+        switch (status) {
+            case 'CANCELADO':
+                return 'rgba(235, 14, 14, 0.589)';
+            case 'REMARCADO':
+                return 'rgb(255, 136, 0)';
+            case 'FINALIZADO':
+                return 'rgba(0, 128, 0, 0.61)';
+            case 'CONFIRMADO':
+                return 'rgba(231, 235, 26, 0.582)'
+            case 'ENVIADO':
+                return 'rgba(208, 8, 248, 0.767)'
+            case 'AGUARDANDO':
+                return 'rgba(0, 191, 255, 0.637)'
         }
-      }
+    }
+
+    const handleDelete = (valueToDelete) => {
+        atualizarConsulta('procedimentosIds', consultaForm.procedimentosIds.filter((value) => value !== valueToDelete));
+    };
+
+    const formatTime = (minutes) => {
+        const hours = Math.floor(minutes / 60);
+        const remainingMinutes = minutes % 60;
+        return `${hours.toString().padStart(2, '0')}:${remainingMinutes.toString().padStart(2, '0')}`;
+    };
+    
 
     return (
         <Modal open={modalOpen} onClose={handleCloseModal}>
             <Box className="md">
                 <span className="close" onClick={() => handleCloseModal()}><CloseIcon /></span>
                 <>
-                    <Typography variant="h6" sx={{ marginBottom: 2, color: '#333' }}>
-                        Agendar Horário
-                    </Typography>
+                    <h1>{selectedEvent ? 'Alterar agendamento' : 'Agendar consulta'}</h1>
                     <form onSubmit={handleAgendar}>
                         {consultaId > 0 && (
                             <div className="item">
@@ -409,10 +420,27 @@ export const BookingForm = forwardRef(({ modalOpen, handleCloseModal, selectedEv
                                 sx={{ my: 2, color: '#333' }}
                                 input={<Input />}
                                 renderValue={(selected) => (
-                                    (selected.length === procedimentos?.length ?
-                                        'Todos ' : `${selected.length} selecionados`) +
-                                    ' - Valor: ' + consultaForm.valorTotal +
-                                    ' - Tempo aproximado: ' + consultaForm.tempoAproximado
+                                    <div>
+                                        {selected.map((value) => (
+                                            <Tooltip
+                                                key={value}
+                                                title={`Valor: R$${procedimentos.find(proc => proc.id === value).valor} - Tempo Estimado: ${formatTime(procedimentos.find(proc => proc.id === value).tempo)}`}
+                                                placement="top"
+                                            >
+                                                <Chip
+                                                    label={procedimentos.find(proc => proc.id === value).tratamento}
+                                                    onDelete={(event) => {
+                                                        event.stopPropagation();
+                                                        handleDelete(value);
+                                                    }}
+                                                    onMouseDown={(event) => {
+                                                        event.stopPropagation();
+                                                    }}
+                                                    style={{ backgroundColor: '#2ab7bd80', marginRight: '2px' }}
+                                                />
+                                            </Tooltip>
+                                        ))}
+                                    </div>
                                 )}
                             >
                                 {procedimentos?.map((proc) => (
@@ -423,6 +451,16 @@ export const BookingForm = forwardRef(({ modalOpen, handleCloseModal, selectedEv
                                 ))}
                             </Select>
                         </div>
+                        {consultaForm.procedimentosIds && consultaForm.procedimentosIds.length > 0 && (
+                            <div className="item itemContainer">
+                                <div className="label">
+                                    Valor Total: {consultaForm.valorTotal}
+                                </div>
+                                <div className="label">
+                                    Tempo Aproximado: {consultaForm.tempoAproximado}
+                                </div>
+                            </div>
+                        )}
 
                         <div className="item">
                             <div className="label">
@@ -436,33 +474,34 @@ export const BookingForm = forwardRef(({ modalOpen, handleCloseModal, selectedEv
                                 label="Doutor"
                                 sx={{ my: 2, color: '#333' }}
                             >
-                                {doutores?.map((doctor) => (
-                                    <MenuItem key={doctor.id} value={doctor.id}>
-                                        {doctor.nome} {doctor.sobreNome}
-                                    </MenuItem>
-                                ))}
+                                {doutores?.length > 0 ? (
+                                    doutores.map((doctor) => (
+                                        <MenuItem key={doctor.id} value={doctor.id}>
+                                            {doctor.nome} {doctor.sobreNome}
+                                        </MenuItem>
+                                    ))
+                                ) : (
+                                    <MenuItem disabled>Nenhum doutor disponível para os procedimentos selecionados.</MenuItem>
+                                )}
                             </Select>
                         </div>
-
                         <div className="item">
                             <div className="label">
                                 <label>Paciente:</label>
                                 {erros.paciente && <div className="error-message">{erros.paciente}</div>}
                             </div>
-                            <Select
+                            <Autocomplete
                                 fullWidth
-                                value={consultaForm.pacienteId}
-                                onChange={(e) => atualizarConsulta('pacienteId', e.target.value)}
-                                label="Paciente"
+                                value={pacientes.find(paciente => paciente.id === consultaForm.pacienteId) || null}
+                                onChange={(event, newValue) => {
+                                    atualizarConsulta('pacienteId', newValue ? newValue.id : null);
+                                }}
+                                getOptionLabel={(option) => `${option.nome} - ${formatarCPF(option.cpf)}`}
                                 disabled={Number.isInteger(consultaId) && consultaId > 0}
-                                sx={{ my: 2, color: '#333' }}
-                            >
-                                {pacientes?.map((paciente) => (
-                                    <MenuItem key={paciente.id} value={paciente.id}>
-                                        {paciente.nome} - {formatarCPF(paciente.cpf)}
-                                    </MenuItem>
-                                ))}
-                            </Select>
+                                options={pacientes}
+                                onFocus={(e) => e.stopPropagation()} // Evita que o evento de foco se propague
+                                renderInput={(params) => <TextField {...params} sx={{ my: 2, color: '#333' }} />}
+                            />
                         </div>
 
                         <div>
@@ -505,7 +544,7 @@ export const BookingForm = forwardRef(({ modalOpen, handleCloseModal, selectedEv
                                                     variant="outlined"
                                                     fullWidth
                                                     sx={{ my: 2 }}
-                                                    InputLabelProps={{ shrink: true, color: '#333' }}
+                                                    InputLabelProps={{ shrink: false}}
                                                     label="Horário de Término"
                                                 />
                                             )}
@@ -515,7 +554,7 @@ export const BookingForm = forwardRef(({ modalOpen, handleCloseModal, selectedEv
                             </div>
                         </div>
 
-                        <Button className="btn" variant="contained" color="primary" type="submit">Gravar</Button>
+                        <Button className="btn" variant="contained" color="primary" type="submit">Salvar</Button>
                     </form>
                 </>
             </Box>

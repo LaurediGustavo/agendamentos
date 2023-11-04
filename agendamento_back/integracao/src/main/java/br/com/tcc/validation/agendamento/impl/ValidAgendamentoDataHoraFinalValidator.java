@@ -22,12 +22,19 @@ public class ValidAgendamentoDataHoraFinalValidator implements ConstraintValidat
             LocalDateTime dataIncio = value.getDataHoraInicio();
             LocalDateTime dataFinal = value.getDataHoraFim();
 
-            if (isDataValida(dataIncio, dataFinal)) {
-                boolean disponivel = validarHorario(dataIncio, dataFinal, value);
+            if (isDataValida(dataIncio, dataFinal, context)) {
+                boolean disponivel = validarHorarioDoutor(dataIncio, dataFinal, value);
 
                 if(!disponivel) {
                     context.disableDefaultConstraintViolation();
-                    context.buildConstraintViolationWithTemplate("{agendamento.horarioIndisponivel}")
+                    context.buildConstraintViolationWithTemplate("{agendamento.horarioIndisponivel.doutor}")
+                            .addConstraintViolation();
+                }
+
+                disponivel = validarHorarioPaciente(dataIncio, dataFinal, value);
+                if(!disponivel) {
+                    context.disableDefaultConstraintViolation();
+                    context.buildConstraintViolationWithTemplate("{agendamento.horarioIndisponivel.paciente}")
                             .addConstraintViolation();
                 }
 
@@ -38,21 +45,43 @@ public class ValidAgendamentoDataHoraFinalValidator implements ConstraintValidat
         return false;
     }
 
-    private boolean isDataValida(LocalDateTime dataIncio, LocalDateTime dataFinal) {
+    private boolean isDataValida(LocalDateTime dataIncio, LocalDateTime dataFinal, ConstraintValidatorContext context) {
         LocalDateTime dataCorrente = LocalDateTime.now();
 
         if(dataCorrente.isAfter(dataIncio)) {
+            context.disableDefaultConstraintViolation();
+            context.buildConstraintViolationWithTemplate("{agendamento.dataHoraInicio.menorQueDataCorrente}")
+                    .addConstraintViolation();
             return false;
         }
 
         if(dataFinal.isBefore(dataIncio)) {
+            context.disableDefaultConstraintViolation();
+            context.buildConstraintViolationWithTemplate("{agendamento.dataHoraFinal.menorQueDataInicial}")
+                    .addConstraintViolation();
             return false;
         }
 
         return true;
     }
 
-    private boolean validarHorario(LocalDateTime dataInicio, LocalDateTime dataFinal, AgendamentoRequest agendamento) {
+    private boolean validarHorarioPaciente(LocalDateTime dataInicio, LocalDateTime dataFinal, AgendamentoRequest agendamento) {
+        if(agendamento.getId() == null || agendamento.getId() == 0 || mudancaDeData(agendamento, dataInicio, dataFinal)) {
+            Long possuiAgendamento = consultaRepository.consultarPorDataEPaciente(dataInicio, dataFinal, agendamento.getPacienteId(), agendamento.getId()).get();
+            if(possuiAgendamento > 0) {
+                return false;
+            }
+
+            possuiAgendamento = consultaRepository.consultarPorDataEPaciente(dataInicio, dataFinal, agendamento.getPacienteId(), agendamento.getId()).get();
+            if(possuiAgendamento > 0) {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    private boolean validarHorarioDoutor(LocalDateTime dataInicio, LocalDateTime dataFinal, AgendamentoRequest agendamento) {
         if(agendamento.getId() == null || agendamento.getId() == 0 || mudancaDeData(agendamento, dataInicio, dataFinal)) {
             Long possuiAgendamento = consultaRepository.consultarPorDataEDoutor(dataInicio, dataFinal, agendamento.getDoutorId(), agendamento.getId()).get();
             if(possuiAgendamento > 0) {

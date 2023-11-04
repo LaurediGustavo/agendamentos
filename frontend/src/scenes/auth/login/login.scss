@@ -1,0 +1,40 @@
+.boxStyle {
+    position: absolute;
+    display: flex;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 80%; /* Aumentando a largura para 80% */
+    height: 90%; /* Aumentando a altura para 80% */
+    background-color: #fff;
+    box-shadow: 2px 0 10px rgba(0, 0, 0, 0.8);
+    border-radius: 20px; /* Adicionando cantos arredondados */
+}
+
+.backgroundImage {
+    background-size: cover;
+    background-position: center;
+    border-radius: 20px; /* Adicionando cantos arredondados */
+    color: #f5f5f5;
+    width: 100%;
+    height: 100%;
+    margin: 0; /* Remova qualquer margem */
+    padding: 0; /* Remova qualquer preenchimento */
+}
+
+.rightBox {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    background-size: cover;
+    border-bottom-right-radius: 20px; /* Adicionando cantos arredondados */
+    border-top-right-radius: 20px; /* Adicionando cantos arredondados */
+    width: 100%;
+    height: 100%;
+    min-height: 100%;
+    background-color: #3b33d5;
+    color: #ccc;
+    margin: 0; /* Remova qualquer margem */
+    padding: 0; /* Remova qualquer preenchimento */
+}
+

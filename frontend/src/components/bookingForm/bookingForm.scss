@@ -13,6 +13,12 @@
     background-color: #f5f5f5;
     border: 1px solid #e0e0e0;
   }
+
+  .md h1 {
+    margin-bottom: 40px;
+    font-size: 26px;
+    text-align: center;
+  }
   
   .close {
     position: absolute;
@@ -86,3 +92,65 @@
   font-size: 12px;
   color: red;
 }
+
+
+
+@media screen and (max-width: 767px) {
+  .md {
+    width: calc(100% - 32px); /* Definindo a largura máxima para a tela, com espaço nas laterais */
+    margin: 0;
+  }
+
+  .item-container {
+    flex-direction: column; /* Empilhar os elementos ao invés de dispor lado a lado */
+    margin-bottom: 0; /* Remover a margem inferior */
+  }
+
+  .item2 {
+    margin-right: 0; /* Remover a margem direita */
+    margin-top: 10px; /* Adicionar um espaço entre os elementos */
+  }
+
+  .label {
+    margin-bottom: 10px; /* Adicionar um espaço entre os elementos */
+  }
+
+  .label label {
+    margin-right: 0; /* Remover a margem direita */
+  }
+
+  .error-message {
+    margin-top: 5px; /* Adicionar um espaço acima da mensagem de erro */
+  }
+}
+
+.md {
+  max-height: 80vh; /* Define a altura máxima como 80% da altura da viewport */
+  overflow-y: auto; /* Adiciona uma barra de rolagem vertical se o conteúdo exceder a altura máxima */
+}
+
+
+.itemContainer {
+  background-color: #e2e2e2;
+  padding: 10px;
+  border-radius: 5px;
+  margin: 10px 0;
+}
+
+/* Estiliza os botões dentro de elementos com a classe "md" */
+.md .btn{
+  width: 100%;
+  padding: 10px;
+  cursor: pointer;
+  background-color: #3fbabf;
+}
+
+/* Quando o mouse passa sobre o botão dentro de um elemento com a classe "md" */
+.md .btn:hover {
+  background-color: #2d8f92; 
+}
+
+.MuiButtonBase-root.MuiCheckbox-root.Mui-checked {
+  color: #3fbabf; /* Define a cor do checkbox quando está marcado */
+}
+

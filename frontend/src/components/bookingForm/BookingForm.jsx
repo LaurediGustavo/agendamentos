@@ -1,4 +1,4 @@
-import React, { useState, useEffect, forwardRef, useImperativeHandle  } from 'react';
+import React, { useState, useEffect, forwardRef, useImperativeHandle } from 'react';
 import { format } from 'date-fns';
 import { LocalizationProvider, TimePicker } from '@mui/x-date-pickers';
 import CloseIcon from '@mui/icons-material/Close';
@@ -9,16 +9,19 @@ import moment from 'moment';
 
 import {
     Box,
-    Typography,
     Modal,
+    Chip,
     Select,
     MenuItem,
     Button,
     Checkbox,
     ListItemText,
     Input,
+    Tooltip,
     TextField,
+    Autocomplete
 } from "@mui/material";
+
 
 export const BookingForm = forwardRef(({ modalOpen, handleCloseModal, selectedEvent, selectedDate, calendarRef }, ref) => {
     // Estado local do componente
@@ -32,14 +35,14 @@ export const BookingForm = forwardRef(({ modalOpen, handleCloseModal, selectedEv
         api.get("/agendamento/consultar/" + id)
             .then((response) => preencherForm(response.data))
             .catch((err) => {
-            console.error("ops! ocorreu um erro" + err);
-        });
+                console.error("ops! ocorreu um erro" + err);
+            });
     };
 
     // Função para limpar os dados do formulário
     const limparDados = () => {
         const formulario = {};
-    
+
         formulario.status = '';
         formulario.dataHoraInicio = null;
         formulario.dataHoraFim = null;
@@ -48,7 +51,7 @@ export const BookingForm = forwardRef(({ modalOpen, handleCloseModal, selectedEv
         formulario.procedimentosIds = [];
         formulario.valorTotal = '';
         formulario.tempoAproximado = '';
-    
+
         setConsultaForm(formulario);
         setConsultaId('')
         setErros({});
@@ -61,7 +64,7 @@ export const BookingForm = forwardRef(({ modalOpen, handleCloseModal, selectedEv
 
     const preencherForm = (data) => {
         const formulario = {};
-    
+
         formulario.status = data.status;
         formulario.dataHoraInicio = moment(data.dataHoraInicio).toDate();
 
@@ -73,7 +76,7 @@ export const BookingForm = forwardRef(({ modalOpen, handleCloseModal, selectedEv
         formulario.procedimentosIds = data.procedimentos.map(item => item.id);
         formulario.valorTotal = data.valorTotal;
         formulario.tempoAproximado = data.tempoAproximado;
-    
+
         setConsultaForm(formulario);
 
         getDoutores();
@@ -82,21 +85,21 @@ export const BookingForm = forwardRef(({ modalOpen, handleCloseModal, selectedEv
     const [procedimentos, setProcedimentos] = useState();
     const [pacientes, setPacientes] = useState([]);
     useEffect(() => {
-      api
-        .get("procedimento/consultar?tratamento")
-        .then((response) => setProcedimentos(response.data))
-        .catch((err) => {
-          console.error("ops! ocorreu um erro" + err);
-        });
+        api
+            .get("procedimento/consultar?tratamento")
+            .then((response) => setProcedimentos(response.data))
+            .catch((err) => {
+                console.error("ops! ocorreu um erro" + err);
+            });
 
-       api
-        .get("/paciente/consultar/agendamento?nome")
-        .then((response) => setPacientes(response.data))
-        .catch((err) => {
-          console.error("ops! ocorreu um erro" + err);
-        });
+        api
+            .get("/paciente/consultar/agendamento?nome")
+            .then((response) => setPacientes(response.data))
+            .catch((err) => {
+                console.error("ops! ocorreu um erro" + err);
+            });
     }, []);
-    
+
     const [doutores, setDoutores] = useState([]);
     const getDoutores = async () => {
         try {
@@ -118,13 +121,17 @@ export const BookingForm = forwardRef(({ modalOpen, handleCloseModal, selectedEv
         { key: 'REMARCADO', label: 'Remarcado' },
         { key: 'FINALIZADO', label: 'Finalizado' },
     ];
-    
-    const [erros, setErros] = useState({ procedimento: '', doutor: '', paciente: '',
-        horarioInicio: '' });
 
-    const [consultaForm, setConsultaForm] = useState({ status: '', dataHoraInicio: null, dataHoraFim: null,
+    const [erros, setErros] = useState({
+        procedimento: '', doutor: '', paciente: '',
+        horarioInicio: ''
+    });
+
+    const [consultaForm, setConsultaForm] = useState({
+        status: '', dataHoraInicio: null, dataHoraFim: null,
         doutorId: '', pacienteId: '', procedimentosIds: [],
-        valorTotal: '', tempoAproximado: '' });
+        valorTotal: '', tempoAproximado: ''
+    });
 
     const atualizarConsulta = (atributo, novoValor) => {
         setConsultaForm({
@@ -135,57 +142,57 @@ export const BookingForm = forwardRef(({ modalOpen, handleCloseModal, selectedEv
 
     useEffect(() => {
         const calcular = async () => {
-          const tempoAproximado = calcularTempo();
-          const valorTotal = calcularValor();
-      
-          setConsultaForm((prevConsultaForm) => ({
-            ...prevConsultaForm,
-            tempoAproximado,
-            valorTotal,
-          }));
+            const tempoAproximado = calcularTempo();
+            const valorTotal = calcularValor();
+
+            setConsultaForm((prevConsultaForm) => ({
+                ...prevConsultaForm,
+                tempoAproximado,
+                valorTotal,
+            }));
         };
-      
+
         getDoutores();
         calcular();
     }, [consultaForm.procedimentosIds]);
-      
+
 
     const calcularTempo = () => {
         const procedimentosSelecionados = procedimentos?.filter((proc) =>
-          consultaForm.procedimentosIds.includes(proc.id)
+            consultaForm.procedimentosIds.includes(proc.id)
         );
-      
+
         const somaDosTemposEmSegundos = procedimentosSelecionados?.reduce((total, proc) => {
-          const tempoEmSegundos = parseFloat(proc.tempo) * 60;
-          return isNaN(tempoEmSegundos) ? total : total + tempoEmSegundos;
+            const tempoEmSegundos = parseFloat(proc.tempo) * 60;
+            return isNaN(tempoEmSegundos) ? total : total + tempoEmSegundos;
         }, 0);
-      
+
         const horas = Math.floor(somaDosTemposEmSegundos / 3600);
         const minutos = Math.floor((somaDosTemposEmSegundos % 3600) / 60);
         const segundos = somaDosTemposEmSegundos % 60;
-      
+
         const tempoFormatado = `${horas.toString().padStart(2, '0')}:${minutos.toString().padStart(2, '0')}:${segundos.toString().padStart(2, '0')}`;
-      
+
         return tempoFormatado;
     };
-      
-      const calcularValor = () => {
+
+    const calcularValor = () => {
         const procedimentosSelecionados = procedimentos?.filter((proc) =>
-          consultaForm.procedimentosIds.includes(proc.id)
+            consultaForm.procedimentosIds.includes(proc.id)
         );
-      
+
         const somaDosValores = procedimentosSelecionados?.reduce((total, proc) => {
-          const valor = parseFloat(proc.valor);
-          return isNaN(valor) ? total : total + valor;
+            const valor = parseFloat(proc.valor);
+            return isNaN(valor) ? total : total + valor;
         }, 0);
-      
+
         const valorFormatado = somaDosValores?.toLocaleString('pt-BR', {
-          style: 'currency',
-          currency: 'BRL',
-          minimumFractionDigits: 2,
-          maximumFractionDigits: 2,
+            style: 'currency',
+            currency: 'BRL',
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 2,
         });
-      
+
         return valorFormatado;
     };
 
@@ -206,7 +213,7 @@ export const BookingForm = forwardRef(({ modalOpen, handleCloseModal, selectedEv
         dataFinal.setHours(consultaForm.dataHoraFim.getHours());
         dataFinal.setMinutes(consultaForm.dataHoraFim.getMinutes() - 1);
 
-        if(!selectedEvent) {
+        if (!selectedEvent) {
             gravar(dataInicio, dataFinal);
         }
         else {
@@ -214,10 +221,10 @@ export const BookingForm = forwardRef(({ modalOpen, handleCloseModal, selectedEv
 
             const eventos = calendarRef.current.getApi().getEvents();
             const eventoExistente = eventos.find((evento) => evento.extendedProps.consulta_id === consultaId);
-            
+
             if (eventoExistente) {
-              eventoExistente.setStart(dataInicio);
-              eventoExistente.setEnd(dataFinal);
+                eventoExistente.setStart(dataInicio);
+                eventoExistente.setEnd(dataFinal);
             }
         }
     }
@@ -241,7 +248,7 @@ export const BookingForm = forwardRef(({ modalOpen, handleCloseModal, selectedEv
                 start: args1,
                 end: args2
             });
-            
+
             limparDados();
             setErros({});
             handleCloseModal();
@@ -269,10 +276,11 @@ export const BookingForm = forwardRef(({ modalOpen, handleCloseModal, selectedEv
                 pacienteId: consultaForm.pacienteId,
                 procedimentosIds: consultaForm.procedimentosIds
             });
-            
+
             limparDados();
             setErros({});
             handleCloseModal();
+            window.location.reload();
         } catch (error) {
             if (error.response && error.response.data) {
                 tratarErrosDeIntegracao(error.response.data.errors);
@@ -281,37 +289,37 @@ export const BookingForm = forwardRef(({ modalOpen, handleCloseModal, selectedEv
             }
         }
     }
-  
+
     const validarFormulario = () => {
-      const novosErros = {};
-  
-      if (consultaForm.procedimentosIds.length === 0) {
-        novosErros.procedimento = 'Deve ser informado';
-      }
-  
-      if (!Number.isInteger(consultaForm.doutorId) || consultaForm.doutorId <= 0 || doutores.length === 0) {
-        novosErros.doutor = 'Deve ser informado';
-      }
+        const novosErros = {};
 
-      if (!Number.isInteger(consultaForm.pacienteId) || consultaForm.pacienteId <= 0) {
-        novosErros.paciente = 'Deve ser informado';
-      }
+        if (consultaForm.procedimentosIds.length === 0) {
+            novosErros.procedimento = 'Deve ser informado';
+        }
 
-      if (!moment(consultaForm.dataHoraInicio).isValid()) {
-        novosErros.startTime = 'Campo Horário de Inicio é inválido';
-      }
-  
-      if (!moment(consultaForm.dataHoraFim).isValid()) {
-        novosErros.startTime = 'Campo Horário de Término é inválido';
-      }
-  
-      if (moment(consultaForm.dataHoraInicio).isAfter(consultaForm.dataHoraFim)) {
-        novosErros.startTime = 'A data de início deve ser anterior à data de término';
-      }
-  
-      setErros(novosErros);
+        if (!Number.isInteger(consultaForm.doutorId) || consultaForm.doutorId <= 0 || doutores.length === 0) {
+            novosErros.doutor = 'Deve ser informado';
+        }
 
-      return Object.keys(novosErros).length === 0;
+        if (!Number.isInteger(consultaForm.pacienteId) || consultaForm.pacienteId <= 0) {
+            novosErros.paciente = 'Deve ser informado';
+        }
+
+        if (!moment(consultaForm.dataHoraInicio).isValid()) {
+            novosErros.startTime = 'Campo Horário de Inicio é inválido';
+        }
+
+        if (!moment(consultaForm.dataHoraFim).isValid()) {
+            novosErros.startTime = 'Campo Horário de Término é inválido';
+        }
+
+        if (moment(consultaForm.dataHoraInicio).isAfter(consultaForm.dataHoraFim)) {
+            novosErros.startTime = 'A data de início deve ser anterior à data de término';
+        }
+
+        setErros(novosErros);
+
+        return Object.keys(novosErros).length === 0;
     };
 
     const tratarErrosDeIntegracao = (erros) => {
@@ -327,20 +335,46 @@ export const BookingForm = forwardRef(({ modalOpen, handleCloseModal, selectedEv
 
     const formatarCPF = (cpf) => {
         if (!cpf || typeof cpf !== 'string') {
-          return 'CPF Inválido';
+            return 'CPF Inválido';
         }
-      
+
         return cpf.replace(/(\d{3})(\d{3})(\d{3})(\d{2})/, '$1.$2.$3-$4');
     };
+
+    const eventColor = (status) => {
+        switch (status) {
+            case 'CANCELADO':
+                return 'rgba(235, 14, 14, 0.589)';
+            case 'REMARCADO':
+                return 'rgb(255, 136, 0)';
+            case 'FINALIZADO':
+                return 'rgba(0, 128, 0, 0.61)';
+            case 'CONFIRMADO':
+                return 'rgba(231, 235, 26, 0.582)'
+            case 'ENVIADO':
+                return 'rgba(208, 8, 248, 0.767)'
+            case 'AGUARDANDO':
+                return 'rgba(0, 191, 255, 0.637)'
+        }
+    }
+
+    const handleDelete = (valueToDelete) => {
+        atualizarConsulta('procedimentosIds', consultaForm.procedimentosIds.filter((value) => value !== valueToDelete));
+    };
+
+    const formatTime = (minutes) => {
+        const hours = Math.floor(minutes / 60);
+        const remainingMinutes = minutes % 60;
+        return `${hours.toString().padStart(2, '0')}:${remainingMinutes.toString().padStart(2, '0')}`;
+    };
+    
 
     return (
         <Modal open={modalOpen} onClose={handleCloseModal}>
             <Box className="md">
                 <span className="close" onClick={() => handleCloseModal()}><CloseIcon /></span>
                 <>
-                    <Typography variant="h6" sx={{ marginBottom: 2, color: '#333' }}>
-                        Agendar Horário
-                    </Typography>
+                    <h1>{selectedEvent ? 'Alterar agendamento' : 'Agendar consulta'}</h1>
                     <form onSubmit={handleAgendar}>
                         {consultaId > 0 && (
                             <div className="item">
@@ -353,10 +387,20 @@ export const BookingForm = forwardRef(({ modalOpen, handleCloseModal, selectedEv
                                     onChange={(e) => atualizarConsulta('status', e.target.value)}
                                     label="Situação"
                                     sx={{ my: 2, color: '#333' }}
-                                    >
+                                >
                                     {statusOpcoes.map((option) => (
                                         <MenuItem key={option.key} value={option.key}>
-                                        {option.label}
+                                            <span
+                                                style={{
+                                                    display: 'inline-block',
+                                                    height: '10px',
+                                                    width: '10px',
+                                                    borderRadius: '50%',
+                                                    backgroundColor: eventColor(option.key),
+                                                    marginRight: '10px'
+                                                }}
+                                            ></span>
+                                            {option.label}
                                         </MenuItem>
                                     ))}
                                 </Select>
@@ -376,10 +420,27 @@ export const BookingForm = forwardRef(({ modalOpen, handleCloseModal, selectedEv
                                 sx={{ my: 2, color: '#333' }}
                                 input={<Input />}
                                 renderValue={(selected) => (
-                                    (selected.length === procedimentos?.length ? 
-                                    'Todos ' : `${selected.length} selecionados`) +
-                                    ' - Valor: ' + consultaForm.valorTotal +
-                                    ' - Tempo aproximado: ' +  consultaForm.tempoAproximado
+                                    <div>
+                                        {selected.map((value) => (
+                                            <Tooltip
+                                                key={value}
+                                                title={`Valor: R$${procedimentos.find(proc => proc.id === value).valor} - Tempo Estimado: ${formatTime(procedimentos.find(proc => proc.id === value).tempo)}`}
+                                                placement="top"
+                                            >
+                                                <Chip
+                                                    label={procedimentos.find(proc => proc.id === value).tratamento}
+                                                    onDelete={(event) => {
+                                                        event.stopPropagation();
+                                                        handleDelete(value);
+                                                    }}
+                                                    onMouseDown={(event) => {
+                                                        event.stopPropagation();
+                                                    }}
+                                                    style={{ backgroundColor: '#2ab7bd80', marginRight: '2px' }}
+                                                />
+                                            </Tooltip>
+                                        ))}
+                                    </div>
                                 )}
                             >
                                 {procedimentos?.map((proc) => (
@@ -390,6 +451,16 @@ export const BookingForm = forwardRef(({ modalOpen, handleCloseModal, selectedEv
                                 ))}
                             </Select>
                         </div>
+                        {consultaForm.procedimentosIds && consultaForm.procedimentosIds.length > 0 && (
+                            <div className="item itemContainer">
+                                <div className="label">
+                                    Valor Total: {consultaForm.valorTotal}
+                                </div>
+                                <div className="label">
+                                    Tempo Aproximado: {consultaForm.tempoAproximado}
+                                </div>
+                            </div>
+                        )}
 
                         <div className="item">
                             <div className="label">
@@ -403,35 +474,36 @@ export const BookingForm = forwardRef(({ modalOpen, handleCloseModal, selectedEv
                                 label="Doutor"
                                 sx={{ my: 2, color: '#333' }}
                             >
-                                {doutores?.map((doctor) => (
-                                    <MenuItem key={doctor.id} value={doctor.id}>
-                                        {doctor.nome} {doctor.sobreNome}
-                                    </MenuItem>
-                                ))}
+                                {doutores?.length > 0 ? (
+                                    doutores.map((doctor) => (
+                                        <MenuItem key={doctor.id} value={doctor.id}>
+                                            {doctor.nome} {doctor.sobreNome}
+                                        </MenuItem>
+                                    ))
+                                ) : (
+                                    <MenuItem disabled>Nenhum doutor disponível para os procedimentos selecionados.</MenuItem>
+                                )}
                             </Select>
                         </div>
-
                         <div className="item">
                             <div className="label">
                                 <label>Paciente:</label>
                                 {erros.paciente && <div className="error-message">{erros.paciente}</div>}
                             </div>
-                            <Select
+                            <Autocomplete
                                 fullWidth
-                                value={consultaForm.pacienteId}
-                                onChange={(e) => atualizarConsulta('pacienteId', e.target.value)}
-                                label="Paciente"
+                                value={pacientes.find(paciente => paciente.id === consultaForm.pacienteId) || null}
+                                onChange={(event, newValue) => {
+                                    atualizarConsulta('pacienteId', newValue ? newValue.id : null);
+                                }}
+                                getOptionLabel={(option) => `${option.nome} - ${formatarCPF(option.cpf)}`}
                                 disabled={Number.isInteger(consultaId) && consultaId > 0}
-                                sx={{ my: 2, color: '#333' }}
-                            >
-                                {pacientes?.map((paciente) => (
-                                    <MenuItem key={paciente.id} value={paciente.id}>
-                                        {paciente.nome} - {formatarCPF(paciente.cpf)}
-                                    </MenuItem>
-                                ))}
-                            </Select>
+                                options={pacientes}
+                                onFocus={(e) => e.stopPropagation()} // Evita que o evento de foco se propague
+                                renderInput={(params) => <TextField {...params} sx={{ my: 2, color: '#333' }} />}
+                            />
                         </div>
-                        
+
                         <div>
                             <div className="label label-data">
                                 <label>Horários:</label>
@@ -444,15 +516,16 @@ export const BookingForm = forwardRef(({ modalOpen, handleCloseModal, selectedEv
                                             label="Horário de Início"
                                             value={consultaForm.dataHoraInicio}
                                             onChange={(newTime) => atualizarConsulta('dataHoraInicio', newTime)}
+                                            ampm={false}
                                             renderInput={(params) => (
-                                            <TextField
-                                                {...params}
-                                                variant="outlined"
-                                                fullWidth
-                                                sx={{ my: 2 }}
-                                                InputLabelProps={{ shrink: true, color: '#333' }}
-                                                label="Horário de Início"
-                                            />
+                                                <TextField
+                                                    {...params}
+                                                    variant="outlined"
+                                                    fullWidth
+                                                    sx={{ my: 2 }}
+                                                    InputLabelProps={{ shrink: true, color: '#333' }}
+                                                    label="Horário de Início"
+                                                />
                                             )}
                                         />
                                     </LocalizationProvider>
@@ -464,23 +537,24 @@ export const BookingForm = forwardRef(({ modalOpen, handleCloseModal, selectedEv
                                             label="Horário de Término"
                                             value={consultaForm.dataHoraFim}
                                             onChange={(newTime) => atualizarConsulta('dataHoraFim', newTime)}
+                                            ampm={false}
                                             renderInput={(params) => (
-                                            <TextField
-                                                {...params}
-                                                variant="outlined"
-                                                fullWidth
-                                                sx={{ my: 2 }}
-                                                InputLabelProps={{ shrink: true, color: '#333' }}
-                                                label="Horário de Término"
-                                            />
+                                                <TextField
+                                                    {...params}
+                                                    variant="outlined"
+                                                    fullWidth
+                                                    sx={{ my: 2 }}
+                                                    InputLabelProps={{ shrink: false}}
+                                                    label="Horário de Término"
+                                                />
                                             )}
                                         />
                                     </LocalizationProvider>
                                 </div>
                             </div>
                         </div>
-                        
-                        <Button className="btn" variant="contained" color="primary" type="submit">Gravar</Button>
+
+                        <Button className="btn" variant="contained" color="primary" type="submit">Salvar</Button>
                     </form>
                 </>
             </Box>

@@ -64,7 +64,7 @@ export const Home = () => {
   return (
     <Box m="20px">
       <Box display="flex" justifyContent="space-between" alignItems="center">
-        <Header title="Home" subtitle="Agende seu horario" />
+        <Header title="Home" subtitle="Agende seu horário" />
       </Box>
 
       <Calendar

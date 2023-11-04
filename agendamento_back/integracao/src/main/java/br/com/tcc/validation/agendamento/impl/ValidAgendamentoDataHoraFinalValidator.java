@@ -22,7 +22,7 @@ public class ValidAgendamentoDataHoraFinalValidator implements ConstraintValidat
             LocalDateTime dataIncio = value.getDataHoraInicio();
             LocalDateTime dataFinal = value.getDataHoraFim();
 
-            if (dataFinal.isAfter(dataIncio)) {
+            if (isDataValida(dataIncio, dataFinal)) {
                 boolean disponivel = validarHorario(dataIncio, dataFinal, value);
 
                 if(!disponivel) {
@@ -36,6 +36,20 @@ public class ValidAgendamentoDataHoraFinalValidator implements ConstraintValidat
         }
 
         return false;
+    }
+
+    private boolean isDataValida(LocalDateTime dataIncio, LocalDateTime dataFinal) {
+        LocalDateTime dataCorrente = LocalDateTime.now();
+
+        if(dataCorrente.isAfter(dataIncio)) {
+            return false;
+        }
+
+        if(dataFinal.isBefore(dataIncio)) {
+            return false;
+        }
+
+        return true;
     }
 
     private boolean validarHorario(LocalDateTime dataInicio, LocalDateTime dataFinal, AgendamentoRequest agendamento) {

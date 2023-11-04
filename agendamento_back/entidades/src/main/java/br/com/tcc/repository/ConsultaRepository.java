@@ -88,4 +88,14 @@ public interface ConsultaRepository extends JpaRepository<Consulta, Long> {
 			"AND c.dataHoraInicio >= CURRENT_TIMESTAMP")
 	Long hasConsultasByStatusAndCpfAndDataHoraInicio(@Param("cpf") String cpf);
 
+	@Query("SELECT c FROM Consulta c " +
+			" WHERE c.doutor.id = :doutorId " +
+			" AND YEAR(c.dataHoraInicio) = :ano " +
+			" AND MONTH(c.dataHoraInicio) = :mes " +
+			" AND DAY(c.dataHoraInicio) = :dia")
+	Optional<List<Consulta>> findByConsultasByDoutorDias(@Param("doutorId") Long doutorId,
+														 @Param("ano") Integer ano,
+														 @Param("mes") Integer mes,
+														 @Param("dia") Integer dia);
+
 }

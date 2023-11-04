@@ -17,7 +17,7 @@ public interface PacienteRepository extends JpaRepository<Paciente, Long> {
 
     @Query("SELECT p FROM Paciente p " +
             "WHERE p.nome LIKE %:nome% " +
-            "AND p.cpf LIKE %:cpf%")
+            "OR p.cpf LIKE %:cpf%")
     Optional<List<Paciente>> findByCpfNome(@Param("cpf") String cpf, @Param("nome") String nome);
 
     @Query("SELECT p FROM Paciente p " +

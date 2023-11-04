@@ -5,10 +5,7 @@ import br.com.tcc.impl.DoutorService;
 import br.com.tcc.impl.FuncionarioService;
 import br.com.tcc.model.request.DoutorAgendamentoRequest;
 import br.com.tcc.model.request.FuncionarioRequest;
-import br.com.tcc.model.response.DoutorAgendamentoResponse;
-import br.com.tcc.model.response.DoutorResponse;
-import br.com.tcc.model.response.FuncionarioResponse;
-import br.com.tcc.model.response.PacienteResponse;
+import br.com.tcc.model.response.*;
 import br.com.tcc.service.DoutorTratarResponse;
 import br.com.tcc.service.FuncionarioTratarResponse;
 import jakarta.validation.Valid;
@@ -75,6 +72,14 @@ public class DoutorController {
                 .consultarPorNomeEProcedimento(request.getNome(), request.getProcedimentos());
 
         return ResponseEntity.status(HttpStatus.OK).body(doutorResponseList);
+    }
+
+    @GetMapping(value = "/consultar/{id}/{data}")
+    public ResponseEntity<?> consultarHorariosEmUso(@PathVariable("id") Long id, @PathVariable("data") String data) {
+        List<HorariosDoutorResponse> horarios = doutorTratarResponse
+                .consultarHorariosDoutor(id, data);
+
+        return ResponseEntity.status(HttpStatus.OK).body(horarios);
     }
 
 }

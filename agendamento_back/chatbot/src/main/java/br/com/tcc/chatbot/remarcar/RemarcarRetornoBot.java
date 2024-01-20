@@ -1,7 +1,7 @@
-package br.com.tcc.chatbot.cadastro;
+package br.com.tcc.chatbot.remarcar;
 
 import br.com.tcc.chatbot.RetornoChatBotInterface;
-import br.com.tcc.chatbot.cadastro.enumerador.CadastroPassosEnum;
+import br.com.tcc.chatbot.remarcar.enumerador.RemarcarPassosEnum;
 import br.com.tcc.entity.MonitorDeChatBot;
 import br.com.tcc.enumerador.TipoChatBotEnum;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,33 +13,33 @@ import java.util.Arrays;
 import java.util.List;
 
 @Component
-public class CadastroRetornoBot extends RetornoChatBotInterface {
+public class RemarcarRetornoBot extends RetornoChatBotInterface {
 
     @Autowired
-    private CadastroPassosFactory cadastroPassosFactory;
+    private RemarcarPassosFactory remarcarPassosFactory;
 
     @Override
     public List<SendMessage> processarRetorno(Message message, MonitorDeChatBot monitorDeChatBot) {
         List<SendMessage> messages = null;
 
         if(monitorDeChatBot == null) {
-            monitorDeChatBot = super.cadastrarMonitor(message, TipoChatBotEnum.CADASTRO);
+            monitorDeChatBot = super.cadastrarMonitor(message, TipoChatBotEnum.REMARCAR);
         }
 
-        messages = cadastroPassosFactory.processar(getPasso(monitorDeChatBot))
-                .processarPassosDeCadastro(monitorDeChatBot, message);
+        messages = remarcarPassosFactory.processar(getPasso(monitorDeChatBot))
+                .processarPassosDeRemarcar(monitorDeChatBot, message);
 
         return messages;
     }
 
-    private CadastroPassosEnum getPasso(MonitorDeChatBot monitorDeChatBot) {
-        return Arrays.stream(CadastroPassosEnum.values())
+    private RemarcarPassosEnum getPasso(MonitorDeChatBot monitorDeChatBot) {
+        return Arrays.stream(RemarcarPassosEnum.values())
                 .filter(passo -> passo.getPASSO().equals(monitorDeChatBot.getPasso())).findFirst()
-                .orElse(CadastroPassosEnum.PASSO_UM);
+                .orElse(RemarcarPassosEnum.PASSO_UM);
     }
 
     @Override
     public TipoChatBotEnum getTipoChatBot() {
-        return TipoChatBotEnum.CADASTRO;
+        return TipoChatBotEnum.REMARCAR;
     }
 }

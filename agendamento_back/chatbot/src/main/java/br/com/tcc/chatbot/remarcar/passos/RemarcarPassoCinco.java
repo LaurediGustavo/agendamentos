@@ -1,13 +1,9 @@
-package br.com.tcc.chatbot.agendamento.passos;
+package br.com.tcc.chatbot.remarcar.passos;
 
-import br.com.tcc.chatbot.agendamento.enumerador.AgendamentoPassosEnum;
-import br.com.tcc.chatbot.agendamento.interfaces.AgendamentoPassosInterface;
-import br.com.tcc.entity.AgendamentoChatBot;
-import br.com.tcc.entity.Doutor;
-import br.com.tcc.entity.MonitorDeChatBot;
-import br.com.tcc.entity.Procedimento;
+import br.com.tcc.chatbot.remarcar.enumerador.RemarcarPassosEnum;
+import br.com.tcc.chatbot.remarcar.interfaces.RemarcarPassosInterface;
+import br.com.tcc.entity.*;
 import br.com.tcc.repository.*;
-import org.checkerframework.checker.units.qual.A;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
@@ -19,10 +15,9 @@ import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 @Component
-public class AgendamentoPassoQuatro implements AgendamentoPassosInterface {
+public class RemarcarPassoCinco implements RemarcarPassosInterface {
 
     @Autowired
     private ProcedimentoRepository procedimentoRepository;
@@ -37,20 +32,22 @@ public class AgendamentoPassoQuatro implements AgendamentoPassosInterface {
     private ConsultaRepository consultaRepository;
 
     @Autowired
-    private AgendamentoChatBotRepository agendamentoChatBotRepository;
+    private RemarcarAgendamentoChatBotRepository remarcarAgendamentoChatBotRepository;
 
     @Override
-    public List<SendMessage> processarPassosDeAgendamento(MonitorDeChatBot monitorDeChatBot, Message message) {
+    public List<SendMessage> processarPassosDeRemarcar(MonitorDeChatBot monitorDeChatBot, Message message) {
         String mensagem = message.getText();
 
         LocalDate data = getData(mensagem);
         if(data != null && !data.isBefore(LocalDate.now()) ) {
-            AgendamentoChatBot agendamentoChatBot = getAgendamento(message.getChatId());
-            List<LocalTime> horarios = horariosDisponiveis(data, Integer.parseInt(agendamentoChatBot.getProcedimento().getTempo()));
+            RemarcarAgendamentoChatBot remarcarAgendamentoChatBot = getRemarcarAgendamento(message.getChatId());
+            Consulta consulta = getConsulta(remarcarAgendamentoChatBot);
+
+            List<LocalTime> horarios = horariosDisponiveis(data, consulta.getProcedimentos());
 
             if(!horarios.isEmpty()) {
                 atualizarMonitor(monitorDeChatBot);
-                persistirAgendamento(agendamentoChatBot, data);
+                persistirRemarcarAgendamento(remarcarAgendamentoChatBot, data);
                 return montarMensagem(message.getChatId(), getTextoMensagem(horarios));
             }
             else {
@@ -62,15 +59,19 @@ public class AgendamentoPassoQuatro implements AgendamentoPassosInterface {
         }
     }
 
-    private void persistirAgendamento(AgendamentoChatBot agendamentoChatBot, LocalDate data) {
-        LocalDateTime dataHora = data.atTime(LocalTime.MIDNIGHT);
-
-        agendamentoChatBot.setHorario(dataHora);
-        agendamentoChatBotRepository.save(agendamentoChatBot);
+    private Consulta getConsulta(RemarcarAgendamentoChatBot remarcarAgendamentoChatBot) {
+        return consultaRepository.findById(remarcarAgendamentoChatBot.getAgendamentoId()).get();
     }
 
-    private AgendamentoChatBot getAgendamento(Long chatId) {
-        return agendamentoChatBotRepository.findByChatId(chatId).get();
+    private void persistirRemarcarAgendamento(RemarcarAgendamentoChatBot remarcarAgendamentoChatBot, LocalDate data) {
+        LocalDateTime dataHora = data.atTime(LocalTime.MIDNIGHT);
+
+        remarcarAgendamentoChatBot.setHorario(dataHora);
+        remarcarAgendamentoChatBotRepository.save(remarcarAgendamentoChatBot);
+    }
+
+    private RemarcarAgendamentoChatBot getRemarcarAgendamento(Long chatId) {
+        return remarcarAgendamentoChatBotRepository.findByChatId(chatId).get();
     }
 
     private LocalDate getData(String data) {
@@ -106,9 +107,11 @@ public class AgendamentoPassoQuatro implements AgendamentoPassosInterface {
         return string.toString();
     }
 
-    private List<LocalTime> horariosDisponiveis(LocalDate data, int intevalo) {
+    private List<LocalTime> horariosDisponiveis(LocalDate data, List<Procedimento> procedimentos) {
         List<Doutor> doutorList = doutorRepository
                 .findAll();
+
+        int intevalo = getIntervalo(procedimentos);
 
         List<LocalTime> horarios = gerarHorarios(intevalo);
         List<LocalTime> listaFinal = new ArrayList<LocalTime>();
@@ -145,6 +148,12 @@ public class AgendamentoPassoQuatro implements AgendamentoPassosInterface {
         return listaFinal;
     }
 
+    private int getIntervalo(List<Procedimento> procedimentos) {
+        return procedimentos.stream()
+                .mapToInt(procedimento -> Integer.parseInt(procedimento.getTempo()))
+                .sum();
+    }
+
     private List<LocalTime> gerarHorarios(int intervalo) {
         LocalTime startTime = LocalTime.of(8, 0);
         LocalTime endTime = LocalTime.of(18, 0);
@@ -162,11 +171,10 @@ public class AgendamentoPassoQuatro implements AgendamentoPassosInterface {
 
     private void atualizarMonitor(MonitorDeChatBot monitorDeChatBot) {
         monitorDeChatBot.setDataDaMensagem(LocalDateTime.now());
-        monitorDeChatBot.setPasso(5);
+        monitorDeChatBot.setPasso(6);
 
         monitorDeChatBotRepository.save(monitorDeChatBot);
     }
-
 
     private List<SendMessage> montarMensagem(Long chatId, String mensagem) {
         SendMessage sendMessage = new SendMessage();
@@ -177,7 +185,7 @@ public class AgendamentoPassoQuatro implements AgendamentoPassosInterface {
     }
 
     @Override
-    public AgendamentoPassosEnum getPasso() {
-        return AgendamentoPassosEnum.PASSO_QUATRO;
+    public RemarcarPassosEnum getPasso() {
+        return RemarcarPassosEnum.PASSO_CINCO;
     }
 }

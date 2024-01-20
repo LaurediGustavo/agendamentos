@@ -4,7 +4,6 @@ import br.com.tcc.chatbot.cadastro.enumerador.CadastroPassosEnum;
 import br.com.tcc.chatbot.cadastro.interfaces.CadastroPassosInterface;
 import br.com.tcc.entity.MonitorDeChatBot;
 import br.com.tcc.entity.PacienteChatBot;
-import br.com.tcc.enumerador.StatusDaMensagemChatBotEnum;
 import br.com.tcc.repository.MonitorDeChatBotRepository;
 import br.com.tcc.repository.PacienteChatBotRepository;
 import org.apache.commons.lang3.StringUtils;
@@ -14,6 +13,8 @@ import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.Message;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 @Component
@@ -26,7 +27,7 @@ public class CadastroPassoTres implements CadastroPassosInterface {
     private PacienteChatBotRepository pacienteChatBotRepository;
 
     @Override
-    public SendMessage processarPassosDeCadastro(MonitorDeChatBot monitorDeChatBot, Message message) {
+    public List<SendMessage> processarPassosDeCadastro(MonitorDeChatBot monitorDeChatBot, Message message) {
         String mensagem = message.getText();
 
         if(StringUtils.isNotBlank(mensagem)) {
@@ -60,12 +61,12 @@ public class CadastroPassoTres implements CadastroPassosInterface {
         monitorDeChatBotRepository.save(monitorDeChatBot);
     }
 
-    private SendMessage montarMensagem(Long chatId, String mensagem) {
+    private List<SendMessage> montarMensagem(Long chatId, String mensagem) {
         SendMessage sendMessage = new SendMessage();
         sendMessage.setChatId(chatId.toString());
         sendMessage.setText(mensagem);
 
-        return sendMessage;
+        return new ArrayList<>(List.of(sendMessage));
     }
 
     @Override

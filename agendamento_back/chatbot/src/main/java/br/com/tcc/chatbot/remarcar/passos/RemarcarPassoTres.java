@@ -1,15 +1,9 @@
-package br.com.tcc.chatbot.cancelaragendamento.passos;
+package br.com.tcc.chatbot.remarcar.passos;
 
-import br.com.tcc.chatbot.cancelaragendamento.enumerador.CancelarPassosEnum;
-import br.com.tcc.chatbot.cancelaragendamento.interfaces.CancelarPassosInterface;
-import br.com.tcc.entity.CancelarAgendamentoChatBot;
-import br.com.tcc.entity.Consulta;
-import br.com.tcc.entity.MonitorDeChatBot;
-import br.com.tcc.entity.Procedimento;
-import br.com.tcc.repository.CancelarAgendamentoChatBotRepository;
-import br.com.tcc.repository.ConsultaRepository;
-import br.com.tcc.repository.MonitorDeChatBotRepository;
-import br.com.tcc.repository.PacienteRepository;
+import br.com.tcc.chatbot.remarcar.enumerador.RemarcarPassosEnum;
+import br.com.tcc.chatbot.remarcar.interfaces.RemarcarPassosInterface;
+import br.com.tcc.entity.*;
+import br.com.tcc.repository.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
@@ -23,7 +17,7 @@ import java.util.List;
 import java.util.Optional;
 
 @Component
-public class CancelarPassoTres implements CancelarPassosInterface {
+public class RemarcarPassoTres implements RemarcarPassosInterface {
 
     @Autowired
     private MonitorDeChatBotRepository monitorDeChatBotRepository;
@@ -35,23 +29,23 @@ public class CancelarPassoTres implements CancelarPassosInterface {
     private ConsultaRepository consultaRepository;
 
     @Autowired
-    private CancelarAgendamentoChatBotRepository cancelarAgendamentoChatBotRepository;
+    private RemarcarAgendamentoChatBotRepository remarcarAgendamentoChatBotRepository;
 
     @Override
-    public List<SendMessage> processarPassosDeCadastro(MonitorDeChatBot monitorDeChatBot, Message message) {
-        Optional<CancelarAgendamentoChatBot> cancelarAgendamentoChatBot = cancelarAgendamentoChatBotRepository
+    public List<SendMessage> processarPassosDeRemarcar(MonitorDeChatBot monitorDeChatBot, Message message) {
+        Optional<RemarcarAgendamentoChatBot> remarcarAgendamentoChatBot = remarcarAgendamentoChatBotRepository
                 .findTopByChatIdOrderByIdDesc(message.getChatId());
 
-        if(cancelarAgendamentoChatBot.isPresent()) {
-            CancelarAgendamentoChatBot cancelamento = cancelarAgendamentoChatBot.get();
+        if(remarcarAgendamentoChatBot.isPresent()) {
+            RemarcarAgendamentoChatBot remarcar = remarcarAgendamentoChatBot.get();
 
-            if(isOpcaoValida(message, cancelamento)) {
+            if(isOpcaoValida(message, remarcar)) {
                 atualizarMonitor(monitorDeChatBot);
-                atualizarCancelamento(cancelamento);
-                return montarMensagemSucesso(message.getChatId(), cancelarAgendamentoChatBot.get().getConsulta());
+                atualizarCancelamento(remarcar);
+                return montarMensagemSucesso(message.getChatId(), remarcarAgendamentoChatBot.get().getConsulta());
             }
             else {
-                return montarMensagemErro(message.getChatId(), "Opção informada inálida! Por favor informa uma opção válida.");
+                return montarMensagemErro(message.getChatId(), "Opção informada inválida! Por favor informa uma opção válida.");
             }
         }
         else {
@@ -59,28 +53,28 @@ public class CancelarPassoTres implements CancelarPassosInterface {
         }
     }
 
-    private boolean isOpcaoValida(Message message, CancelarAgendamentoChatBot cancelarAgendamentoChatBot) {
+    private boolean isOpcaoValida(Message message, RemarcarAgendamentoChatBot remarcar) {
         boolean isValid = false;
         String mensagem = message.getText();
 
-        if (Uteis.isValorNumerico(mensagem) && isOpcaoExistente(message, cancelarAgendamentoChatBot)) {
+        if (Uteis.isValorNumerico(mensagem) && isOpcaoExistente(message, remarcar)) {
             isValid = true;
         }
 
         return isValid;
     }
 
-    private boolean isOpcaoExistente(Message message, CancelarAgendamentoChatBot cancelarAgendamentoChatBot) {
+    private boolean isOpcaoExistente(Message message, RemarcarAgendamentoChatBot remarcarAgendamentoChatBot) {
         boolean isValid = false;
 
         List<Consulta> consultaList = consultaRepository
-                .findConsultasByStatusAndCpfAndDataHoraInicio(cancelarAgendamentoChatBot.getCpf());
+                .findConsultasByStatusAndCpfAndDataHoraInicio(remarcarAgendamentoChatBot.getCpf());
         if(!consultaList.isEmpty()) {
             Consulta consulta = getConsulta(consultaList, message.getText());
 
             if(consulta != null) {
-                cancelarAgendamentoChatBot.setAgendamentoId(consulta.getId());
-                cancelarAgendamentoChatBot.setConsulta(consulta);
+                remarcarAgendamentoChatBot.setAgendamentoId(consulta.getId());
+                remarcarAgendamentoChatBot.setConsulta(consulta);
                 isValid = true;
             }
         }
@@ -97,8 +91,8 @@ public class CancelarPassoTres implements CancelarPassosInterface {
         }
     }
 
-    private void atualizarCancelamento(CancelarAgendamentoChatBot cancelarAgendamentoChatBot) {
-        cancelarAgendamentoChatBotRepository.save(cancelarAgendamentoChatBot);
+    private void atualizarCancelamento(RemarcarAgendamentoChatBot remarcarAgendamentoChatBot) {
+        remarcarAgendamentoChatBotRepository.save(remarcarAgendamentoChatBot);
     }
 
     private void atualizarMonitor(MonitorDeChatBot monitorDeChatBot) {
@@ -125,7 +119,7 @@ public class CancelarPassoTres implements CancelarPassosInterface {
     }
 
     public String getMensagem(Consulta consulta) {
-        return "Deseja realmente cancelar essa consulta? \n\n" +
+        return "Deseja realmente remarcar essa consulta? \n\n" +
                 DataUteis.getLocalDateTime_ddMMaaaaHHMM(consulta.getDataHoraInicio()) +
                 "\n" +
                 "Procedimento: \n" +
@@ -149,7 +143,7 @@ public class CancelarPassoTres implements CancelarPassosInterface {
     }
 
     @Override
-    public CancelarPassosEnum getPasso() {
-        return CancelarPassosEnum.PASSO_TRES;
+    public RemarcarPassosEnum getPasso() {
+        return RemarcarPassosEnum.PASSO_TRES;
     }
 }

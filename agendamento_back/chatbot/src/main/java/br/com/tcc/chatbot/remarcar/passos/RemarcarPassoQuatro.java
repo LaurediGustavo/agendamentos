@@ -1,17 +1,17 @@
-package br.com.tcc.chatbot.cancelaragendamento.passos;
+package br.com.tcc.chatbot.remarcar.passos;
 
-import br.com.tcc.chatbot.CancelarOperacaoChatBotService;
-import br.com.tcc.chatbot.cancelaragendamento.enumerador.CancelarPassosEnum;
-import br.com.tcc.chatbot.cancelaragendamento.interfaces.CancelarPassosInterface;
+import br.com.tcc.chatbot.RemarcarOperacaoChatBotService;
 import br.com.tcc.chatbot.menu.MenuChatBot;
-import br.com.tcc.entity.CancelarAgendamentoChatBot;
+import br.com.tcc.chatbot.remarcar.enumerador.RemarcarPassosEnum;
+import br.com.tcc.chatbot.remarcar.interfaces.RemarcarPassosInterface;
 import br.com.tcc.entity.Consulta;
 import br.com.tcc.entity.MonitorDeChatBot;
+import br.com.tcc.entity.RemarcarAgendamentoChatBot;
 import br.com.tcc.enumerador.StatusConsultaEnum;
 import br.com.tcc.enumerador.StatusDaMensagemChatBotEnum;
-import br.com.tcc.repository.CancelarAgendamentoChatBotRepository;
 import br.com.tcc.repository.ConsultaRepository;
 import br.com.tcc.repository.MonitorDeChatBotRepository;
+import br.com.tcc.repository.RemarcarAgendamentoChatBotRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
@@ -23,7 +23,7 @@ import java.util.List;
 import java.util.Optional;
 
 @Component
-public class CancelarPassoQuatro implements CancelarPassosInterface {
+public class RemarcarPassoQuatro implements RemarcarPassosInterface {
 
     @Autowired
     private MonitorDeChatBotRepository monitorDeChatBotRepository;
@@ -32,26 +32,23 @@ public class CancelarPassoQuatro implements CancelarPassosInterface {
     private ConsultaRepository consultaRepository;
 
     @Autowired
-    private CancelarAgendamentoChatBotRepository cancelarAgendamentoChatBotRepository;
+    private RemarcarAgendamentoChatBotRepository remarcarAgendamentoChatBotRepository;
 
     @Autowired
-    private CancelarOperacaoChatBotService cancelarOperacaoChatBot;
+    private RemarcarOperacaoChatBotService remarcarOperacaoChatBot;
 
     @Autowired
     private MenuChatBot menuChatBot;
 
     @Override
-    public List<SendMessage> processarPassosDeCadastro(MonitorDeChatBot monitorDeChatBot, Message message) {
+    public List<SendMessage> processarPassosDeRemarcar(MonitorDeChatBot monitorDeChatBot, Message message) {
         String opcao = message.getText();
 
         if(isOpcaoValida(opcao)) {
             if("1".equals(opcao)) {
-                cancelarAgendamento(message.getChatId());
-                atualizarMonitor(monitorDeChatBot, 5,StatusDaMensagemChatBotEnum.FINALIZADO);
+                atualizarMonitor(monitorDeChatBot, 5,StatusDaMensagemChatBotEnum.AGUARDANDO);
 
-                List<SendMessage> sendMessage = montarMensagem(message.getChatId(), "Cancelamento efetuado com sucesso!\n\n");
-                menuChatBot.montarMensagem(sendMessage.get(0), message.getChatId());
-                return sendMessage;
+                return montarMensagem(message.getChatId(), "Por favor informe a nova data da consulta (dd/mm/aaaa)");
             }
             else {
                 atualizarMonitor(monitorDeChatBot, 3, StatusDaMensagemChatBotEnum.AGUARDANDO);
@@ -66,32 +63,15 @@ public class CancelarPassoQuatro implements CancelarPassosInterface {
     }
 
     private String getTexto(Long chatId) {
-        Optional<CancelarAgendamentoChatBot> cancelarAgendamentoChatBot = cancelarAgendamentoChatBotRepository
+        Optional<RemarcarAgendamentoChatBot> remarcarAgendamentoChatBot = remarcarAgendamentoChatBotRepository
                 .findTopByChatIdOrderByIdDesc(chatId);
 
-        if(cancelarAgendamentoChatBot.isPresent()) {
-            CancelarAgendamentoChatBot cancelamento = cancelarAgendamentoChatBot.get();
-            return cancelarOperacaoChatBot.consultasDisponiveis(cancelamento.getCpf());
+        if(remarcarAgendamentoChatBot.isPresent()) {
+            RemarcarAgendamentoChatBot remarcar = remarcarAgendamentoChatBot.get();
+            return remarcarOperacaoChatBot.consultasDisponiveis(remarcar.getCpf());
         }
 
         return "Falha interna! Digite \"CANCELAR\"";
-    }
-
-    private void cancelarAgendamento(Long chatId) {
-        Optional<CancelarAgendamentoChatBot> cancelarAgendamentoChatBot = cancelarAgendamentoChatBotRepository
-                .findTopByChatIdOrderByIdDesc(chatId);
-
-        if(cancelarAgendamentoChatBot.isPresent()) {
-            CancelarAgendamentoChatBot cancelamento = cancelarAgendamentoChatBot.get();
-
-            Consulta consulta = consultaRepository.findById(cancelamento.getAgendamentoId()).get();
-            cancelarConsulta(consulta);
-        }
-    }
-
-    private void cancelarConsulta(Consulta consulta) {
-        consulta.setStatus(StatusConsultaEnum.CANCELADO);
-        consultaRepository.save(consulta);
     }
 
     private boolean isOpcaoValida(String opcao) {
@@ -118,7 +98,7 @@ public class CancelarPassoQuatro implements CancelarPassosInterface {
     }
 
     @Override
-    public CancelarPassosEnum getPasso() {
-        return CancelarPassosEnum.PASSO_QUATRO;
+    public RemarcarPassosEnum getPasso() {
+        return RemarcarPassosEnum.PASSO_QUATRO;
     }
 }

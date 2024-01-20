@@ -10,6 +10,7 @@ import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.Message;
 
 import java.util.Arrays;
+import java.util.List;
 
 @Component
 public class CancelarRetornoBot extends RetornoChatBotInterface {
@@ -18,17 +19,17 @@ public class CancelarRetornoBot extends RetornoChatBotInterface {
     private CancelarPassosFactory cancelarPassosFactory;
 
     @Override
-    public SendMessage processarRetorno(Message message, MonitorDeChatBot monitorDeChatBot) {
-        SendMessage sendMessage = null;
+    public List<SendMessage> processarRetorno(Message message, MonitorDeChatBot monitorDeChatBot) {
+        List<SendMessage> messages = null;
 
         if(monitorDeChatBot == null) {
             monitorDeChatBot = super.cadastrarMonitor(message, TipoChatBotEnum.CANCELAR);
         }
 
-        sendMessage = cancelarPassosFactory.processar(getPasso(monitorDeChatBot))
+        messages = cancelarPassosFactory.processar(getPasso(monitorDeChatBot))
                 .processarPassosDeCadastro(monitorDeChatBot, message);
 
-        return sendMessage;
+        return messages;
     }
 
     private CancelarPassosEnum getPasso(MonitorDeChatBot monitorDeChatBot) {

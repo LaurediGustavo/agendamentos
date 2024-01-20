@@ -1,16 +1,13 @@
-package br.com.tcc.chatbot.cancelaragendamento.passos;
+package br.com.tcc.chatbot.remarcar.passos;
 
-import br.com.tcc.chatbot.CancelarOperacaoChatBotService;
-import br.com.tcc.chatbot.cancelaragendamento.enumerador.CancelarPassosEnum;
-import br.com.tcc.chatbot.cancelaragendamento.interfaces.CancelarPassosInterface;
+import br.com.tcc.chatbot.RemarcarOperacaoChatBotService;
 import br.com.tcc.chatbot.menu.MenuChatBot;
-import br.com.tcc.entity.CancelarAgendamentoChatBot;
+import br.com.tcc.chatbot.remarcar.enumerador.RemarcarPassosEnum;
+import br.com.tcc.chatbot.remarcar.interfaces.RemarcarPassosInterface;
 import br.com.tcc.entity.MonitorDeChatBot;
+import br.com.tcc.entity.RemarcarAgendamentoChatBot;
 import br.com.tcc.enumerador.StatusDaMensagemChatBotEnum;
-import br.com.tcc.repository.CancelarAgendamentoChatBotRepository;
-import br.com.tcc.repository.ConsultaRepository;
-import br.com.tcc.repository.MonitorDeChatBotRepository;
-import br.com.tcc.repository.PacienteRepository;
+import br.com.tcc.repository.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
@@ -22,7 +19,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Component
-public class CancelarPassoDois implements CancelarPassosInterface {
+public class RemarcarPassoDois implements RemarcarPassosInterface {
 
     @Autowired
     private MonitorDeChatBotRepository monitorDeChatBotRepository;
@@ -31,10 +28,10 @@ public class CancelarPassoDois implements CancelarPassosInterface {
     private PacienteRepository pacienteRepository;
 
     @Autowired
-    private CancelarAgendamentoChatBotRepository cancelarAgendamentoChatBotRepository;
+    private RemarcarAgendamentoChatBotRepository remarcarAgendamentoChatBotRepository;
 
     @Autowired
-    private CancelarOperacaoChatBotService cancelarOperacaoChatBot;
+    private RemarcarOperacaoChatBotService remarcarOperacaoChatBot;
 
     @Autowired
     private ConsultaRepository consultaRepository;
@@ -43,14 +40,14 @@ public class CancelarPassoDois implements CancelarPassosInterface {
     private MenuChatBot menuChatBot;
 
     @Override
-    public List<SendMessage> processarPassosDeCadastro(MonitorDeChatBot monitorDeChatBot, Message message) {
+    public List<SendMessage> processarPassosDeRemarcar(MonitorDeChatBot monitorDeChatBot, Message message) {
         String mensagem = message.getText();
 
         if(Uteis.cpfValido(mensagem) && cpfUtilizado(mensagem)) {
             if(isExisteConsulta(mensagem)) {
-                cadastrarCancelamento(message);
+                cadastrarRemarcar(message);
                 atualizarMonitor(monitorDeChatBot, StatusDaMensagemChatBotEnum.AGUARDANDO);
-                return montarMensagem(message.getChatId(), cancelarOperacaoChatBot.consultasDisponiveis(mensagem));
+                return montarMensagem(message.getChatId(), remarcarOperacaoChatBot.consultasDisponiveis(mensagem));
             }
             else {
                 atualizarMonitor(monitorDeChatBot, StatusDaMensagemChatBotEnum.FINALIZADO);
@@ -68,12 +65,12 @@ public class CancelarPassoDois implements CancelarPassosInterface {
         return consultaRepository.hasConsultasByStatusAndCpfAndDataHoraInicio(cpf) > 0L;
     }
 
-    private void cadastrarCancelamento(Message mensagem) {
-        CancelarAgendamentoChatBot cancelarAgendamentoChatBot = new CancelarAgendamentoChatBot();
-        cancelarAgendamentoChatBot.setCpf(mensagem.getText());
-        cancelarAgendamentoChatBot.setChatId(mensagem.getChatId());
+    private void cadastrarRemarcar(Message mensagem) {
+        RemarcarAgendamentoChatBot remarcarAgendamentoChatBot = new RemarcarAgendamentoChatBot();
+        remarcarAgendamentoChatBot.setCpf(mensagem.getText());
+        remarcarAgendamentoChatBot.setChatId(mensagem.getChatId());
 
-        cancelarAgendamentoChatBotRepository.save(cancelarAgendamentoChatBot);
+        remarcarAgendamentoChatBotRepository.save(remarcarAgendamentoChatBot);
     }
 
     private boolean cpfUtilizado(String mensagem) {
@@ -98,7 +95,7 @@ public class CancelarPassoDois implements CancelarPassosInterface {
     }
 
     @Override
-    public CancelarPassosEnum getPasso() {
-        return CancelarPassosEnum.PASSO_DOIS;
+    public RemarcarPassosEnum getPasso() {
+        return RemarcarPassosEnum.PASSO_DOIS;
     }
 }

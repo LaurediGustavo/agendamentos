@@ -1,7 +1,9 @@
-package br.com.tcc.chatbot.agendamento.passos;
+package br.com.tcc.chatbot.remarcar.passos;
 
-import br.com.tcc.chatbot.agendamento.enumerador.AgendamentoPassosEnum;
-import br.com.tcc.chatbot.agendamento.interfaces.AgendamentoPassosInterface;
+import br.com.tcc.chatbot.cancelaragendamento.enumerador.CancelarPassosEnum;
+import br.com.tcc.chatbot.cancelaragendamento.interfaces.CancelarPassosInterface;
+import br.com.tcc.chatbot.remarcar.enumerador.RemarcarPassosEnum;
+import br.com.tcc.chatbot.remarcar.interfaces.RemarcarPassosInterface;
 import br.com.tcc.entity.MonitorDeChatBot;
 import br.com.tcc.repository.MonitorDeChatBotRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,13 +16,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Component
-public class AgendamentoPassoUm implements AgendamentoPassosInterface {
+public class RemarcarPassoUm implements RemarcarPassosInterface {
 
     @Autowired
     private MonitorDeChatBotRepository monitorDeChatBotRepository;
 
     @Override
-    public List<SendMessage> processarPassosDeAgendamento(MonitorDeChatBot monitorDeChatBot, Message message) {
+    public List<SendMessage> processarPassosDeRemarcar(MonitorDeChatBot monitorDeChatBot, Message message) {
         atualizarMonitor(monitorDeChatBot);
         return montarMensagem(message.getChatId(), "Por favor informe o seu CPF");
     }
@@ -41,7 +43,7 @@ public class AgendamentoPassoUm implements AgendamentoPassosInterface {
     }
 
     @Override
-    public AgendamentoPassosEnum getPasso() {
-        return AgendamentoPassosEnum.PASSO_UM;
+    public RemarcarPassosEnum getPasso() {
+        return RemarcarPassosEnum.PASSO_UM;
     }
 }

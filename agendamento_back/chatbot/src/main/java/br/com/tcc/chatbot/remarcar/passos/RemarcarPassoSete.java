@@ -1,8 +1,10 @@
-package br.com.tcc.chatbot.agendamento.passos;
+package br.com.tcc.chatbot.remarcar.passos;
 
 import br.com.tcc.chatbot.agendamento.enumerador.AgendamentoPassosEnum;
 import br.com.tcc.chatbot.agendamento.interfaces.AgendamentoPassosInterface;
 import br.com.tcc.chatbot.menu.MenuChatBot;
+import br.com.tcc.chatbot.remarcar.enumerador.RemarcarPassosEnum;
+import br.com.tcc.chatbot.remarcar.interfaces.RemarcarPassosInterface;
 import br.com.tcc.entity.*;
 import br.com.tcc.enumerador.StatusConsultaEnum;
 import br.com.tcc.enumerador.StatusDaMensagemChatBotEnum;
@@ -21,13 +23,13 @@ import java.util.List;
 import java.util.Optional;
 
 @Component
-public class AgendamentoPassoSeis implements AgendamentoPassosInterface {
+public class RemarcarPassoSete implements RemarcarPassosInterface {
 
     @Autowired
     private MonitorDeChatBotRepository monitorDeChatBotRepository;
 
     @Autowired
-    private AgendamentoChatBotRepository agendamentoChatBotRepository;
+    private RemarcarAgendamentoChatBotRepository remarcarAgendamentoChatBotRepository;
 
     @Autowired
     private PacienteRepository pacienteRepository;
@@ -46,7 +48,7 @@ public class AgendamentoPassoSeis implements AgendamentoPassosInterface {
 
 
     @Override
-    public List<SendMessage> processarPassosDeAgendamento(MonitorDeChatBot monitorDeChatBot, Message message) {
+    public List<SendMessage> processarPassosDeRemarcar(MonitorDeChatBot monitorDeChatBot, Message message) {
         String mensagem = message.getText();
 
         try {
@@ -54,15 +56,15 @@ public class AgendamentoPassoSeis implements AgendamentoPassosInterface {
 
             switch (opcao) {
                 case 1 -> {
-                    atualizarMonitor(monitorDeChatBot, 7, StatusDaMensagemChatBotEnum.FINALIZADO);
+                    atualizarMonitor(monitorDeChatBot, 8, StatusDaMensagemChatBotEnum.FINALIZADO);
                     cadastrarAgendamento(message.getChatId());
 
-                    List<SendMessage> messages = montarMensagem(message.getChatId(), "Agendamento cadastrado com sucesso!\n\n");
+                    List<SendMessage> messages = montarMensagem(message.getChatId(), "Agendamento remarcado com sucesso!\n\n");
                     menuChatBot.montarMensagem(messages.get(0), message.getChatId());
                     return messages;
                 }
                 case 2 -> {
-                    atualizarMonitor(monitorDeChatBot, 3, StatusDaMensagemChatBotEnum.AGUARDANDO);
+                    atualizarMonitor(monitorDeChatBot, 6, StatusDaMensagemChatBotEnum.AGUARDANDO);
                     return montarMensagem(message.getChatId(), getTextoMensagem());
                 }
                 default ->
@@ -102,40 +104,54 @@ public class AgendamentoPassoSeis implements AgendamentoPassosInterface {
     }
 
     private void cadastrarAgendamento(Long chatId) {
-        Optional<AgendamentoChatBot> agendamentoChatBotOptional = agendamentoChatBotRepository.findByChatId(chatId);
+        Optional<RemarcarAgendamentoChatBot> remarcarAgendamentoChatBot = remarcarAgendamentoChatBotRepository.findByChatId(chatId);
 
-        if(agendamentoChatBotOptional.isPresent()) {
-            AgendamentoChatBot agendamentoChatBot = agendamentoChatBotOptional.get();
-            Optional<Paciente> paciente = pacienteRepository.findByCpf(agendamentoChatBot.getCpf());
+        if(remarcarAgendamentoChatBot.isPresent()) {
+            RemarcarAgendamentoChatBot remarcar = remarcarAgendamentoChatBot.get();
+            Optional<Paciente> paciente = pacienteRepository.findByCpf(remarcar.getCpf());
+            Consulta consultaAnterior = getConsulta(remarcar);
 
-            int minutos = Integer.parseInt(agendamentoChatBot.getProcedimento().getTempo());
+            int minutos = getIntervalo(consultaAnterior.getProcedimentos());
             int horas = minutos / 60;
             minutos = minutos % 60;
 
             Consulta consulta = new Consulta();
             consulta.setTempoAproximado(LocalTime.of(horas, minutos));
             consulta.setStatus(StatusConsultaEnum.AGUARDANDO);
-            consulta.setValorTotal(agendamentoChatBot.getProcedimento().getValor());
-            consulta.setDataHoraInicio(agendamentoChatBot.getHorario());
-            consulta.setDataHoraFinal(agendamentoChatBot.getHorario().plusMinutes(Long.parseLong(agendamentoChatBot.getProcedimento().getTempo())));
+            consulta.setValorTotal(consultaAnterior.getValorTotal());
+            consulta.setDataHoraInicio(remarcar.getHorario());
+            consulta.setDataHoraFinal(remarcar.getHorario().plusMinutes(minutos));
             consulta.setPaciente(paciente.get());
-            consulta.setDoutor(getDoutorDisponivel(agendamentoChatBot));
-            consulta.setProcedimentos(getProcedimentos(agendamentoChatBot.getProcedimento()));
+            consulta.setDoutor(getDoutorDisponivel(remarcar, minutos));
+            consulta.setProcedimentos(consultaAnterior.getProcedimentos());
 
             consultaRepository.save(consulta);
-            agendamentoChatBotRepository.delete(agendamentoChatBot);
+
+            consultaAnterior.setConsultaRemarcadaPara(consulta);
+            consultaAnterior.setStatus(StatusConsultaEnum.REMARCADO);
+            consultaRepository.save(consultaAnterior);
+
+            remarcarAgendamentoChatBotRepository.delete(remarcar);
         }
     }
 
-    private List<Procedimento> getProcedimentos(Procedimento procedimento) {
-        return Collections.singletonList(procedimento);
+    private int getIntervalo(List<Procedimento> procedimentos) {
+        return procedimentos.stream()
+                .mapToInt(procedimento -> Integer.parseInt(procedimento.getTempo()))
+                .sum();
     }
 
-    private Doutor getDoutorDisponivel(AgendamentoChatBot agendamentoChatBot) {
-        LocalDateTime horarioFinal = agendamentoChatBot.getHorario()
-                .plusMinutes(Long.parseLong(agendamentoChatBot.getProcedimento().getTempo()));
+    private Consulta getConsulta(RemarcarAgendamentoChatBot remarcarAgendamentoChatBot) {
+        Consulta consulta = consultaRepository.findById(remarcarAgendamentoChatBot.getAgendamentoId()).get();
+        remarcarAgendamentoChatBot.setConsulta(consulta);
+        return consulta;
+    }
 
-        return doutorRepository.findDoutoresDisponiveis(agendamentoChatBot.getHorario(), horarioFinal)
+    private Doutor getDoutorDisponivel(RemarcarAgendamentoChatBot remarcarAgendamentoChatBot, int minutos) {
+        LocalDateTime horarioFinal = remarcarAgendamentoChatBot.getHorario()
+                .plusMinutes(minutos);
+
+        return doutorRepository.findDoutoresDisponiveis(remarcarAgendamentoChatBot.getHorario(), horarioFinal)
                 .get(0);
     }
 
@@ -156,7 +172,7 @@ public class AgendamentoPassoSeis implements AgendamentoPassosInterface {
     }
 
     @Override
-    public AgendamentoPassosEnum getPasso() {
-        return AgendamentoPassosEnum.PASSO_SEIS;
+    public RemarcarPassosEnum getPasso() {
+        return RemarcarPassosEnum.PASSO_SETE;
     }
 }

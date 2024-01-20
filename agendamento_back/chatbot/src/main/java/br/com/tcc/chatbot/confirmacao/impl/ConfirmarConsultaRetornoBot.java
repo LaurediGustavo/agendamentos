@@ -14,6 +14,7 @@ import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.Message;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Optional;
 
 @Component
@@ -25,7 +26,7 @@ public class ConfirmarConsultaRetornoBot extends RetornoChatBotInterface {
     @Autowired
     private ConsultaRepository consultaRepository;
 
-    public SendMessage processarRetorno(Message message, MonitorDeChatBot monitorDeChatBot) {
+    public List<SendMessage> processarRetorno(Message message, MonitorDeChatBot monitorDeChatBot) {
         String messageText = message.getText().toUpperCase();
         Optional<Consulta> consultaOptional = consultas(monitorDeChatBot);
 

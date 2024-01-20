@@ -16,6 +16,8 @@ import org.telegram.telegrambots.meta.api.objects.Message;
 import uteis.Uteis;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 @Component
@@ -31,7 +33,7 @@ public class AgendamentoPassoTres implements AgendamentoPassosInterface {
     private AgendamentoChatBotRepository agendamentoChatBotRepository;
 
     @Override
-    public SendMessage processarPassosDeAgendamento(MonitorDeChatBot monitorDeChatBot, Message message) {
+    public List<SendMessage> processarPassosDeAgendamento(MonitorDeChatBot monitorDeChatBot, Message message) {
         String mensagem = message.getText();
 
         Optional<Procedimento> procedimento = getProcedimento(mensagem);
@@ -88,12 +90,12 @@ public class AgendamentoPassoTres implements AgendamentoPassosInterface {
         monitorDeChatBotRepository.save(monitorDeChatBot);
     }
 
-    private SendMessage montarMensagem(Long chatId, String mensagem) {
+    private List<SendMessage> montarMensagem(Long chatId, String mensagem) {
         SendMessage sendMessage = new SendMessage();
         sendMessage.setChatId(chatId.toString());
         sendMessage.setText(mensagem);
 
-        return sendMessage;
+        return new ArrayList<>(List.of(sendMessage));
     }
 
     @Override

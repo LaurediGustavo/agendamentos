@@ -13,6 +13,7 @@ import org.telegram.telegrambots.meta.api.objects.Message;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Component("RetornoChatBotInterface")
 public abstract class RetornoChatBotInterface {
@@ -20,7 +21,7 @@ public abstract class RetornoChatBotInterface {
     @Autowired
     private MonitorDeChatBotRepository monitorDeChatBotRepository;
 
-    public abstract SendMessage processarRetorno(Message message, MonitorDeChatBot monitorDeChatBot);
+    public abstract List<SendMessage> processarRetorno(Message message, MonitorDeChatBot monitorDeChatBot);
 
     public abstract TipoChatBotEnum getTipoChatBot();
 

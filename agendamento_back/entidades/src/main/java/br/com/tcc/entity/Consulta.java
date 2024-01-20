@@ -53,4 +53,8 @@ public class Consulta implements Serializable {
 	@Column(name = "tempoaproximado", nullable = false)
 	private LocalTime tempoAproximado;
 
+	@ManyToOne
+	@JoinColumn(name = "consultaremarcadapara_id")
+	private Consulta consultaRemarcadaPara;
+
 }

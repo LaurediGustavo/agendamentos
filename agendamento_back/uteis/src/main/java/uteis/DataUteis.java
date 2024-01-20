@@ -21,6 +21,18 @@ public class DataUteis {
         return localDateTime.format(formatter);
     }
 
+    public static String getLocalDateTime_ddMMaaaa(LocalDateTime localDateTime) {
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+
+        return localDateTime.format(formatter);
+    }
+
+    public static String getLocalTimeHHmm(LocalDateTime localDateTime) {
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm");
+
+        return localDateTime.format(formatter);
+    }
+
     public static LocalDate getLocalDate(String data) {
         try {
             DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");

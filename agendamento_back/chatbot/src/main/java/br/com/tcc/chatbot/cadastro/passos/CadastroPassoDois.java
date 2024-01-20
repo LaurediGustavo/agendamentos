@@ -3,13 +3,11 @@ package br.com.tcc.chatbot.cadastro.passos;
 import br.com.tcc.chatbot.cadastro.enumerador.CadastroPassosEnum;
 import br.com.tcc.chatbot.cadastro.interfaces.CadastroPassosInterface;
 import br.com.tcc.entity.MonitorDeChatBot;
-import br.com.tcc.entity.Paciente;
 import br.com.tcc.entity.PacienteChatBot;
 import br.com.tcc.enumerador.StatusDaMensagemChatBotEnum;
 import br.com.tcc.repository.MonitorDeChatBotRepository;
 import br.com.tcc.repository.PacienteChatBotRepository;
 import br.com.tcc.repository.PacienteRepository;
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
@@ -17,7 +15,8 @@ import org.telegram.telegrambots.meta.api.objects.Message;
 import uteis.Uteis;
 
 import java.time.LocalDateTime;
-import java.util.Optional;
+import java.util.ArrayList;
+import java.util.List;
 
 @Component
 public class CadastroPassoDois implements CadastroPassosInterface {
@@ -32,7 +31,7 @@ public class CadastroPassoDois implements CadastroPassosInterface {
     private PacienteChatBotRepository pacienteChatBotRepository;
 
     @Override
-    public SendMessage processarPassosDeCadastro(MonitorDeChatBot monitorDeChatBot, Message message) {
+    public List<SendMessage> processarPassosDeCadastro(MonitorDeChatBot monitorDeChatBot, Message message) {
         String mensagem = message.getText();
 
         if(Uteis.cpfValido(mensagem)) {
@@ -42,8 +41,7 @@ public class CadastroPassoDois implements CadastroPassosInterface {
                 return montarMensagem(message.getChatId(), "Por favor informe seu nome e sobrenome");
             }
             else {
-                atualizarMonitor(monitorDeChatBot, StatusDaMensagemChatBotEnum.CANCELADO);
-                return montarMensagem(message.getChatId(), "Esse CPF já está em uso. Operação cancelada");
+                return montarMensagem(message.getChatId(), "Esse CPF já está em uso. Por favor informe seu CPF");
             }
         }
         else {
@@ -72,12 +70,12 @@ public class CadastroPassoDois implements CadastroPassosInterface {
         monitorDeChatBotRepository.save(monitorDeChatBot);
     }
 
-    private SendMessage montarMensagem(Long chatId, String mensagem) {
+    private List<SendMessage> montarMensagem(Long chatId, String mensagem) {
         SendMessage sendMessage = new SendMessage();
         sendMessage.setChatId(chatId.toString());
         sendMessage.setText(mensagem);
 
-        return sendMessage;
+        return new ArrayList<>(List.of(sendMessage));
     }
 
     @Override

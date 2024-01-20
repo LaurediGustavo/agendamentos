@@ -1,7 +1,6 @@
 package br.com.tcc.chatbot.consulta;
 
 import br.com.tcc.chatbot.RetornoChatBotInterface;
-import br.com.tcc.chatbot.cadastro.enumerador.CadastroPassosEnum;
 import br.com.tcc.chatbot.consulta.enumerador.ConsultaPassosEnum;
 import br.com.tcc.entity.MonitorDeChatBot;
 import br.com.tcc.enumerador.TipoChatBotEnum;
@@ -11,6 +10,7 @@ import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.Message;
 
 import java.util.Arrays;
+import java.util.List;
 
 @Component
 public class ConsultaRetornoBot extends RetornoChatBotInterface {
@@ -19,17 +19,17 @@ public class ConsultaRetornoBot extends RetornoChatBotInterface {
     private ConsultaPassosFactory consultaPassosFactory;
 
     @Override
-    public SendMessage processarRetorno(Message message, MonitorDeChatBot monitorDeChatBot) {
-        SendMessage sendMessage = null;
+    public List<SendMessage> processarRetorno(Message message, MonitorDeChatBot monitorDeChatBot) {
+        List<SendMessage> messages = null;
 
         if(monitorDeChatBot == null) {
             monitorDeChatBot = super.cadastrarMonitor(message, TipoChatBotEnum.CONSULTAR);
         }
 
-        sendMessage = consultaPassosFactory.processar(getPasso(monitorDeChatBot))
+        messages = consultaPassosFactory.processar(getPasso(monitorDeChatBot))
                 .processarPassosDeCadastro(monitorDeChatBot, message);
 
-        return sendMessage;
+        return messages;
     }
 
     private ConsultaPassosEnum getPasso(MonitorDeChatBot monitorDeChatBot) {

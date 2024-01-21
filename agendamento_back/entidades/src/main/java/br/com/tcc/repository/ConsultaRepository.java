@@ -1,6 +1,7 @@
 package br.com.tcc.repository;
 
 import br.com.tcc.entity.Consulta;
+import br.com.tcc.entity.MonitorDeChatBot;
 import br.com.tcc.enumerador.StatusConsultaEnum;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;

@@ -9,7 +9,7 @@
   align-items: center;
   justify-content: center;
   overflow: hidden;
-  z-index: 9999; 
+  z-index: 1000;
 }
 
 .modal {
@@ -17,9 +17,9 @@
   border-radius: 10px;
   background-color: white;
   position: relative;
+  z-index: 1000;
+  max-width: 800px;
 }
-
-
 
 .modal h1 {
   margin-bottom: 40px;
@@ -37,16 +37,18 @@
 .modal form {
   display: flex;
   flex-wrap: wrap;
-  max-width: 450px;
-  justify-content: space-between;
+  justify-content: center; /* Alterado de flex-start para center */
 }
 
-
 .modal form .item {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
+  width: calc(33.33% - 20px);
   margin-bottom: 20px;
+  margin-right: 10px; /* Adicionado margem à direita */
+}
+
+/* Remova a margem à direita do último item em cada linha */
+.modal form .item:nth-child(3n) {
+  margin-right: 0;
 }
 
 .modal form .item label {
@@ -55,12 +57,12 @@
 
 .modal form .item input,
 .modal form .item textarea {
+  width: 100%;
   padding: 10px;
   outline: none;
-  border: 1px solid #b4b4b4; 
+  border: 1px solid #b4b4b4;
   border-radius: 3px;
 }
-
 
 .modal button {
   width: 100%;
@@ -70,8 +72,9 @@
 }
 
 .modal button:hover {
-  background-color: #2d8f92; /* Defina a cor mais escura aqui */
+  background-color: #2d8f92;
 }
+
 .error-message {
   color: red;
   font-size: 12px;
@@ -86,13 +89,25 @@
   width: calc(50% - 5px);
 }
 
+.modal form .item input[type="radio"] {
+  align-self: flex-start;
+}
+
+textarea {
+  font-family: Arial, sans-serif;
+  box-sizing: border-box;
+  font-size: 16px;
+}
+
 @media screen and (max-width: 767px) {
   .modal form .item {
-    flex: 0 0 calc(50% - 10px); /* Define a largura para 50% do container com algum espaçamento */
+    width: calc(50% - 10px);
+    margin-right: 10px; /* Adicionado margem à direita */
+   
   }
 
-  .modal form .item input,
-  .modal form .item textarea {
-    width: 100%; /* Garante que os elementos ocupem toda a largura disponível */
+  /* Remova a margem à direita do último item em cada linha */
+  .modal form .item:nth-child(2n) {
+    margin-right: 0;
   }
 }

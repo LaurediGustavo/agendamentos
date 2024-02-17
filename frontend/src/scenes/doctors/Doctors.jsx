@@ -6,11 +6,25 @@ import { DataTable } from "../../components/dataTable/dataTable";
 import "./doctors.scss";
 import { doctorsData } from "../../data/dados";
 import Action from "../../components/action/Action"; 
+import { proceduresData } from "../../data/dados"; // Importando os dados dos procedimentos
+
 
 const columns = [
   {
     field: 'nome',
     headerName: 'Nome',
+    width: 200,
+    type: 'string'
+  },
+  {
+    field: 'sobrenome',
+    headerName: 'Sobrenome',
+    width: 200,
+    type: 'string'
+  },
+  {
+    field: 'genero',
+    headerName: 'Gênero',
     width: 200,
     type: 'string'
   },
@@ -27,6 +41,12 @@ const columns = [
     width: 200
   },
   {
+    field: 'cro',
+    headerName: 'CRO',
+    type: 'string',
+    width: 200
+  },
+  {
     field: 'telefone',
     headerName: 'Telefone',
     type: 'string',
@@ -39,18 +59,49 @@ const columns = [
     width: 200
   },
   {
-    field: 'endereco',
-    headerName: 'Endereço',
+    field: 'cep',
+    headerName: 'CEP',
     type: 'string',
     width: 200
   },
   {
-    field: 'cro',
-    headerName: 'CRO',
+    field: 'estado',
+    headerName: 'Estado',
+    type: 'string',
+    width: 200
+  },
+  {
+    field: 'cidade',
+    headerName: 'Cidade',
+    type: 'string',
+    width: 200
+  },
+  {
+    field: 'bairro',
+    headerName: 'Bairro',
+    type: 'string',
+    width: 200
+  },
+  {
+    field: 'logradouro',
+    headerName: 'Logradouro',
+    type: 'string',
+    width: 200
+  },
+  {
+    field: 'numero',
+    headerName: 'Número',
+    type: 'string',
+    width: 200
+  },
+  {
+    field: 'bloco',
+    headerName: 'Bloco',
     type: 'string',
     width: 200
   },
 ];
+
 
 const Doctors = () => {
 
@@ -110,6 +161,7 @@ const Doctors = () => {
           onSave={handleSaveDoctor}
           isEditing={isEditing}
           initialData={isEditing ? editDoctor : null}
+          procedures={proceduresData} // Passando os procedimentos como propriedade
         />
       )}
       

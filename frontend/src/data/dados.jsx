@@ -1,240 +1,396 @@
 export const doctorsData = [
-    {
-      "id": 1,
-      "nome": "Doutor 1",
-      "idade": "21",
-      "especialidade": "Dermatologia",
-      "cpf": "770.053.320-24",
-      "telefone": "(11) 11111-1111",
-      "dataDeNascimento": "02/02/1980",
-      "endereco": "Rua 1, Nº 1, Cidade 1",
-      "cro": "11111-11"
-    },
-    {
-      "id": 2,
-      "nome": "Doutor 2",
-      "idade": "22",
-      "especialidade": "Cardiologia",
-      "cpf": "771.642.740-70",
-      "telefone": "(22) 22222-2222",
-      "dataDeNascimento": "03/03/1980",
-      "endereco": "Rua 2, Nº 2, Cidade 2",
-      "cro": "22222-22"
-    },
-    {
-      "id": 3,
-      "nome": "Doutor 3",
-      "idade": "23",
-      "especialidade": "Hematologia",
-      "cpf": "924.876.400-22",
-      "telefone": "(33) 33333-3333",
-      "dataDeNascimento": "04/04/1980",
-      "endereco": "Rua 3, Nº 3, Cidade 3",
-      "cro": "33333-33"
-    },
-    {
-      "id": 4,
-      "nome": "Doutor 4",
-      "idade": "24",
-      "especialidade": "Ortopedia",
-      "cpf": "667.453.880-90",
-      "telefone": "(44) 44444-4444",
-      "dataDeNascimento": "05/05/1980",
-      "endereco": "Rua 4, Nº 4, Cidade 4",
-      "cro": "44444-44"
-    },
-    {
-      "id": 5,
-      "nome": "Doutor 5",
-      "idade": "25",
-      "especialidade": "Endocrinologia",
-      "cpf": "418.824.340-64",
-      "telefone": "(55) 55555-5555",
-      "dataDeNascimento": "06/06/1980",
-      "endereco": "Rua 5, Nº 5, Cidade 5",
-      "cro": "55555-55"
-    },
-    {
-      "id": 6,
-      "nome": "Doutor 6",
-      "idade": "26",
-      "especialidade": "Cardiologia",
-      "cpf": "973.498.000-96",
-      "telefone": "(66) 66666-6666",
-      "dataDeNascimento": "07/07/1980",
-      "endereco": "Rua 6, Nº 6, Cidade 6",
-      "cro": "66666-66"
-    },
-    {
-      "id": 7,
-      "nome": "Doutor 7",
-      "idade": "27",
-      "especialidade": "Gastroenterologia",
-      "cpf": "951.546.540-05",
-      "telefone": "(77) 77777-7777",
-      "dataDeNascimento": "08/08/1980",
-      "endereco": "Rua 7, Nº 7, Cidade 7",
-      "cro": "77777-77"
-    },
-    {
-      "id": 8,
-      "nome": "Doutor 8",
-      "idade": "28",
-      "especialidade": "Endocrinologia",
-      "cpf": "983.789.720-11",
-      "telefone": "(88) 88888-8888",
-      "dataDeNascimento": "09/09/1980",
-      "endereco": "Rua 8, Nº 8, Cidade 8",
-      "cro": "88888-88"
-    },
-    {
-      "id": 9,
-      "nome": "Doutor 9",
-      "idade": "29",
-      "especialidade": "Gastroenterologia",
-      "cpf": "498.932.150-219",
-      "telefone": "(99) 99999-9999",
-      "dataDeNascimento": "10/10/1980",
-      "endereco": "Rua 9, Nº 9, Cidade 9",
-      "cro": "99999-99"
-    }
-  ]
-
-
-  export const patientsData = [{
+  {
     "id": 1,
-    "nome": "Paciente 1",
-    "idade": "21",
-    "cpf": "352.927.440-26",
+    "nome": "Doutor 1",
+    "sobrenome": "Sobrenome 1",
+    "genero": "Masculino",
+    "especialidade": "Dermatologia",
+    "cpf": "770.053.320-24",
+    "cro": "11111-11",
     "telefone": "(11) 11111-1111",
     "dataDeNascimento": "02/02/1980",
-    "endereco": "Rua 1, Nº 1, Cidade 1",
-    "informacoesAdicionais": "Info 1"
+    "cep": "11111-111",
+    "estado": "Estado Fictício",
+    "cidade": "Cidade Fictícia",
+    "bairro": "Bairro 1",
+    "logradouro": "Rua 1",
+    "numero": "1",
+    "bloco": ""
   },
   {
     "id": 2,
-    "nome": "Paciente 2",
-    "idade": "22",
-    "cpf": "072.794.760-58",
+    "nome": "Doutor 2",
+    "sobrenome": "Sobrenome 2",
+    "genero": "Feminino",
+    "especialidade": "Cardiologia",
+    "cpf": "771.642.740-70",
+    "cro": "22222-22",
     "telefone": "(22) 22222-2222",
     "dataDeNascimento": "03/03/1980",
-    "endereco": "Rua 2, Nº 2, Cidade 2",
-    "informacoesAdicionais": "Info 2"
+    "cep": "22222-222",
+    "estado": "Estado Fictício",
+    "cidade": "Cidade Fictícia",
+    "bairro": "Bairro 2",
+    "logradouro": "Rua 2",
+    "numero": "2",
+    "bloco": ""
   },
   {
     "id": 3,
-    "nome": "Paciente 3",
-    "idade": "23",
-    "cpf": "341.109.690-00",
+    "nome": "Doutor 3",
+    "sobrenome": "Sobrenome 3",
+    "genero": "Outros",
+    "especialidade": "Hematologia",
+    "cpf": "924.876.400-22",
+    "cro": "33333-33",
     "telefone": "(33) 33333-3333",
     "dataDeNascimento": "04/04/1980",
-    "endereco": "Rua 3, Nº 3, Cidade 3",
-    "informacoesAdicionais": "Info 3"
+    "cep": "33333-333",
+    "estado": "Estado Fictício",
+    "cidade": "Cidade Fictícia",
+    "bairro": "Bairro 3",
+    "logradouro": "Rua 3",
+    "numero": "3",
+    "bloco": "Bloco 3"
   },
   {
     "id": 4,
-    "nome": "Paciente 4",
-    "idade": "24",
-    "cpf": "944.503.850-98",
+    "nome": "Doutor 4",
+    "sobrenome": "Sobrenome 4",
+    "genero": "Masculino",
+    "especialidade": "Ortopedia",
+    "cpf": "667.453.880-90",
+    "cro": "44444-44",
     "telefone": "(44) 44444-4444",
     "dataDeNascimento": "05/05/1980",
-    "endereco": "Rua 4, Nº 4, Cidade 4",
-    "informacoesAdicionais": "Info 4"
+    "cep": "44444-444",
+    "estado": "Estado Fictício",
+    "cidade": "Cidade Fictícia",
+    "bairro": "Bairro 4",
+    "logradouro": "Rua 4",
+    "numero": "4",
+    "bloco": ""
   },
   {
     "id": 5,
-    "nome": "Paciente 5",
-    "idade": "25",
-    "cpf": "185.979.260-07",
+    "nome": "Doutor 5",
+    "sobrenome": "Sobrenome 5",
+    "genero": "Feminino",
+    "especialidade": "Endocrinologia",
+    "cpf": "418.824.340-64",
+    "cro": "55555-55",
     "telefone": "(55) 55555-5555",
     "dataDeNascimento": "06/06/1980",
-    "endereco": "Rua 5, Nº 5, Cidade 5",
-    "informacoesAdicionais": "Nenhuma informação adicional."
+    "cep": "55555-555",
+    "estado": "Estado Fictício",
+    "cidade": "Cidade Fictícia",
+    "bairro": "Bairro 5",
+    "logradouro": "Rua 5",
+    "numero": "5",
+    "bloco": ""
   },
   {
     "id": 6,
-    "nome": "Paciente 6",
-    "idade": "26",
-    "cpf": "297.237.790-72",
+    "nome": "Doutor 6",
+    "sobrenome": "Sobrenome 6",
+    "genero": "Masculino",
+    "especialidade": "Cardiologia",
+    "cpf": "973.498.000-96",
+    "cro": "66666-66",
     "telefone": "(66) 66666-6666",
     "dataDeNascimento": "07/07/1980",
-    "endereco": "Rua 6, Nº 6, Cidade 6",
-    "informacoesAdicionais": "Info 6"
+    "cep": "66666-666",
+    "estado": "Estado Fictício",
+    "cidade": "Cidade Fictícia",
+    "bairro": "Bairro 6",
+    "logradouro": "Rua 6",
+    "numero": "6",
+    "bloco": ""
   },
   {
     "id": 7,
-    "nome": "Paciente 7",
-    "idade": "27",
-    "cpf": "170.917.350-56",
+    "nome": "Doutor 7",
+    "sobrenome": "Sobrenome 7",
+    "genero": "Outros",
+    "especialidade": "Gastroenterologia",
+    "cpf": "951.546.540-05",
+    "cro": "77777-77",
     "telefone": "(77) 77777-7777",
     "dataDeNascimento": "08/08/1980",
-    "endereco": "Rua 7, Nº 7, Cidade 7",
-    "informacoesAdicionais": "Info 7"
+    "cep": "77777-777",
+    "estado": "Estado Fictício",
+    "cidade": "Cidade Fictícia",
+    "bairro": "Bairro 7",
+    "logradouro": "Rua 7",
+    "numero": "7",
+    "bloco": ""
   },
   {
     "id": 8,
-    "nome": "Paciente 8",
-    "idade": "28",
-    "cpf": "525.617.140-20",
+    "nome": "Doutor 8",
+    "sobrenome": "Sobrenome 8",
+    "genero": "Masculino",
+    "especialidade": "Endocrinologia",
+    "cpf": "983.789.720-11",
+    "cro": "88888-88",
     "telefone": "(88) 88888-8888",
     "dataDeNascimento": "09/09/1980",
-    "endereco": "Rua 8, Nº 8, Cidade 8",
-    "informacoesAdicionais": "Info 8"
+    "cep": "88888-888",
+    "estado": "Estado Fictício",
+    "cidade": "Cidade Fictícia",
+    "bairro": "Bairro 8",
+    "logradouro": "Rua 8",
+    "numero": "8",
+    "bloco": ""
   },
   {
     "id": 9,
-    "nome": "Paciente 9",
-    "idade": "29",
-    "cpf": "454.895.800-20",
+    "nome": "Doutor 9",
+    "sobrenome": "Sobrenome 9",
+    "genero": "Feminino",
+    "especialidade": "Gastroenterologia",
+    "cpf": "498.932.150-219",
+    "cro": "99999-99",
     "telefone": "(99) 99999-9999",
     "dataDeNascimento": "10/10/1980",
-    "endereco": "Rua 9, Nº 9, Cidade 9",
-    "informacoesAdicionais": "Info 9"
+    "cep": "99999-999",
+    "estado": "Estado Fictício",
+    "cidade": "Cidade Fictícia",
+    "bairro": "Bairro 9",
+    "logradouro": "Rua 9",
+    "numero": "9",
+    "bloco": ""
+  },
+  {
+    "id": 10,
+    "nome": "Doutor 10",
+    "sobrenome": "Sobrenome 10",
+    "genero": "Outros",
+    "especialidade": "Neurologia",
+    "cpf": "501.725.610-45",
+    "telefone": "(10) 10000-1000",
+    "dataDeNascimento": "11/11/1980",
+    "cro": "101010-10",
+    "cep": "10101-101",
+    "estado": "Estado Fictício",
+    "cidade": "Cidade Fictícia",
+    "bairro": "Bairro 10",
+    "logradouro": "Rua 10",
+    "numero": "10",
+    "bloco": "Bloco 10"
   }
-]
+];
 
-export const proceduresData = [ {
+export const patientsData = [{
   "id": 1,
-  "procedimento": "Avaliação de rotina"
+  "nome": "Paciente 1",
+  "sobrenome": "Sobrenome 1",
+  "genero": "Masculino",
+  "cpf": "352.927.440-26",
+  "telefone": "(11) 11111-1111",
+  "dataDeNascimento": "02/02/1980",
+  "informacoesAdicionais": "Info 1",
+  "cep": "11111-111",
+  "estado": "Estado Fictício",
+  "cidade": "Cidade Fictícia",
+  "bairro": "Bairro 1",
+  "logradouro": "Rua 1",
+  "numero": "1",
+  "bloco": ""
 },
 {
   "id": 2,
-  "procedimento": "Extração de Dente"
+  "nome": "Paciente 2",
+  "sobrenome": "Sobrenome 2",
+  "genero": "Feminino",
+  "cpf": "072.794.760-58",
+  "telefone": "(22) 22222-2222",
+  "dataDeNascimento": "03/03/1980",
+  "informacoesAdicionais": "Info 2",
+  "cep": "22222-222",
+  "estado": "Estado Fictício",
+  "cidade": "Cidade Fictícia",
+  "bairro": "Bairro 2",
+  "logradouro": "Rua 2",
+  "numero": "2",
+  "bloco": "Bloco 2"
 },
 {
   "id": 3,
-  "procedimento": "Limpeza Dental"
+  "nome": "Paciente 3",
+  "sobrenome": "Sobrenome 3",
+  "genero": "Outros",
+  "cpf": "341.109.690-00",
+  "telefone": "(33) 33333-3333",
+  "dataDeNascimento": "04/04/1980",
+  "informacoesAdicionais": "Info 3",
+  "cep": "33333-333",
+  "estado": "Estado Fictício",
+  "cidade": "Cidade Fictícia",
+  "bairro": "Bairro 3",
+  "logradouro": "Rua 3",
+  "numero": "3",
+  "bloco": "Bloco 3"
 },
 {
   "id": 4,
-  "procedimento": "Tratamento de Canal"
+  "nome": "Paciente 4",
+  "sobrenome": "Sobrenome 4",
+  "genero": "Masculino",
+  "cpf": "944.503.850-98",
+  "telefone": "(44) 44444-4444",
+  "dataDeNascimento": "05/05/1980",
+  "informacoesAdicionais": "Info 4",
+  "cep": "44444-444",
+  "estado": "Estado Fictício",
+  "cidade": "Cidade Fictícia",
+  "bairro": "Bairro 4",
+  "logradouro": "Rua 4",
+  "numero": "4",
+  "bloco": ""
 },
 {
   "id": 5,
-  "procedimento": "Coroa Dentária"
+  "nome": "Paciente 5",
+  "sobrenome": "Sobrenome 5",
+  "genero": "Feminino",
+  "cpf": "185.979.260-07",
+  "telefone": "(55) 55555-5555",
+  "dataDeNascimento": "06/06/1980",
+  "informacoesAdicionais": "Nenhuma informação adicional.",
+  "cep": "55555-555",
+  "estado": "Estado Fictício",
+  "cidade": "Cidade Fictícia",
+  "bairro": "Bairro 5",
+  "logradouro": "Rua 5",
+  "numero": "5",
+  "bloco": ""
 },
 {
   "id": 6,
-  "procedimento": "Implante Dentário"
+  "nome": "Paciente 6",
+  "sobrenome": "Sobrenome 6",
+  "genero": "Masculino",
+  "cpf": "297.237.790-72",
+  "telefone": "(66) 66666-6666",
+  "dataDeNascimento": "07/07/1980",
+  "informacoesAdicionais": "Info 6",
+  "cep": "66666-666",
+  "estado": "Estado Fictício",
+  "cidade": "Cidade Fictícia",
+  "bairro": "Bairro 6",
+  "logradouro": "Rua 6",
+  "numero": "6",
+  "bloco": ""
 },
 {
   "id": 7,
-  "procedimento": "Aparelho Ortodôntico"
+  "nome": "Paciente 7",
+  "sobrenome": "Sobrenome 7",
+  "genero": "Outros",
+  "cpf": "170.917.350-56",
+  "telefone": "(77) 77777-7777",
+  "dataDeNascimento": "08/08/1980",
+  "informacoesAdicionais": "Info 7",
+  "cep": "77777-777",
+  "estado": "Estado Fictício",
+  "cidade": "Cidade Fictícia",
+  "bairro": "Bairro 7",
+  "logradouro": "Rua 7",
+  "numero": "7",
+  "bloco": ""
 },
 {
   "id": 8,
-  "procedimento": "Clareamento Dental"
+  "nome": "Paciente 8",
+  "sobrenome": "Sobrenome 8",
+  "genero": "Masculino",
+  "cpf": "525.617.140-20",
+  "telefone": "(88) 88888-8888",
+  "dataDeNascimento": "09/09/1980",
+  "informacoesAdicionais": "Info 8",
+  "cep": "88888-888",
+  "estado": "Estado Fictício",
+  "cidade": "Cidade Fictícia",
+  "bairro": "Bairro 8",
+  "logradouro": "Rua 8",
+  "numero": "8",
+  "bloco": ""
 },
 {
   "id": 9,
-  "procedimento": "Prótese Dentária"
-},
-{
-  "id": 10,
-  "procedimento": "Periodontia (Tratamento de Gengivas)"
-},
-{
-  "id": 11,
-  "procedimento": "Obturação Dentária"
+  "nome": "Paciente 9",
+  "sobrenome": "Sobrenome 9",
+  "genero": "Feminino",
+  "cpf": "454.895.800-20",
+  "telefone": "(99) 99999-9999",
+  "dataDeNascimento": "10/10/1980",
+  "informacoesAdicionais": "Info 9",
+  "cep": "99999-999",
+  "estado": "Estado Fictício",
+  "cidade": "Cidade Fictícia",
+  "bairro": "Bairro 9",
+  "logradouro": "Rua 9",
+  "numero": "9",
+  "bloco": ""
 }
-]
+];
+
+
+export const proceduresData = [
+  {
+    "id": 1,
+    "procedimento": "Avaliação de rotina",
+    "tempo": "00:30"
+  },
+  {
+    "id": 2,
+    "procedimento": "Extração de Dente",
+    "tempo": "00:45"
+  },
+  {
+    "id": 3,
+    "procedimento": "Limpeza Dental",
+    "tempo": "01:00"
+  },
+  {
+    "id": 4,
+    "procedimento": "Tratamento de Canal",
+    "tempo": "01:20"
+  },
+  {
+    "id": 5,
+    "procedimento": "Coroa Dentária",
+    "tempo": "00:20"
+  },
+  {
+    "id": 6,
+    "procedimento": "Implante Dentário",
+    "tempo": "01:40"
+  },
+  {
+    "id": 7,
+    "procedimento": "Aparelho Ortodôntico",
+    "tempo": "00:10"
+  },
+  {
+    "id": 8,
+    "procedimento": "Clareamento Dental",
+    "tempo": "00:30"
+  },
+  {
+    "id": 9,
+    "procedimento": "Prótese Dentária",
+    "tempo": "02:20"
+  },
+  {
+    "id": 10,
+    "procedimento": "Periodontia (Tratamento de Gengivas)",
+    "tempo": "01:20"
+  },
+  {
+    "id": 11,
+    "procedimento": "Obturação Dentária",
+    "tempo": "01:50"
+  }
+];

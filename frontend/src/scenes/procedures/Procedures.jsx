@@ -1,4 +1,4 @@
-import { useState } from "react";
+import React, { useState } from "react";
 import "./procedures.scss";
 import { Box, Fab } from "@mui/material";
 import { Add as AddIcon } from "@mui/icons-material";
@@ -15,6 +15,12 @@ const columns = [
     width: 200,
     type: 'string'
   },
+  {
+    field: 'tempo',
+    headerName: 'Tempo',
+    width: 100,
+    type: 'string'
+  }
 ];
 
 const Procedures = () => {
@@ -32,7 +38,7 @@ const Procedures = () => {
 
   const handleAddClick = () => {
     setIsEditing(false);
-    setOpen(true);
+    setOpen(true); // Definir open como true ao clicar no botão de adicionar
   };
 
   const handleSaveProcedure = (data) => {
@@ -85,8 +91,3 @@ const Procedures = () => {
 };
 
 export default Procedures;
-
-
-
-
-

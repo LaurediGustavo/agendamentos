@@ -15,10 +15,16 @@ const columns = [
     type: 'string'
   },
   {
-    field: 'idade',
-    headerName: 'Idade',
-    width: 150,
-    type: 'number'
+    field: 'sobrenome',
+    headerName: 'Sobrenome',
+    width: 200,
+    type: 'string'
+  },
+  {
+    field: 'genero',
+    headerName: 'Gênero',
+    width: 200,
+    type: 'string'
   },
   {
     field: 'cpf',
@@ -39,8 +45,44 @@ const columns = [
     width: 200
   },
   {
-    field: 'endereco',
-    headerName: 'Endereço',
+    field: 'cep',
+    headerName: 'CEP',
+    type: 'string',
+    width: 200
+  },
+  {
+    field: 'estado',
+    headerName: 'Estado',
+    type: 'string',
+    width: 200
+  },
+  {
+    field: 'cidade',
+    headerName: 'Cidade',
+    type: 'string',
+    width: 200
+  },
+  {
+    field: 'bairro',
+    headerName: 'Bairro',
+    type: 'string',
+    width: 200
+  },
+  {
+    field: 'logradouro',
+    headerName: 'Logradouro',
+    type: 'string',
+    width: 200
+  },
+  {
+    field: 'numero',
+    headerName: 'Número',
+    type: 'string',
+    width: 200
+  },
+  {
+    field: 'bloco',
+    headerName: 'Bloco',
     type: 'string',
     width: 200
   },
@@ -51,6 +93,7 @@ const columns = [
     width: 300
   },
 ];
+
 
 const Patients = () => {
   const [open, setOpen] = useState(false);

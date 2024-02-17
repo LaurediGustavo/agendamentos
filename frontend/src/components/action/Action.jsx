@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import './action.scss';
-import Button from '@mui/material/Button';
+import { Button, TextField, Select, MenuItem, TextareaAutosize } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
 import InputMask from 'react-input-mask';
 
@@ -13,7 +13,7 @@ const Action = (props) => {
   }, [props.initialData]); // Apenas quando as props iniciais mudam
 
   const handleInputChange = (e) => {
-    const { name, value } = e.target; 
+    const { name, value } = e.target;
     if (name !== 'cpf') {
       setFormData({
         ...formData, // Mantém os dados existentes
@@ -28,7 +28,6 @@ const Action = (props) => {
       });
     }
   }
-  
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -37,15 +36,15 @@ const Action = (props) => {
     }
   }
 
-    // Função para validar o formulário
-    const validateForm = () => {
+  // Função para validar o formulário
+  const validateForm = () => {
     let valid = true; // Assume que o formulário é válido
     const newErrors = {}; // Cria um novo objeto para erros
 
     props.columns.forEach(column => {
       const { field, headerName } = column;
 
-      if (!formData[field]) {
+      if (!formData[field] && field !== 'bloco') {
         newErrors[field] = `O campo ${headerName} é obrigatório`;
         valid = false;
       } else if (field === 'nome' && formData[field].length < 2) {
@@ -69,16 +68,16 @@ const Action = (props) => {
 
   const validateCPF = (cpf) => {
     const cpfClean = cpf.replace(/[^\d]/g, '');
-  
+
     if (cpfClean.length !== 11 || /^(.)\1+$/.test(cpfClean)) {
       return false;
     }
-  
+
     let sum = 0;
     for (let i = 0; i < 9; i++) {
       sum += parseInt(cpfClean[i]) * (10 - i);
     }
-  
+
     let remainder = sum % 11;
     if (remainder < 2) {
       if (parseInt(cpfClean[9]) !== 0) {
@@ -89,12 +88,12 @@ const Action = (props) => {
         return false;
       }
     }
-  
+
     sum = 0;
     for (let i = 0; i < 10; i++) {
       sum += parseInt(cpfClean[i]) * (11 - i);
     }
-  
+
     remainder = sum % 11;
     if (remainder < 2) {
       if (parseInt(cpfClean[10]) !== 0) {
@@ -105,7 +104,7 @@ const Action = (props) => {
         return false;
       }
     }
-  
+
     return true;
   }
 
@@ -114,24 +113,24 @@ const Action = (props) => {
     if (parts.length !== 3) {
       return false;
     }
-  
+
     const day = parseInt(parts[0]);
     const month = parseInt(parts[1]);
     const year = parseInt(parts[2]);
-  
+
     if (isNaN(day) || isNaN(month) || isNaN(year)) {
       return false;
     }
-  
+
     if (day < 1 || day > 31 || month < 1 || month > 12) {
       return false;
     }
-  
+
     const lastDayOfMonth = new Date(year, month, 0).getDate();
     if (day > lastDayOfMonth) {
       return false;
     }
-  
+
     return true;
   }
 
@@ -153,17 +152,10 @@ const Action = (props) => {
                   defaultValue={formData[column.field] || ''}
                   onChange={handleInputChange}
                   disabled={props.isEditing}
-                  style={
-                    props.isEditing
-                      ? {
-                          pointerEvents: 'none', // Desabilita eventos de clique
-                          backgroundColor: '#eeeeee' // Define a cor de fundo cinza
-                        }
-                      : {}
-                  }
-                >
+                  style={props.isEditing ? { pointerEvents: 'none', backgroundColor: '#eeeeee', width: '100%' } : { width: '100%' }}
+                  >
                   {(inputProps) => (
-                    <input
+                    <TextField
                       {...inputProps}
                       className={errors[column.field] ? 'error' : ''}
                     />
@@ -178,7 +170,29 @@ const Action = (props) => {
                   onChange={handleInputChange}
                   style={{ width: '100%' }}
                   className={errors[column.field] ? 'error' : ''}
-                />
+                >
+                  {(inputProps) => (
+                    <TextField
+                      {...inputProps}
+                    />
+                  )}
+                </InputMask>
+              ) : column.field === 'cep' ? (
+                <InputMask
+                  mask="99999-999"
+                  placeholder={column.headerName}
+                  name={column.field}
+                  value={formData[column.field] || ''}
+                  onChange={handleInputChange}
+                  style={{ width: '100%' }}
+                  className={errors[column.field] ? 'error' : ''}
+                >
+                  {(inputProps) => (
+                    <TextField
+                      {...inputProps}
+                    />
+                  )}
+                </InputMask>
               ) : column.field === 'dataDeNascimento' ? (
                 <InputMask
                   mask="99/99/9999"
@@ -188,17 +202,76 @@ const Action = (props) => {
                   onChange={handleInputChange}
                   style={{ width: '100%' }}
                   className={errors[column.field] ? 'error' : ''}
-                />
+                >
+                  {(inputProps) => (
+                    <TextField
+                      {...inputProps}
+                    />
+                  )}
+                </InputMask>
+              ) : column.field === 'tempo' ? ( 
+                <InputMask
+                  mask="99:99"
+                  placeholder={column.headerName}
+                  name={column.field}
+                  value={formData[column.field] || ''}
+                  onChange={handleInputChange}
+                  style={{ width: '100%' }}
+                  className={errors[column.field] ? 'error' : ''}
+                >
+                  {(inputProps) => (
+                    <TextField
+                      {...inputProps}
+                    />
+                  )}
+                </InputMask>
               ) : column.field === 'informacoesAdicionais' || column.field === 'procedimento' ? (
-                <textarea
+                <TextareaAutosize
                   placeholder={column.headerName}
                   className={`${column.field} largeTextarea ${errors[column.field] ? 'error' : ''}`}
                   name={column.field}
                   value={formData[column.field] || ''}
                   onChange={handleInputChange}
                 />
+              ) : column.field === 'genero' ? (
+                <Select
+                  name={column.field}
+                  value={formData[column.field] || ''}
+                  onChange={handleInputChange}
+                  className={errors[column.field] ? 'error' : ''}
+                  style={{ width: '100%', height: '60%' }}
+                >
+                  <MenuItem value="Masculino">Masculino</MenuItem>
+                  <MenuItem value="Feminino">Feminino</MenuItem>
+                  <MenuItem value="Outros">Outros</MenuItem>
+                </Select>
+              ) : column.field === 'especialidade' ? (
+                <Select
+                  multiple
+                  name={column.field}
+                  value={formData[column.field] || []}
+                  onChange={handleInputChange}
+                  className={errors[column.field] ? 'error' : ''}
+                  style={{ width: '100%', height: '60%' }}
+                >
+                  {props.procedures && props.procedures.map((procedure) => (
+                    <MenuItem key={procedure.id} value={procedure.procedimento}>
+                      {procedure.procedimento}
+                    </MenuItem>
+                  ))}
+                </Select>
+              ) : column.field === 'logradouro' || column.field === 'bairro' || column.field === 'numero' || column.field === 'cidade' || column.field === 'estado' ? (
+                <TextField
+                  type="text"
+                  placeholder={column.headerName}
+                  style={{ width: '100%' }}
+                  name={column.field}
+                  value={formData[column.field] || ''}
+                  onChange={handleInputChange}
+                  className={errors[column.field] ? 'error' : ''}
+                />
               ) : (
-                <input
+                <TextField
                   type={column.type}
                   placeholder={column.headerName}
                   style={{ width: '100%' }}
@@ -218,6 +291,6 @@ const Action = (props) => {
       </div>
     </div>
   );
-}
+}  
 
 export default Action;

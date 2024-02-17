@@ -18,6 +18,7 @@ import uteis.DataUteis;
 import uteis.Uteis;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -37,7 +38,7 @@ public class CancelarPassoTres implements CancelarPassosInterface {
     private CancelarAgendamentoChatBotRepository cancelarAgendamentoChatBotRepository;
 
     @Override
-    public SendMessage processarPassosDeCadastro(MonitorDeChatBot monitorDeChatBot, Message message) {
+    public List<SendMessage> processarPassosDeCadastro(MonitorDeChatBot monitorDeChatBot, Message message) {
         Optional<CancelarAgendamentoChatBot> cancelarAgendamentoChatBot = cancelarAgendamentoChatBotRepository
                 .findTopByChatIdOrderByIdDesc(message.getChatId());
 
@@ -107,20 +108,20 @@ public class CancelarPassoTres implements CancelarPassosInterface {
         monitorDeChatBotRepository.save(monitorDeChatBot);
     }
 
-    private SendMessage montarMensagemErro(Long chatId, String mensagem) {
+    private List<SendMessage> montarMensagemErro(Long chatId, String mensagem) {
         SendMessage sendMessage = new SendMessage();
         sendMessage.setChatId(chatId.toString());
         sendMessage.setText(mensagem);
 
-        return sendMessage;
+        return new ArrayList<>(List.of(sendMessage));
     }
 
-    private SendMessage montarMensagemSucesso(Long chatId, Consulta consulta) {
+    private List<SendMessage> montarMensagemSucesso(Long chatId, Consulta consulta) {
         SendMessage sendMessage = new SendMessage();
         sendMessage.setChatId(chatId.toString());
         sendMessage.setText(getMensagem(consulta));
 
-        return sendMessage;
+        return new ArrayList<>(List.of(sendMessage));
     }
 
     public String getMensagem(Consulta consulta) {
@@ -133,8 +134,8 @@ public class CancelarPassoTres implements CancelarPassosInterface {
                 "Valor: " +
                 Uteis.formatarMoedaParaReal(consulta.getValorTotal()) +
                 "\n\n" +
-                "1. Confirmar \n" +
-                "2. Ajustar";
+                "1. Sim \n" +
+                "2. Não";
     }
 
     private String getProcedimentos(List<Procedimento> procedimentos) {

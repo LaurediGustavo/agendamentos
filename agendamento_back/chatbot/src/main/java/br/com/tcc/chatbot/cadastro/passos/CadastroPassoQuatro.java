@@ -2,6 +2,7 @@ package br.com.tcc.chatbot.cadastro.passos;
 
 import br.com.tcc.chatbot.cadastro.enumerador.CadastroPassosEnum;
 import br.com.tcc.chatbot.cadastro.interfaces.CadastroPassosInterface;
+import br.com.tcc.chatbot.menu.MenuChatBot;
 import br.com.tcc.entity.MonitorDeChatBot;
 import br.com.tcc.entity.Paciente;
 import br.com.tcc.entity.PacienteChatBot;
@@ -16,6 +17,8 @@ import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.Message;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 @Component
@@ -30,8 +33,11 @@ public class CadastroPassoQuatro implements CadastroPassosInterface {
     @Autowired
     private PacienteRepository pacienteRepository;
 
+    @Autowired
+    private MenuChatBot menuChatBot;
+
     @Override
-    public SendMessage processarPassosDeCadastro(MonitorDeChatBot monitorDeChatBot, Message message) {
+    public List<SendMessage> processarPassosDeCadastro(MonitorDeChatBot monitorDeChatBot, Message message) {
         String mensagem = message.getText();
 
         if(StringUtils.isNotBlank(mensagem)) {
@@ -39,7 +45,10 @@ public class CadastroPassoQuatro implements CadastroPassosInterface {
                 atualizarMonitor(monitorDeChatBot);
                 PacienteChatBot paciente = atualizarPaciente(message);
                 cadastrarPacienteNoSistema(paciente);
-                return montarMensagem(message.getChatId(), "Cadastro realizado com sucesso");
+
+                List<SendMessage> messages = montarMensagem(message.getChatId(), "Cadastro realizado com sucesso!\n\n");
+                menuChatBot.montarMensagem(messages.get(0), message.getChatId());
+                return messages;
             }
             else {
                 return montarMensagem(message.getChatId(), "Por favor informe um número válido");
@@ -85,12 +94,12 @@ public class CadastroPassoQuatro implements CadastroPassosInterface {
         monitorDeChatBotRepository.save(monitorDeChatBot);
     }
 
-    private SendMessage montarMensagem(Long chatId, String mensagem) {
+    private List<SendMessage> montarMensagem(Long chatId, String mensagem) {
         SendMessage sendMessage = new SendMessage();
         sendMessage.setChatId(chatId.toString());
         sendMessage.setText(mensagem);
 
-        return sendMessage;
+        return new ArrayList<>(List.of(sendMessage));
     }
 
     @Override

@@ -1,6 +1,7 @@
 package br.com.tcc.controller;
 
 import br.com.tcc.dto.AgendamentoDto;
+import br.com.tcc.entity.Consulta;
 import br.com.tcc.enumerador.StatusConsultaEnum;
 import br.com.tcc.impl.AgendamentoService;
 import br.com.tcc.model.request.AgendamentoRequest;
@@ -33,9 +34,9 @@ public class AgendamentoController {
 	public ResponseEntity<?> cadastroAgendamento(@Valid @RequestBody AgendamentoRequest agendamento) {
 		AgendamentoDto agendamentoDto = new AgendamentoDto();
 		BeanUtils.copyProperties(agendamento, agendamentoDto);
-		agendamentoService.persistir(agendamentoDto);
+		Consulta consulta = agendamentoService.persistir(agendamentoDto);
 
-		return ResponseEntity.status(HttpStatus.CREATED).build();
+		return consultarPorId(consulta.getId());
 	}
 
 	@PutMapping(value = "/atualizar", consumes = MediaType.APPLICATION_JSON_VALUE)
@@ -44,9 +45,9 @@ public class AgendamentoController {
 		AgendamentoDto agendamentoDto = new AgendamentoDto();
 		BeanUtils.copyProperties(agendamento, agendamentoDto);
 		agendamentoDto.setStatus(StatusConsultaEnum.valueOf(agendamento.getStatus()));
-		agendamentoService.persistir(agendamentoDto);
+		Consulta consulta = agendamentoService.persistir(agendamentoDto);
 
-		return ResponseEntity.status(HttpStatus.OK).build();
+		return consultarPorId(consulta.getId());
 	}
 
 	@GetMapping(value = "/consultar")

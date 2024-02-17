@@ -4,7 +4,6 @@ import br.com.tcc.chatbot.agendamento.enumerador.AgendamentoPassosEnum;
 import br.com.tcc.chatbot.agendamento.interfaces.AgendamentoPassosInterface;
 import br.com.tcc.entity.AgendamentoChatBot;
 import br.com.tcc.entity.MonitorDeChatBot;
-import br.com.tcc.entity.Procedimento;
 import br.com.tcc.repository.AgendamentoChatBotRepository;
 import br.com.tcc.repository.MonitorDeChatBotRepository;
 import br.com.tcc.repository.PacienteRepository;
@@ -16,6 +15,8 @@ import org.telegram.telegrambots.meta.api.objects.Message;
 import uteis.Uteis;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 @Component
@@ -34,7 +35,7 @@ public class AgendamentoPassoDois implements AgendamentoPassosInterface {
     private AgendamentoChatBotRepository agendamentoChatBotRepository;
 
     @Override
-    public SendMessage processarPassosDeAgendamento(MonitorDeChatBot monitorDeChatBot, Message message) {
+    public List<SendMessage> processarPassosDeAgendamento(MonitorDeChatBot monitorDeChatBot, Message message) {
         String mensagem = message.getText();
 
         if(Uteis.cpfValido(mensagem) && cpfUtilizado(mensagem)) {
@@ -67,7 +68,7 @@ public class AgendamentoPassoDois implements AgendamentoPassosInterface {
                                 .append(procedimento.getId())
                                 .append(". ")
                                 .append(procedimento.getTratamento())
-                                .append("\n - Valor: " + Uteis.formatarMoedaParaReal(procedimento.getValor()))
+                                .append("\n\t\t\t\t\t- Valor: " + Uteis.formatarMoedaParaReal(procedimento.getValor()))
                                 .append("\n"))
                 .collect(
                         StringBuilder::new,
@@ -93,12 +94,12 @@ public class AgendamentoPassoDois implements AgendamentoPassosInterface {
         monitorDeChatBotRepository.save(monitorDeChatBot);
     }
 
-    private SendMessage montarMensagem(Long chatId, String mensagem) {
+    private List<SendMessage> montarMensagem(Long chatId, String mensagem) {
         SendMessage sendMessage = new SendMessage();
         sendMessage.setChatId(chatId.toString());
         sendMessage.setText(mensagem);
 
-        return sendMessage;
+        return new ArrayList<>(List.of(sendMessage));
     }
 
     @Override

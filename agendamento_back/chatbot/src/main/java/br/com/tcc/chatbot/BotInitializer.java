@@ -1,6 +1,7 @@
 package br.com.tcc.chatbot;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
@@ -12,6 +13,7 @@ import org.telegram.telegrambots.updatesreceivers.DefaultBotSession;
 public class BotInitializer {
 	
     @Autowired
+    @Qualifier("ConfirmarConsultaBot")
     private BotListener bot;
 
     @EventListener({ContextRefreshedEvent.class})

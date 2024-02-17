@@ -2,6 +2,7 @@ package br.com.tcc.chatbot.agendamento.passos;
 
 import br.com.tcc.chatbot.agendamento.enumerador.AgendamentoPassosEnum;
 import br.com.tcc.chatbot.agendamento.interfaces.AgendamentoPassosInterface;
+import br.com.tcc.chatbot.menu.MenuChatBot;
 import br.com.tcc.entity.*;
 import br.com.tcc.enumerador.StatusConsultaEnum;
 import br.com.tcc.enumerador.StatusDaMensagemChatBotEnum;
@@ -14,7 +15,7 @@ import uteis.Uteis;
 
 import java.time.LocalDateTime;
 import java.time.LocalTime;
-import java.util.Arrays;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
@@ -40,11 +41,14 @@ public class AgendamentoPassoSeis implements AgendamentoPassosInterface {
     @Autowired
     private ProcedimentoRepository procedimentoRepository;
 
+    @Autowired
+    private MenuChatBot menuChatBot;
+
+
     @Override
-    public SendMessage processarPassosDeAgendamento(MonitorDeChatBot monitorDeChatBot, Message message) {
+    public List<SendMessage> processarPassosDeAgendamento(MonitorDeChatBot monitorDeChatBot, Message message) {
         String mensagem = message.getText();
 
-        SendMessage sendMessage = null;
         try {
             int opcao = Integer.parseInt(mensagem);
 
@@ -52,22 +56,26 @@ public class AgendamentoPassoSeis implements AgendamentoPassosInterface {
                 case 1 -> {
                     atualizarMonitor(monitorDeChatBot, 7, StatusDaMensagemChatBotEnum.FINALIZADO);
                     cadastrarAgendamento(message.getChatId());
-                    sendMessage = montarMensagem(message.getChatId(), "Agendamento cadastrado com sucesso");
+
+                    List<SendMessage> messages = montarMensagem(message.getChatId(), "Agendamento cadastrado com sucesso!\n\n");
+                    menuChatBot.montarMensagem(messages.get(0), message.getChatId());
+                    return messages;
                 }
                 case 2 -> {
                     atualizarMonitor(monitorDeChatBot, 3, StatusDaMensagemChatBotEnum.AGUARDANDO);
-                    sendMessage = montarMensagem(message.getChatId(), getTextoMensagem());
+                    return montarMensagem(message.getChatId(), getTextoMensagem());
                 }
                 default ->
-                        sendMessage = montarMensagem(message.getChatId(), "Opção inválida. \n Por favor inform:\n1. Confirmar\n 2. Ajustar");
+                {
+                    return montarMensagem(message.getChatId(), "Opção inválida. \n Por favor inform:\n1. Confirmar\n 2. Ajustar");
+                }
             }
         }
         catch (Exception e) {
             e.printStackTrace();
-            sendMessage = montarMensagem(message.getChatId(), "Opção inválida. \n Por favor inform:\n1. Confirmar\n 2. Ajustar");
+            return montarMensagem(message.getChatId(), "Opção inválida. \n Por favor inform:\n1. Confirmar\n 2. Ajustar");
         }
 
-        return sendMessage;
     }
 
     private String getTextoMensagem() {
@@ -139,12 +147,12 @@ public class AgendamentoPassoSeis implements AgendamentoPassosInterface {
         monitorDeChatBotRepository.save(monitorDeChatBot);
     }
 
-    private SendMessage montarMensagem(Long chatId, String mensagem) {
+    private List<SendMessage> montarMensagem(Long chatId, String mensagem) {
         SendMessage sendMessage = new SendMessage();
         sendMessage.setChatId(chatId.toString());
         sendMessage.setText(mensagem);
 
-        return sendMessage;
+        return new ArrayList<>(List.of(sendMessage));
     }
 
     @Override

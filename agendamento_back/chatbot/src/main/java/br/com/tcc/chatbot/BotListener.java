@@ -13,6 +13,7 @@ import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboardRemove;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -38,18 +39,20 @@ public class BotListener extends TelegramLongPollingBot {
 				Optional<MonitorDeChatBot> optionalMonitor = monitorDeMensagensChatBot
 						.consultarPorChatIdAndStatus(chatId, StatusDaMensagemChatBotEnum.AGUARDANDO);
 
-				SendMessage message = null;
+				List<SendMessage> messagens = new ArrayList<>();
 				if(optionalMonitor.isPresent()) {
 					MonitorDeChatBot monitor = optionalMonitor.get();
-					message = chamarOperacao(update.getMessage(), monitor);
+					messagens = chamarOperacao(update.getMessage(), monitor);
 
-					removeKeyboard(message);
+					removeKeyboard(messagens);
 				}
 				else {
-					message = naoPossuiOperacaoCadastrada(update.getMessage(), update);
+					messagens = naoPossuiOperacaoCadastrada(update.getMessage(), update);
 				}
 
-				execute(message);
+				for (SendMessage message : messagens) {
+					execute(message);
+				}
 			}
 			catch (TelegramApiException e) {
 				e.printStackTrace();
@@ -57,7 +60,7 @@ public class BotListener extends TelegramLongPollingBot {
         }
 	}
 
-	private SendMessage chamarOperacao(Message message, MonitorDeChatBot monitor) {
+	private List<SendMessage> chamarOperacao(Message message, MonitorDeChatBot monitor) {
 		TipoChatBotEnum tipo = getTipoChatBot(message, monitor);
 
 		return retornoChatBotInterface.stream()
@@ -78,27 +81,33 @@ public class BotListener extends TelegramLongPollingBot {
 		return tipo;
 	}
 
-	private SendMessage naoPossuiOperacaoCadastrada(Message message, Update update) {
+	private List<SendMessage> naoPossuiOperacaoCadastrada(Message message, Update update) {
 		Optional<RetornoChatBotInterface> botInterfaceOptional = retornoChatBotInterface
 				.stream()
 				.filter(p -> p.getTipoChatBot().getVALUE().equals(update.getMessage().getText()))
 				.findFirst();
 
+		List<SendMessage> messages = new ArrayList<>();
 		if(botInterfaceOptional.isPresent()) {
-			SendMessage sendMessage = botInterfaceOptional.get().processarRetorno(message, null);
-			removeKeyboard(sendMessage);
-			return sendMessage;
+			messages = botInterfaceOptional.get().processarRetorno(message, null);
+			removeKeyboard(messages);
 		}
 		else {
-			return menuChatBot.getMenu(message.getChatId());
+			messages.add(menuChatBot.getMenu(message.getChatId()));
 		}
+
+		return messages;
 	}
 
-    public void removeKeyboard(SendMessage sendMessage) {
-		ReplyKeyboardRemove teclado = new ReplyKeyboardRemove();
-		teclado.setRemoveKeyboard(true);
+    public void removeKeyboard(List<SendMessage> messages) {
+		if (messages != null) {
+			for (SendMessage message : messages) {
+				ReplyKeyboardRemove teclado = new ReplyKeyboardRemove();
+				teclado.setRemoveKeyboard(true);
 
-		sendMessage.setReplyMarkup(teclado);
+				message.setReplyMarkup(teclado);
+			}
+		}
     }
 
 	@Override

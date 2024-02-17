@@ -37,9 +37,23 @@ public class AgendamentoService {
 	@Autowired
 	private ProcedimentoRepository procedimentoRepository;
 
-	public void persistir(AgendamentoDto agendamentoDto) {
+	public Consulta persistir(AgendamentoDto agendamentoDto) {
+		if(StatusConsultaEnum.REMARCADO.equals(agendamentoDto.getStatus())) {
+			remarcar(agendamentoDto);
+			agendamentoDto.setId(0L);
+			agendamentoDto.setStatus(StatusConsultaEnum.AGUARDANDO);
+		}
+
 		Consulta consulta = gerarConsulta(agendamentoDto);
-		consultaRepository.save(consulta);
+
+		return consultaRepository.save(consulta);
+	}
+
+	private void remarcar(AgendamentoDto agendamentoDto) {
+		Consulta consultaOriginal = consultaRepository.findById(agendamentoDto.getId()).get();
+		consultaOriginal.setStatus(agendamentoDto.getStatus());
+
+		consultaRepository.save(consultaOriginal);
 	}
 
 	private Consulta gerarConsulta(AgendamentoDto agendamento) {
@@ -53,12 +67,12 @@ public class AgendamentoService {
 		consulta.setStatus(agendamento.getStatus() == null? StatusConsultaEnum.AGUARDANDO : agendamento.getStatus());
 
 		calcularValorTotal(consulta);
-		caçciçarTempoAproximado(consulta);
+		calcularTempoAproximado(consulta);
 
 		return consulta;
 	}
 
-	private void caçciçarTempoAproximado(Consulta consulta) {
+	private void calcularTempoAproximado(Consulta consulta) {
 		consulta.setTempoAproximado(LocalTime.of(0, 0));
 
 		consulta.getProcedimentos().forEach(procedimento -> {

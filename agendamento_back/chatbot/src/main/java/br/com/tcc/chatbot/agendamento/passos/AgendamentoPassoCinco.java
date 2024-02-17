@@ -40,7 +40,7 @@ public class AgendamentoPassoCinco implements AgendamentoPassosInterface {
     private AgendamentoChatBotRepository agendamentoChatBotRepository;
 
     @Override
-    public SendMessage processarPassosDeAgendamento(MonitorDeChatBot monitorDeChatBot, Message message) {
+    public List<SendMessage> processarPassosDeAgendamento(MonitorDeChatBot monitorDeChatBot, Message message) {
         String mensagem = message.getText();
 
         AgendamentoChatBot agendamentoChatBot = getAgendamento(message.getChatId());
@@ -65,7 +65,8 @@ public class AgendamentoPassoCinco implements AgendamentoPassosInterface {
         return "Por favor confirme os dados do agendamento\n\n" +
                 "Procedimento: " + agendamentoChatBot.getProcedimento().getTratamento() +
                 "\nValor: " + Uteis.formatarMoedaParaReal(agendamentoChatBot.getProcedimento().getValor()) +
-                "\nDia e Horário: " + DataUteis.getLocalDateTime_ddMMaaaaHHMM(agendamentoChatBot.getHorario()) +
+                "\nDia: " + DataUteis.getLocalDateTime_ddMMaaaa(agendamentoChatBot.getHorario()) +
+                "\nHorário: " + DataUteis.getLocalTimeHHmm(agendamentoChatBot.getHorario()) +
                 "\n\n" +
                 "1. Confirmar\n" +
                 "2. Ajustar";
@@ -187,13 +188,12 @@ public class AgendamentoPassoCinco implements AgendamentoPassosInterface {
         monitorDeChatBotRepository.save(monitorDeChatBot);
     }
 
-
-    private SendMessage montarMensagem(Long chatId, String mensagem) {
+    private List<SendMessage> montarMensagem(Long chatId, String mensagem) {
         SendMessage sendMessage = new SendMessage();
         sendMessage.setChatId(chatId.toString());
         sendMessage.setText(mensagem);
 
-        return sendMessage;
+        return new ArrayList<>(List.of(sendMessage));
     }
 
     @Override

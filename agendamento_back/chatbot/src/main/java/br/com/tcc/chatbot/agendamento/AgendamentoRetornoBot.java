@@ -10,6 +10,7 @@ import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.Message;
 
 import java.util.Arrays;
+import java.util.List;
 
 @Component
 public class AgendamentoRetornoBot extends RetornoChatBotInterface {
@@ -18,17 +19,17 @@ public class AgendamentoRetornoBot extends RetornoChatBotInterface {
     private AgendamentoPassosFactory agendamentoPassosFactory;
 
     @Override
-    public SendMessage processarRetorno(Message message, MonitorDeChatBot monitorDeChatBot) {
-        SendMessage sendMessage = null;
+    public List<SendMessage> processarRetorno(Message message, MonitorDeChatBot monitorDeChatBot) {
+        List<SendMessage> messages = null;
 
         if(monitorDeChatBot == null) {
             monitorDeChatBot = super.cadastrarMonitor(message, TipoChatBotEnum.AGENDAMENTO);
         }
 
-        sendMessage = agendamentoPassosFactory.processar(getPasso(monitorDeChatBot))
+        messages = agendamentoPassosFactory.processar(getPasso(monitorDeChatBot))
                 .processarPassosDeAgendamento(monitorDeChatBot, message);
 
-        return sendMessage;
+        return messages;
     }
 
     private AgendamentoPassosEnum getPasso(MonitorDeChatBot monitorDeChatBot) {

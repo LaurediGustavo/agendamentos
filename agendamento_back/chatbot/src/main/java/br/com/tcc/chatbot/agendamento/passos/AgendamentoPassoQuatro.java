@@ -40,7 +40,7 @@ public class AgendamentoPassoQuatro implements AgendamentoPassosInterface {
     private AgendamentoChatBotRepository agendamentoChatBotRepository;
 
     @Override
-    public SendMessage processarPassosDeAgendamento(MonitorDeChatBot monitorDeChatBot, Message message) {
+    public List<SendMessage> processarPassosDeAgendamento(MonitorDeChatBot monitorDeChatBot, Message message) {
         String mensagem = message.getText();
 
         LocalDate data = getData(mensagem);
@@ -85,11 +85,11 @@ public class AgendamentoPassoQuatro implements AgendamentoPassosInterface {
 
     private String getTextoMensagem(List<LocalTime> horarios) {
         return """
-                Horários disponíveis:
+                Horários disponíveis:\n
                 """ +
                 formatarHorarios(horarios) +
                 """
-                Digite apenas o número da opção desejada
+                \nDigite apenas o número da opção desejada
                 """;
     }
 
@@ -168,12 +168,12 @@ public class AgendamentoPassoQuatro implements AgendamentoPassosInterface {
     }
 
 
-    private SendMessage montarMensagem(Long chatId, String mensagem) {
+    private List<SendMessage> montarMensagem(Long chatId, String mensagem) {
         SendMessage sendMessage = new SendMessage();
         sendMessage.setChatId(chatId.toString());
         sendMessage.setText(mensagem);
 
-        return sendMessage;
+        return new ArrayList<>(List.of(sendMessage));
     }
 
     @Override

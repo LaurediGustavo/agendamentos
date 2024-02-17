@@ -1,6 +1,7 @@
 package br.com.tcc.repository;
 
 import br.com.tcc.entity.Consulta;
+import br.com.tcc.entity.MonitorDeChatBot;
 import br.com.tcc.enumerador.StatusConsultaEnum;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -87,5 +88,27 @@ public interface ConsultaRepository extends JpaRepository<Consulta, Long> {
 			"AND p.cpf = :cpf " +
 			"AND c.dataHoraInicio >= CURRENT_TIMESTAMP")
 	Long hasConsultasByStatusAndCpfAndDataHoraInicio(@Param("cpf") String cpf);
+
+	@Query("SELECT c FROM Consulta c " +
+			" WHERE c.doutor.id = :doutorId " +
+			" AND YEAR(c.dataHoraInicio) = :ano " +
+			" AND MONTH(c.dataHoraInicio) = :mes " +
+			" AND DAY(c.dataHoraInicio) = :dia")
+	Optional<List<Consulta>> findByConsultasByDoutorDias(@Param("doutorId") Long doutorId,
+														 @Param("ano") Integer ano,
+														 @Param("mes") Integer mes,
+														 @Param("dia") Integer dia);
+
+	@Query("SELECT COUNT(c.id) FROM Consulta c " +
+			" WHERE ((:dataInicio BETWEEN c.dataHoraInicio AND c.dataHoraFinal) " +
+			" OR (c.dataHoraInicio BETWEEN :dataInicio AND :dataFim) " +
+			" OR (c.dataHoraFinal BETWEEN :dataInicio AND :dataFim)) " +
+			" AND c.paciente.id = :paciente_id " +
+			" AND (c.id <> :consulta_id OR :consulta_id IS NULL) " +
+			" AND c.status NOT IN ('CANCELADO', 'REMARCADO')")
+	Optional<Long> consultarPorDataEPaciente(@Param("dataInicio") LocalDateTime dataHoraInicio,
+										   @Param("dataFim") LocalDateTime dataHoraFim,
+										   @Param("paciente_id") Long paciente_id,
+										   @Param("consulta_id") Long consulta_id);
 
 }

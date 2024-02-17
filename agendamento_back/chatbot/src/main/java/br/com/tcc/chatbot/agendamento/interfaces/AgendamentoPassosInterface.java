@@ -6,9 +6,11 @@ import br.com.tcc.entity.MonitorDeChatBot;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.Message;
 
+import java.util.List;
+
 public interface AgendamentoPassosInterface {
 
-    SendMessage processarPassosDeAgendamento(MonitorDeChatBot monitorDeChatBot, Message message);
+    List<SendMessage> processarPassosDeAgendamento(MonitorDeChatBot monitorDeChatBot, Message message);
 
     AgendamentoPassosEnum getPasso();
 

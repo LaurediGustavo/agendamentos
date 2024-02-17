@@ -12,6 +12,8 @@ import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.Message;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Component
 public class CancelarOperacaoRetornoBot extends RetornoChatBotInterface {
@@ -23,18 +25,18 @@ public class CancelarOperacaoRetornoBot extends RetornoChatBotInterface {
     private MenuChatBot menuChatBot;
 
     @Override
-    public SendMessage processarRetorno(Message message, MonitorDeChatBot monitorDeChatBot) {
-        SendMessage sendMessage = null;
+    public List<SendMessage> processarRetorno(Message message, MonitorDeChatBot monitorDeChatBot) {
+        List<SendMessage> messages = null;
 
         atualizarMonitor(monitorDeChatBot);
 
-        sendMessage = montarMensagem(message.getChatId());
-        menuChatBot.montarMensagem(sendMessage, message.getChatId());
+        messages = montarMensagem(message.getChatId());
+        messages.add(menuChatBot.getMenu(message.getChatId()));
 
-        return sendMessage;
+        return messages;
     }
 
-    private SendMessage montarMensagem(Long chatId) {
+    private List<SendMessage> montarMensagem(Long chatId) {
         String string = """ 
                         Operação cancelada com sucesso!
                         
@@ -44,7 +46,7 @@ public class CancelarOperacaoRetornoBot extends RetornoChatBotInterface {
         sendMessage.setChatId(chatId.toString());
         sendMessage.setText(string);
 
-        return sendMessage;
+        return new ArrayList<>(List.of(sendMessage));
     }
 
     private void atualizarMonitor(MonitorDeChatBot monitorDeChatBot) {

@@ -1,16 +1,19 @@
 package br.com.tcc.service;
 
+import br.com.tcc.entity.Consulta;
 import br.com.tcc.entity.Doutor;
 import br.com.tcc.entity.TipoFuncionario;
+import br.com.tcc.impl.AgendamentoService;
 import br.com.tcc.impl.DoutorService;
-import br.com.tcc.model.response.DoutorAgendamentoResponse;
-import br.com.tcc.model.response.DoutorResponse;
-import br.com.tcc.model.response.FuncionarioResponse;
-import br.com.tcc.model.response.TipoFuncionarioResponse;
+import br.com.tcc.model.response.*;
+import br.com.tcc.repository.ConsultaRepository;
 import br.com.tcc.repository.DoutorRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import uteis.DataUteis;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -23,6 +26,9 @@ public class DoutorTratarResponse {
 
     @Autowired
     private DoutorService doutorService;
+
+    @Autowired
+    private ConsultaRepository consultaRepository;
 
     public List<DoutorResponse> consultarPorNome(String nome) {
         Optional<List<Doutor>> optionalDoutorList = doutorRepository
@@ -105,4 +111,28 @@ public class DoutorTratarResponse {
 
         return null;
     }
+
+    public List<HorariosDoutorResponse> consultarHorariosDoutor(Long doutorId, String data) {
+        LocalDate dataHora = DataUteis.getLocalDate(data);
+
+        Optional<List<Consulta>> consultas = this.consultaRepository.findByConsultasByDoutorDias(doutorId,
+                dataHora.getYear(), dataHora.getMonthValue(), dataHora.getDayOfMonth());
+
+        return consultas.map(consulta -> consulta.stream()
+                .map(this::montarDatasAgendamentos)
+                .collect(Collectors.toList()))
+                .orElse(null);
+    }
+
+    private HorariosDoutorResponse montarDatasAgendamentos(Consulta consulta) {
+        if(consulta != null) {
+            return new HorariosDoutorResponse(
+                    consulta.getDoutor().getId(),
+                    consulta.getDataHoraInicio(),
+                    consulta.getDataHoraFinal());
+        }
+
+        return null;
+    }
+
 }

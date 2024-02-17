@@ -18,6 +18,8 @@ import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.Message;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 @Component
@@ -39,7 +41,7 @@ public class CancelarPassoQuatro implements CancelarPassosInterface {
     private MenuChatBot menuChatBot;
 
     @Override
-    public SendMessage processarPassosDeCadastro(MonitorDeChatBot monitorDeChatBot, Message message) {
+    public List<SendMessage> processarPassosDeCadastro(MonitorDeChatBot monitorDeChatBot, Message message) {
         String opcao = message.getText();
 
         if(isOpcaoValida(opcao)) {
@@ -47,8 +49,8 @@ public class CancelarPassoQuatro implements CancelarPassosInterface {
                 cancelarAgendamento(message.getChatId());
                 atualizarMonitor(monitorDeChatBot, 5,StatusDaMensagemChatBotEnum.FINALIZADO);
 
-                SendMessage sendMessage = montarMensagem(message.getChatId(), "Cancelamento efetuado com sucesso!\n\n");
-                menuChatBot.montarMensagem(sendMessage, message.getChatId());
+                List<SendMessage> sendMessage = montarMensagem(message.getChatId(), "Cancelamento efetuado com sucesso!\n\n");
+                menuChatBot.montarMensagem(sendMessage.get(0), message.getChatId());
                 return sendMessage;
             }
             else {
@@ -99,12 +101,12 @@ public class CancelarPassoQuatro implements CancelarPassosInterface {
         };
     }
 
-    private SendMessage montarMensagem(Long chatId, String mensagem) {
+    private List<SendMessage> montarMensagem(Long chatId, String mensagem) {
         SendMessage sendMessage = new SendMessage();
         sendMessage.setChatId(chatId.toString());
         sendMessage.setText(mensagem);
 
-        return sendMessage;
+        return new ArrayList<>(List.of(sendMessage));
     }
 
     private void atualizarMonitor(MonitorDeChatBot monitorDeChatBot, int passo, StatusDaMensagemChatBotEnum status) {

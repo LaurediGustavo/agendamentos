@@ -17,8 +17,8 @@ import uteis.DataUteis;
 import uteis.Uteis;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 @Component
 public class ConsultaPassoDois implements ConsultaPassosInterface {
@@ -33,7 +33,7 @@ public class ConsultaPassoDois implements ConsultaPassosInterface {
     private ConsultaRepository consultaRepository;
 
     @Override
-    public SendMessage processarPassosDeCadastro(MonitorDeChatBot monitorDeChatBot, Message message) {
+    public List<SendMessage> processarPassosDeCadastro(MonitorDeChatBot monitorDeChatBot, Message message) {
         String mensagem = message.getText();
 
         if(Uteis.cpfValido(mensagem) && cpfUtilizado(mensagem)) {
@@ -47,21 +47,20 @@ public class ConsultaPassoDois implements ConsultaPassosInterface {
 
     private String getTextoMensagem(String cpf) {
         StringBuilder consultas = new StringBuilder();
-        consultas.append("Lista de consultas agendadas: \n\n");
 
         List<Consulta> consultaList = consultaRepository
                 .findConsultasByStatusAndCpfAndDataHoraInicio(cpf);
 
         if(!consultaList.isEmpty()) {
+            consultas.append("Lista de consultas agendadas: \n\n");
             consultas.append(consultaList.stream()
                                 .map(con -> new StringBuilder()
-                                        .append(DataUteis.getLocalDateTime_ddMMaaaaHHMM(con.getDataHoraInicio()))
-                                        .append("\n")
-                                        .append("Procedimento: \n")
+                                        .append("Dia: " + DataUteis.getLocalDateTime_ddMMaaaa(con.getDataHoraInicio()))
+                                        .append("\nHorário: " + DataUteis.getLocalTimeHHmm(con.getDataHoraInicio()))
+                                        .append("\nValor: " + Uteis.formatarMoedaParaReal(con.getValorTotal()))
+                                        .append("\nProcedimento: \n")
                                         .append(getProcedimentos(con.getProcedimentos()))
-                                        .append("\n")
-                                        .append("Valor: " + Uteis.formatarMoedaParaReal(con.getValorTotal()))
-                                        .append("\n\n"))
+                                        .append("\n"))
                                 .collect(
                                         StringBuilder::new,
                                         StringBuilder::append,
@@ -79,7 +78,7 @@ public class ConsultaPassoDois implements ConsultaPassosInterface {
     private String getProcedimentos(List<Procedimento> procedimentos) {
         return procedimentos.stream()
                 .map(procedimento -> new StringBuilder()
-                        .append("\t\t\t" + procedimento.getTratamento() + "\n"))
+                        .append("\t\t\t- " + procedimento.getTratamento() + "\n"))
                 .collect(
                         StringBuilder::new,
                         StringBuilder::append,
@@ -100,12 +99,12 @@ public class ConsultaPassoDois implements ConsultaPassosInterface {
         monitorDeChatBotRepository.save(monitorDeChatBot);
     }
 
-    private SendMessage montarMensagem(Long chatId, String mensagem) {
+    private List<SendMessage> montarMensagem(Long chatId, String mensagem) {
         SendMessage sendMessage = new SendMessage();
         sendMessage.setChatId(chatId.toString());
         sendMessage.setText(mensagem);
 
-        return sendMessage;
+        return new ArrayList<>(List.of(sendMessage));
     }
 
     @Override

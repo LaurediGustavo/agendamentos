@@ -7,6 +7,8 @@ import br.com.tcc.validation.paciente.interfaces.ValidResponsavel;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
 
+import java.time.LocalDate;
+
 @Data
 public class PacienteRequest {
 
@@ -21,7 +23,7 @@ public class PacienteRequest {
     private String sobrenome;
 
     @ValidObrigatorio
-    private Integer idade;
+    private LocalDate dataDeNascimento;
 
     @ValidCpf
     @JsonProperty(required = false)

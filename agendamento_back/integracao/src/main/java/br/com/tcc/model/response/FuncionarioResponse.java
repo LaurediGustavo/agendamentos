@@ -4,6 +4,8 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.time.LocalDate;
+
 @AllArgsConstructor
 @Getter
 @Setter
@@ -11,7 +13,7 @@ public class FuncionarioResponse {
     private Long id;
     private String nome;
     private String sobrenome;
-    private Integer idade;
+    private LocalDate dataDeNascimento;
     private String cpf;
     private String genero;
     private String telefone;

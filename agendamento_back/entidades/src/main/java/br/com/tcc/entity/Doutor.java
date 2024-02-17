@@ -1,6 +1,7 @@
 package br.com.tcc.entity;
 
 import java.io.Serializable;
+import java.time.LocalDate;
 import java.util.List;
 
 import jakarta.persistence.*;
@@ -25,8 +26,8 @@ public class Doutor extends Funcionario implements Serializable {
 	)
 	private List<Procedimento> procedimentos;
 
-	public Doutor(Long id, String nome, String sobrenome, Integer idade, String cpf, String genero, String telefone, String logradouro, String bairro, Integer numero, String bloco, TipoFuncionario tipoFuncionario, String cro) {
-		super(id, nome, sobrenome, idade, cpf, genero, telefone, logradouro, bairro, numero, bloco, tipoFuncionario);
+	public Doutor(Long id, String nome, String sobrenome, LocalDate dataDeNascimento, String cpf, String genero, String telefone, String logradouro, String bairro, Integer numero, String bloco, TipoFuncionario tipoFuncionario, String cro) {
+		super(id, nome, sobrenome, dataDeNascimento, cpf, genero, telefone, logradouro, bairro, numero, bloco, tipoFuncionario);
 		this.cro = cro;
 	}
 

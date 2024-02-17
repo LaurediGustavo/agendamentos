@@ -69,7 +69,7 @@ public class DoutorTratarResponse {
                 doutor.getId(),
                 doutor.getNome(),
                 doutor.getSobrenome(),
-                doutor.getIdade(),
+                doutor.getDataDeNascimento(),
                 doutor.getCpf(),
                 doutor.getGenero(),
                 doutor.getTelefone(),

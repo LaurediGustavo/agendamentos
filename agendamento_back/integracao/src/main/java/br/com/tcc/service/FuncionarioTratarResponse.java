@@ -46,7 +46,7 @@ public class FuncionarioTratarResponse {
                     funcionario.getId(),
                     funcionario.getNome(),
                     funcionario.getSobrenome(),
-                    funcionario.getIdade(),
+                    funcionario.getDataDeNascimento(),
                     funcionario.getCpf(),
                     funcionario.getGenero(),
                     funcionario.getTelefone(),

@@ -16,11 +16,17 @@ const columns = [
     type: 'string'
   },
   {
+    field: 'valor',
+    headerName: 'Valor',
+    width: 200,
+    type: 'string'
+  },
+  {
     field: 'tempo',
     headerName: 'Tempo',
-    width: 100,
+    width: 200,
     type: 'string'
-  }
+  },
 ];
 
 const Procedures = () => {

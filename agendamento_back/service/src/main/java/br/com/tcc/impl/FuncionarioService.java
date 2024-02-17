@@ -30,7 +30,7 @@ public class FuncionarioService {
 
         funcionario.setNome(funcionarioDto.getNome());
         funcionario.setSobrenome(funcionarioDto.getSobrenome());
-        funcionario.setIdade(funcionarioDto.getIdade());
+        funcionario.setDataDeNascimento(funcionarioDto.getDataDeNascimento());
         funcionario.setCpf(funcionarioDto.getCpf());
         funcionario.setGenero(funcionarioDto.getGenero());
         funcionario.setTelefone(funcionarioDto.getTelefone());
@@ -54,7 +54,7 @@ public class FuncionarioService {
                         funcionarioDto.getId(),
                         funcionarioDto.getNome(),
                         funcionarioDto.getSobrenome(),
-                        funcionarioDto.getIdade(),
+                        funcionarioDto.getDataDeNascimento(),
                         funcionarioDto.getCpf(),
                         funcionarioDto.getGenero(),
                         funcionarioDto.getTelefone(),

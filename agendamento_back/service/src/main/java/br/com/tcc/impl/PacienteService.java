@@ -21,7 +21,7 @@ public class PacienteService {
 		Paciente paciente = new Paciente();
 		paciente.setNome(pacienteDto.getNome());
 		paciente.setSobrenome(pacienteDto.getSobrenome());
-		paciente.setIdade(pacienteDto.getIdade());
+		paciente.setDataDeNascimento(pacienteDto.getDataDeNascimento());
 		paciente.setCpf(pacienteDto.getCpf());
 		paciente.setGenero(pacienteDto.getGenero());
 		paciente.setTelefone(pacienteDto.getTelefone());
@@ -52,8 +52,8 @@ public class PacienteService {
 			paciente.setSobrenome(pacienteDto.getSobrenome());
 		}
 
-		if(!paciente.getIdade().equals(pacienteDto.getIdade())) {
-			paciente.setIdade(pacienteDto.getIdade());
+		if(!paciente.getDataDeNascimento().equals(pacienteDto.getDataDeNascimento())) {
+			paciente.setDataDeNascimento(pacienteDto.getDataDeNascimento());
 		}
 
 		if(!paciente.getGenero().equals(pacienteDto.getGenero())) {

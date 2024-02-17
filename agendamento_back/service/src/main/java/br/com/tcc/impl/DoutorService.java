@@ -33,7 +33,7 @@ public class DoutorService {
 
         doutor.setNome(funcionarioDto.getNome());
         doutor.setSobrenome(funcionarioDto.getSobrenome());
-        doutor.setIdade(funcionarioDto.getIdade());
+        doutor.setDataDeNascimento(funcionarioDto.getDataDeNascimento());
         doutor.setCpf(funcionarioDto.getCpf());
         doutor.setGenero(funcionarioDto.getGenero());
         doutor.setTelefone(funcionarioDto.getTelefone());
@@ -58,7 +58,7 @@ public class DoutorService {
                         funcionarioDto.getId(),
                         funcionarioDto.getNome(),
                         funcionarioDto.getSobrenome(),
-                        funcionarioDto.getIdade(),
+                        funcionarioDto.getDataDeNascimento(),
                         funcionarioDto.getCpf(),
                         funcionarioDto.getGenero(),
                         funcionarioDto.getTelefone(),

@@ -1,5 +1,6 @@
 package br.com.tcc.entity;
 
+import java.io.Serial;
 import java.io.Serializable;
 import java.math.BigDecimal;
 
@@ -16,6 +17,7 @@ import lombok.Data;
 @Table(name = "procedimento")
 public class Procedimento implements Serializable {
 
+	@Serial
 	private static final long serialVersionUID = 5288062917051456982L;
 
 	@Id
@@ -30,5 +32,8 @@ public class Procedimento implements Serializable {
 	
 	@Column(name = "valor", precision = 18, scale = 2, nullable = false)
 	private BigDecimal valor;
+
+	@Column(name = "desabilitado")
+	private Boolean desabilitado;
 	
 }

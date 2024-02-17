@@ -2,6 +2,8 @@ package br.com.tcc.dto;
 
 import lombok.Data;
 
+import java.time.LocalDate;
+
 @Data
 public class FuncionarioDto {
 
@@ -11,7 +13,7 @@ public class FuncionarioDto {
 
     private String sobrenome;
 
-    private Integer idade;
+    private LocalDate dataDeNascimento;
 
     private String cpf;
 

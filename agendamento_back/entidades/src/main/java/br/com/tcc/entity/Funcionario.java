@@ -1,6 +1,7 @@
 package br.com.tcc.entity;
 
 import java.io.Serializable;
+import java.time.LocalDate;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -37,8 +38,8 @@ public class Funcionario implements Serializable {
 	@Column(name = "sobrenome", length = 100, nullable = false)
 	private String sobrenome;
 	
-	@Column(name = "idade", nullable = false)
-	private Integer idade;
+	@Column(name = "data_de_nascimento", nullable = false)
+	private LocalDate dataDeNascimento;
 	
 	@Column(name = "cpf", length = 15, nullable = false, unique = true)
 	private String cpf;

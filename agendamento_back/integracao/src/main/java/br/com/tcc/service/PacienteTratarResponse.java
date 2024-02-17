@@ -67,7 +67,7 @@ public class PacienteTratarResponse {
                     paciente.getId(),
                     paciente.getNome(),
                     paciente.getSobrenome(),
-                    paciente.getIdade(),
+                    paciente.getDataDeNascimento(),
                     paciente.getCpf(),
                     paciente.getGenero(),
                     paciente.getTelefone(),

@@ -15,4 +15,6 @@ public class ProcedimentoDto {
 
     private BigDecimal valor;
 
+    private Boolean desabilitado;
+
 }

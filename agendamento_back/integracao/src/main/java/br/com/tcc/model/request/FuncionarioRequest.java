@@ -8,6 +8,8 @@ import br.com.tcc.validation.generic.interfaces.ValidObrigatorio;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
 
+import java.time.LocalDate;
+
 @Data
 @ValidCro
 public class FuncionarioRequest {
@@ -23,7 +25,7 @@ public class FuncionarioRequest {
     private String sobrenome;
 
     @ValidObrigatorio
-    private Integer idade;
+    private LocalDate dataDeNascimento;
 
     @ValidObrigatorio
     @ValidCpf

@@ -1,6 +1,7 @@
 package br.com.tcc.entity;
 
 import java.io.Serializable;
+import java.time.LocalDate;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
@@ -30,8 +31,8 @@ public class Paciente implements Serializable {
 	@Column(name = "sobrenome", length = 100, nullable = false)
 	private String sobrenome;
 	
-	@Column(name = "idade", nullable = true)
-	private Integer idade;
+	@Column(name = "dataDeNascimento", nullable = true)
+	private LocalDate dataDeNascimento;
 	
 	@Column(name = "cpf", length = 14, nullable = false)
 	private String cpf;

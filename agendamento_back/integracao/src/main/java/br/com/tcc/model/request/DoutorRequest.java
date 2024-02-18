@@ -1,21 +1,25 @@
 package br.com.tcc.model.request;
 
+import br.com.tcc.validation.funcionario.interfaces.ValidFuncionarioId;
 import br.com.tcc.validation.generic.interfaces.ValidObrigatorio;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
 
-import java.math.BigDecimal;
+import java.util.List;
 
 @Data
-public class ProcedimentoRequest {
+public class DoutorRequest {
 
     @JsonProperty(required = false)
+    @ValidFuncionarioId
     private Long id;
+
+    private FuncionarioRequest funcionario;
+
     @ValidObrigatorio
-    private String tratamento;
+    private String cro;
+
     @ValidObrigatorio
-    private String tempo;
-    @ValidObrigatorio
-    private BigDecimal valor;
-    private Boolean desabilitado;
+    private List<Long> procedimentos;
+
 }

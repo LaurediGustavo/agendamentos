@@ -14,6 +14,8 @@ import org.springframework.stereotype.Service;
 @Service("FuncionarioService")
 public class FuncionarioService {
 
+    private final String ATENDENTE = "ATENDENTE";
+
     @Autowired
     private FuncionarioRepository funcionarioRepository;
 
@@ -38,7 +40,7 @@ public class FuncionarioService {
         funcionario.setBairro(funcionarioDto.getBairro());
         funcionario.setNumero(funcionarioDto.getNumero());
         funcionario.setBloco(funcionarioDto.getBloco());
-        funcionario.setTipoFuncionario(getTipoFuncionario(funcionarioDto.getTipo_funcionario_id()));
+        funcionario.setTipoFuncionario(getTipoFuncionario());
 
         return funcionario;
     }
@@ -58,17 +60,19 @@ public class FuncionarioService {
                         funcionarioDto.getCpf(),
                         funcionarioDto.getGenero(),
                         funcionarioDto.getTelefone(),
+                        funcionarioDto.getCep(),
                         funcionarioDto.getLogradouro(),
                         funcionarioDto.getBairro(),
                         funcionarioDto.getNumero(),
                         funcionarioDto.getBloco(),
-                        getTipoFuncionario(funcionarioDto.getTipo_funcionario_id())
+                        getTipoFuncionario(),
+                        funcionario.getDesabilitado()
                 ))
                 .orElse(null);
     }
 
-    private TipoFuncionario getTipoFuncionario(Long id) {
-        return tipoFuncionarioRepository.findById(id).get();
+    private TipoFuncionario getTipoFuncionario() {
+        return tipoFuncionarioRepository.findByNome(this.ATENDENTE);
     }
 
 }

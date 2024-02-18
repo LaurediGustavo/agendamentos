@@ -17,6 +17,7 @@ public class FuncionarioResponse {
     private String cpf;
     private String genero;
     private String telefone;
+    private String cep;
     private String logradouro;
     private String bairro;
     private Integer numero;

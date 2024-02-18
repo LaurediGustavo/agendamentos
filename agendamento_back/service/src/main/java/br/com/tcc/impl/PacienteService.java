@@ -2,7 +2,9 @@ package br.com.tcc.impl;
 
 import br.com.tcc.dto.PacienteDto;
 import br.com.tcc.entity.Paciente;
+import br.com.tcc.entity.Procedimento;
 import br.com.tcc.repository.PacienteRepository;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -12,9 +14,10 @@ public class PacienteService {
 	@Autowired
 	private PacienteRepository pacienteRepository;
 
-	public void cadastrar(PacienteDto pacienteDto) {
+	public Long cadastrar(PacienteDto pacienteDto) {
 		Paciente paciente = gerarPaciente(pacienteDto);
 		pacienteRepository.save(paciente);
+		return paciente.getId();
 	}
 
 	private Paciente gerarPaciente(PacienteDto pacienteDto) {
@@ -31,6 +34,7 @@ public class PacienteService {
 		paciente.setNumero(pacienteDto.getNumero());
 		paciente.setBloco(pacienteDto.getBloco());
 		paciente.setParentesco(pacienteDto.getParentesco());
+		paciente.setCep(pacienteDto.getCep());
 
 		setarResponsavel(paciente, pacienteDto);
 
@@ -44,48 +48,52 @@ public class PacienteService {
 	}
 
 	private void atualizarCampos(Paciente paciente, PacienteDto pacienteDto) {
-		if(!paciente.getNome().equals(pacienteDto.getNome())) {
+		if(StringUtils.isNotBlank(pacienteDto.getNome())) {
 			paciente.setNome(pacienteDto.getNome());
 		}
 
-		if(!paciente.getSobrenome().equals(pacienteDto.getSobrenome())) {
+		if(StringUtils.isNotBlank(pacienteDto.getSobrenome())) {
 			paciente.setSobrenome(pacienteDto.getSobrenome());
 		}
 
-		if(!paciente.getDataDeNascimento().equals(pacienteDto.getDataDeNascimento())) {
+		if(pacienteDto.getDataDeNascimento() != null) {
 			paciente.setDataDeNascimento(pacienteDto.getDataDeNascimento());
 		}
 
-		if(!paciente.getGenero().equals(pacienteDto.getGenero())) {
+		if(StringUtils.isNotBlank(pacienteDto.getGenero())) {
 			paciente.setGenero(pacienteDto.getGenero());
 		}
 
-		if(!paciente.getTelefone().equals(pacienteDto.getTelefone())) {
+		if(StringUtils.isNotBlank(pacienteDto.getTelefone())) {
 			paciente.setTelefone(pacienteDto.getTelefone());
 		}
 
-		if(!paciente.getInformacoesAdicionais().equals(pacienteDto.getInformacoesAdicionais())) {
+		if(StringUtils.isNotBlank(pacienteDto.getInformacoesAdicionais())) {
 			paciente.setInformacoesAdicionais(pacienteDto.getInformacoesAdicionais());
 		}
 
-		if(!paciente.getLogradouro().equals(pacienteDto.getLogradouro())) {
+		if(StringUtils.isNotBlank(pacienteDto.getLogradouro())) {
 			paciente.setLogradouro(pacienteDto.getLogradouro());
 		}
 
-		if(!paciente.getBairro().equals(pacienteDto.getBairro())) {
+		if(StringUtils.isNotBlank(pacienteDto.getBairro())) {
 			paciente.setBairro(pacienteDto.getBairro());
 		}
 
-		if(!paciente.getNumero().equals(pacienteDto.getNumero())) {
+		if(pacienteDto.getNumero() != null) {
 			paciente.setNumero(pacienteDto.getNumero());
 		}
 
-		if(!paciente.getBloco().equals(pacienteDto.getBloco())) {
+		if(StringUtils.isNotBlank(pacienteDto.getBloco())) {
 			paciente.setBloco(pacienteDto.getBloco());
 		}
 
-		if(!paciente.getParentesco().equals(pacienteDto.getParentesco())) {
+		if(StringUtils.isNotBlank(pacienteDto.getParentesco())) {
 			paciente.setParentesco(pacienteDto.getParentesco());
+		}
+
+		if(StringUtils.isNotBlank(pacienteDto.getCep())) {
+			paciente.setCep(pacienteDto.getCep());
 		}
 
 		setarResponsavel(paciente, pacienteDto);
@@ -100,6 +108,17 @@ public class PacienteService {
 
 	private Paciente getPaciente(Long pacienteId) {
 		return pacienteRepository.findById(pacienteId).get();
+	}
+
+	public void deletar(Long id) {
+		Paciente paciente = getPaciente(id);
+		paciente.setDesabilitado(Boolean.TRUE);
+
+		pacienteRepository.save(paciente);
+	}
+
+	public boolean existsById(Long id) {
+		return pacienteRepository.existsById(id);
 	}
 
 }

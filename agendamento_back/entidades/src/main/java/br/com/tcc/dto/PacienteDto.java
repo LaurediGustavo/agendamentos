@@ -23,6 +23,8 @@ public class PacienteDto {
 
     private String informacoesAdicionais;
 
+    private String cep;
+
     private String logradouro;
 
     private String bairro;

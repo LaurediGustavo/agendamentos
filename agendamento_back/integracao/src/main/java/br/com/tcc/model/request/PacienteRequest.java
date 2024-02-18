@@ -39,6 +39,9 @@ public class PacienteRequest {
     private String informacoesAdicionais;
 
     @ValidObrigatorio
+    private String cep;
+
+    @ValidObrigatorio
     private String logradouro;
 
     @ValidObrigatorio

@@ -12,7 +12,10 @@ import java.util.Optional;
 @Repository
 public interface ProcedimentoRepository extends JpaRepository<Procedimento, Long> {
 
-    @Query("SELECT p FROM Procedimento p WHERE p.tratamento LIKE %:tratamento%")
+    @Query("SELECT p FROM Procedimento p " +
+            "WHERE p.tratamento LIKE %:tratamento% " +
+            "AND (p.desabilitado IS NULL OR p.desabilitado = false) " +
+            "ORDER BY p.tratamento")
     Optional<List<Procedimento>> findByTratamentoLike(String tratamento);
 
 }

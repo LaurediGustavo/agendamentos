@@ -18,6 +18,7 @@ public class PacienteResponse {
     private String genero;
     private String telefone;
     private String informacoesAdicionais;
+    private String cep;
     private String logradouro;
     private String bairro;
     private Integer numero;

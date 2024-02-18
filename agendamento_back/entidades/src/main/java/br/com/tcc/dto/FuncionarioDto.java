@@ -21,6 +21,8 @@ public class FuncionarioDto {
 
     private String telefone;
 
+    private String cep;
+
     private String logradouro;
 
     private String bairro;
@@ -28,9 +30,5 @@ public class FuncionarioDto {
     private Integer numero;
 
     private String bloco;
-
-    private Long tipo_funcionario_id;
-
-    private String cro;
 
 }

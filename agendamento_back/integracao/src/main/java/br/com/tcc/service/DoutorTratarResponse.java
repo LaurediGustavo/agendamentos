@@ -9,6 +9,7 @@ import br.com.tcc.model.response.*;
 import br.com.tcc.repository.ConsultaRepository;
 import br.com.tcc.repository.DoutorRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import uteis.DataUteis;
 
@@ -57,11 +58,23 @@ public class DoutorTratarResponse {
             func = new DoutorResponse(
                     doutor.getId(),
                     getFuncionarioResponse(doutor),
-                    doutor.getCro()
+                    doutor.getCro(),
+                    getProcedimentos(doutor)
             );
         }
 
         return func;
+    }
+
+    private List<ProcedimentoResponse> getProcedimentos(Doutor doutor) {
+        return doutor.getProcedimentos().stream()
+                .map(procedimento -> new ProcedimentoResponse(
+                        procedimento.getId(),
+                        procedimento.getTratamento(),
+                        procedimento.getTempo(),
+                        procedimento.getValor()
+                ))
+                .collect(Collectors.toList());
     }
 
     private FuncionarioResponse getFuncionarioResponse(Doutor doutor) {
@@ -73,6 +86,7 @@ public class DoutorTratarResponse {
                 doutor.getCpf(),
                 doutor.getGenero(),
                 doutor.getTelefone(),
+                doutor.getCep(),
                 doutor.getLogradouro(),
                 doutor.getBairro(),
                 doutor.getNumero(),

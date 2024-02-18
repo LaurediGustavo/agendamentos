@@ -1,9 +1,11 @@
 package br.com.tcc.controller;
 
+import br.com.tcc.dto.DoutorDto;
 import br.com.tcc.dto.FuncionarioDto;
 import br.com.tcc.impl.DoutorService;
 import br.com.tcc.impl.FuncionarioService;
 import br.com.tcc.model.request.DoutorAgendamentoRequest;
+import br.com.tcc.model.request.DoutorRequest;
 import br.com.tcc.model.request.FuncionarioRequest;
 import br.com.tcc.model.response.*;
 import br.com.tcc.service.DoutorTratarResponse;
@@ -18,7 +20,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/doutor")
@@ -32,20 +36,27 @@ public class DoutorController {
 
     @PostMapping(value = "/cadastro", consumes = MediaType.APPLICATION_JSON_VALUE)
     @PreAuthorize("hasRole('ROLE_ATENDENTE')")
-    public ResponseEntity<?> cadastro(@Valid @RequestBody FuncionarioRequest funcionarioRequest) {
-        FuncionarioDto funcionarioDto = new FuncionarioDto();
-        BeanUtils.copyProperties(funcionarioRequest, funcionarioDto);
-        doutorService.cadastrar(funcionarioDto);
+    public ResponseEntity<?> cadastro(@Valid @RequestBody DoutorRequest doutorRequest) {
+        DoutorDto doutorDto = new DoutorDto();
+        doutorDto.setFuncionario(new FuncionarioDto());
+        BeanUtils.copyProperties(doutorRequest, doutorDto);
+        BeanUtils.copyProperties(doutorRequest.getFuncionario(), doutorDto.getFuncionario());
+        Long id = doutorService.cadastrar(doutorDto);
 
-        return ResponseEntity.status(HttpStatus.CREATED).build();
+        Map<String, Object> responseBody = new HashMap<>();
+        responseBody.put("id", id);
+
+        return ResponseEntity.status(HttpStatus.CREATED).body(responseBody);
     }
 
     @PutMapping(value = "/atualizar", consumes = MediaType.APPLICATION_JSON_VALUE)
     @PreAuthorize("hasRole('ROLE_ATENDENTE')")
-    public ResponseEntity<?> atualizar(@Valid @RequestBody FuncionarioRequest funcionarioRequest) {
-        FuncionarioDto funcionarioDto = new FuncionarioDto();
-        BeanUtils.copyProperties(funcionarioRequest, funcionarioDto);
-        doutorService.atualizar(funcionarioDto);
+    public ResponseEntity<?> atualizar(@Valid @RequestBody DoutorRequest doutorRequest) {
+        DoutorDto doutorDto = new DoutorDto();
+        doutorDto.setFuncionario(new FuncionarioDto());
+        BeanUtils.copyProperties(doutorRequest, doutorDto);
+        BeanUtils.copyProperties(doutorRequest.getFuncionario(), doutorDto.getFuncionario());
+        doutorService.atualizar(doutorDto);
 
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
@@ -80,6 +91,15 @@ public class DoutorController {
                 .consultarHorariosDoutor(id, data);
 
         return ResponseEntity.status(HttpStatus.OK).body(horarios);
+    }
+
+    @DeleteMapping(value = "delete/{id}")
+    public ResponseEntity<?> deletar(@PathVariable("id") Long id) {
+        if (!doutorService.existsById(id))
+            return ResponseEntity.notFound().build();
+
+        doutorService.deletar(id);
+        return ResponseEntity.status(HttpStatus.OK).build();
     }
 
 }

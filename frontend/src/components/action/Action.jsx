@@ -255,8 +255,8 @@ const Action = (props) => {
                   style={{ width: '100%', height: '60%' }}
                 >
                   {props.procedures && props.procedures.map((procedure) => (
-                    <MenuItem key={procedure.id} value={procedure.procedimento}>
-                      {procedure.procedimento}
+                    <MenuItem key={procedure.id} value={procedure.id}>
+                      {procedure.tratamento}
                     </MenuItem>
                   ))}
                 </Select>

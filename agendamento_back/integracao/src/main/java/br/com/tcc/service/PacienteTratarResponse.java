@@ -72,6 +72,7 @@ public class PacienteTratarResponse {
                     paciente.getGenero(),
                     paciente.getTelefone(),
                     paciente.getInformacoesAdicionais(),
+                    paciente.getCep(),
                     paciente.getLogradouro(),
                     paciente.getBairro(),
                     paciente.getNumero(),

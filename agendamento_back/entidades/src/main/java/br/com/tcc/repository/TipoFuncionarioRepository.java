@@ -6,4 +6,7 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface TipoFuncionarioRepository extends JpaRepository<TipoFuncionario, Long> {
+
+    TipoFuncionario findByNome(String nome);
+
 }

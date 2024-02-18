@@ -1,11 +1,12 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import "./patients.scss";
 import { DataTable } from "../../components/dataTable/dataTable";
 import { Box, Fab } from "@mui/material";
 import { Add as AddIcon } from "@mui/icons-material";
 import Header from "../../components/headers/Headers";
-import { patientsData } from "../../data/dados";
 import Action from "../../components/action/Action"; 
+import api from '../../services/api';
+import { formatarData_yyyy_MM_dd, formatarData_dd_MM_yyyy } from '../../services/dateFormat';
 
 const columns = [
   {
@@ -51,18 +52,6 @@ const columns = [
     width: 200
   },
   {
-    field: 'estado',
-    headerName: 'Estado',
-    type: 'string',
-    width: 200
-  },
-  {
-    field: 'cidade',
-    headerName: 'Cidade',
-    type: 'string',
-    width: 200
-  },
-  {
     field: 'bairro',
     headerName: 'Bairro',
     type: 'string',
@@ -99,7 +88,35 @@ const Patients = () => {
   const [open, setOpen] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
   const [editPatient, setEditPatient] = useState(null);
-  const [initialPatientsData, setInitialPatientsData] = useState(patientsData);
+  const [initialPatientsData, setInitialPatientsData] = useState([]);
+
+  const getPacientes = async () => {
+    try {
+      const response = await api.get("/paciente/consultar?cpf=&nome=");
+      const pacientes = response.data.map((paciente) => ({
+        id: paciente.id,
+        nome: paciente.nome,
+        sobrenome: paciente.sobrenome,
+        dataDeNascimento: formatarData_dd_MM_yyyy(paciente.dataDeNascimento),
+        cpf: paciente.cpf,
+        genero: paciente.genero,
+        telefone: paciente.telefone,
+        informacoesAdicionais: paciente.informacoesAdicionais,
+        cep: paciente.cep,
+        logradouro: paciente.logradouro,
+        bairro: paciente.bairro,
+        numero: paciente.numero,
+        bloco: paciente.bloco,
+      }));
+      setInitialPatientsData(pacientes);
+    } catch (error) {
+      console.error("Ops! Ocorreu um erro: " + error);
+    }
+  };
+
+  useEffect(() => {
+    getPacientes();
+  }, []);
 
   const handleEditClick = (patient) => {
     setIsEditing(true);
@@ -112,14 +129,18 @@ const Patients = () => {
     setOpen(true);
   };
 
-  const handleSavePatient = (data) => {
+  const handleSavePatient = async (data) => {
     if (isEditing) {
       const updatedPatients = initialPatientsData.map(patient => {
         if (patient.id === editPatient.id) {
-          return {
+          const updatedPatients = {
             ...patient,
             ...data
           };
+
+          atualizar(updatedPatients);
+
+          return updatedPatients;
         }
         return patient;
       });
@@ -127,13 +148,75 @@ const Patients = () => {
       setInitialPatientsData(updatedPatients);
     } else {
       const newPatient = {
-        id: Math.random(),
         ...data
       };
+
+      const id = await gravar(newPatient);
+      newPatient.id = id
+
       const updatedPatients = [...initialPatientsData, newPatient];
       setInitialPatientsData(updatedPatients);
     }
     setOpen(false);
+  };
+
+  const gravar = async (paciente) => {
+    try {
+      const response = await api.post("/paciente/cadastro", {
+        nome: paciente.nome,
+        sobrenome: paciente.sobrenome,
+        dataDeNascimento: formatarData_yyyy_MM_dd(paciente.dataDeNascimento),
+        cpf: paciente.cpf,
+        genero: paciente.genero,
+        telefone: paciente.telefone,
+        informacoesAdicionais: paciente.informacoesAdicionais,
+        cep: paciente.cep,
+        logradouro: paciente.logradouro,
+        bairro: paciente.bairro,
+        numero: paciente.numero,
+        bloco: paciente.bloco,
+      });
+      return response.data.id;
+    } catch (error) {
+      throw new Error("Erro ao gravar paciente: " + error.message);
+    }
+  };
+
+  const atualizar = async (paciente) => {
+    try {
+      await api.put("/paciente/atualizar", {
+        id: paciente.id,
+        nome: paciente.nome,
+        sobrenome: paciente.sobrenome,
+        dataDeNascimento: formatarData_yyyy_MM_dd(paciente.dataDeNascimento),
+        cpf: paciente.cpf,
+        genero: paciente.genero,
+        telefone: paciente.telefone,
+        informacoesAdicionais: paciente.informacoesAdicionais,
+        cep: paciente.cep,
+        logradouro: paciente.logradouro,
+        bairro: paciente.bairro,
+        numero: paciente.numero,
+        bloco: paciente.bloco,
+      });
+    } catch (error) {
+      throw new Error("Erro ao atualizar procedimento: " + error);
+    }
+  };
+
+  const handleDeleteClick = (paciente) => {
+    remove(paciente)
+
+    const updatedPacientes = initialPatientsData.filter(p => p.id !== paciente.id);
+    setInitialPatientsData(updatedPacientes);
+  };
+
+  const remove = async (paciente) => {
+    try {
+      await api.delete("/paciente/delete/" + paciente.id);
+    } catch (error) {
+      throw new Error("Erro ao atualizar paciente: " + error);
+    }
   };
 
   return (
@@ -142,7 +225,7 @@ const Patients = () => {
         <Header title="Pacientes" subtitle="Registre e gerencie seus pacientes." />
       </Box>
 
-      <DataTable slug="patients" columns={columns} rows={initialPatientsData} onEditClick={handleEditClick} />
+      <DataTable slug="patients" columns={columns} rows={initialPatientsData} onEditClick={handleEditClick} onDeleteClick={handleDeleteClick} />
       
       {open && (
         <Action

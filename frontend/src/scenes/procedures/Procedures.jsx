@@ -1,16 +1,15 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import "./procedures.scss";
 import { Box, Fab } from "@mui/material";
 import { Add as AddIcon } from "@mui/icons-material";
 import Header from "../../components/headers/Headers";
 import { DataTable } from "../../components/dataTable/dataTable";
-import { proceduresData } from "../../data/dados";
 import Action from "../../components/action/Action";
-
+import api from '../../services/api';
 
 const columns = [
   {
-    field: 'procedimento',
+    field: 'tratamento',
     headerName: 'Procedimento',
     width: 200,
     type: 'string'
@@ -19,7 +18,7 @@ const columns = [
     field: 'valor',
     headerName: 'Valor',
     width: 200,
-    type: 'string'
+    type: 'number'
   },
   {
     field: 'tempo',
@@ -33,8 +32,26 @@ const Procedures = () => {
   const [open, setOpen] = useState(false);
   const [editProcedure, setEditProcedure] = useState(null); 
   const [isEditing, setIsEditing] = useState(false);
-  const [initialProceduresData, setInitialProceduresData] = useState(proceduresData);
-  
+  const [initialProceduresData, setInitialProceduresData] = useState([]);
+
+  const getConsultas = async () => {
+    try {
+      const response = await api.get("/procedimento/consultar?tratamento= ");
+      const procedimentos = response.data.map((procedimento) => ({
+        id: procedimento.id,
+        tratamento: procedimento.tratamento,
+        valor: procedimento.valor,
+        tempo: procedimento.tempo,
+      }));
+      setInitialProceduresData(procedimentos);
+    } catch (error) {
+      console.error("Ops! Ocorreu um erro: " + error);
+    }
+  };
+
+  useEffect(() => {
+    getConsultas();
+  }, []);
 
   const handleEditClick = (procedure) => {
     setIsEditing(true);
@@ -47,14 +64,18 @@ const Procedures = () => {
     setOpen(true); // Definir open como true ao clicar no botão de adicionar
   };
 
-  const handleSaveProcedure = (data) => {
+  const handleSaveProcedure = async (data) => {
     if (isEditing) {
       const updatedProcedures = initialProceduresData.map(procedure => {
         if (procedure.id === editProcedure.id) {
-          return {
+          const updatedProcedures = {
             ...procedure,
             ...data
           };
+
+          atualizar(updatedProcedures);
+
+          return updatedProcedures;
         }
         return procedure;
       });
@@ -62,13 +83,59 @@ const Procedures = () => {
       setInitialProceduresData(updatedProcedures);
     } else {
       const newProcedure = {
-        id: Math.random(),
         ...data
       };
+
+      const id = await gravar(newProcedure);
+      newProcedure.id = id;
+
       const updatedProcedures = [...initialProceduresData, newProcedure];
       setInitialProceduresData(updatedProcedures);
     }
     setOpen(false);
+  };
+
+  const gravar = async (procedimento) => {
+    try {
+      const response = await api.post("/procedimento/cadastro", {
+        tratamento: procedimento.tratamento,
+        valor: parseFloat(procedimento.valor),
+        tempo: procedimento.tempo,
+        desabilitado: false,
+      });
+      return response.data.id;
+    } catch (error) {
+      throw new Error("Erro ao gravar procedimento: " + error.message);
+    }
+  };
+
+  const atualizar = async (procedimento) => {
+    try {
+      await api.put("/procedimento/atualizar", {
+        id: procedimento.id,
+        tratamento: procedimento.tratamento,
+        valor: parseFloat(procedimento.valor),
+        tempo: procedimento.tempo,
+        desabilitado: false,
+      });
+    } catch (error) {
+      throw new Error("Erro ao atualizar procedimento: " + error);
+    }
+  };
+
+  const handleDeleteClick = (procedure) => {
+    remove(procedure)
+
+    const updatedProcedures = initialProceduresData.filter(p => p.id !== procedure.id);
+    setInitialProceduresData(updatedProcedures);
+  };
+
+  const remove = async (procedure) => {
+    try {
+      await api.delete("/procedimento/delete/" + procedure.id);
+    } catch (error) {
+      throw new Error("Erro ao atualizar procedimento: " + error);
+    }
   };
 
   return (
@@ -76,7 +143,7 @@ const Procedures = () => {
       <Box display="flex" justifyContent="space-between" alignItems="center">
         <Header title="Procedimentos" subtitle="Registre e gerencie seus procedimentos." />
       </Box>
-      <DataTable slug="procedures" columns={columns} rows={initialProceduresData} onEditClick={handleEditClick} />
+      <DataTable slug="procedures" columns={columns} rows={initialProceduresData} onEditClick={handleEditClick} onDeleteClick={handleDeleteClick} />
       {open && (
         <Action
           slug="procedimento"

@@ -17,7 +17,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/procedimento")
@@ -50,9 +52,12 @@ public class ProcedimentoController {
     public ResponseEntity<?> cadastro(@Valid @RequestBody ProcedimentoRequest procedimentoRequest) {
         ProcedimentoDto procedimentoDto = new ProcedimentoDto();
         BeanUtils.copyProperties(procedimentoRequest, procedimentoDto);
-        procedimentoService.cadastrar(procedimentoDto);
+        Long id = procedimentoService.cadastrar(procedimentoDto);
 
-        return ResponseEntity.status(HttpStatus.CREATED).build();
+        Map<String, Object> responseBody = new HashMap<>();
+        responseBody.put("id", id);
+
+        return ResponseEntity.status(HttpStatus.CREATED).body(responseBody);
     }
 
     @PutMapping(value = "/atualizar", consumes = MediaType.APPLICATION_JSON_VALUE)

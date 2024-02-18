@@ -16,7 +16,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/paciente")
@@ -33,9 +35,12 @@ public class PacienteController {
     public ResponseEntity<?> cadastro(@Valid @RequestBody PacienteRequest pacienteRequest) {
         PacienteDto pacienteDto = new PacienteDto();
         BeanUtils.copyProperties(pacienteRequest, pacienteDto);
-        pacienteService.cadastrar(pacienteDto);
+        Long id = pacienteService.cadastrar(pacienteDto);
 
-        return ResponseEntity.status(HttpStatus.CREATED).build();
+        Map<String, Object> responseBody = new HashMap<>();
+        responseBody.put("id", id);
+
+        return ResponseEntity.status(HttpStatus.CREATED).body(responseBody);
     }
 
     @PutMapping(value = "/atualizar", consumes = MediaType.APPLICATION_JSON_VALUE)
@@ -70,6 +75,15 @@ public class PacienteController {
                 .consultarPorNome(nome);
 
         return ResponseEntity.status(HttpStatus.OK).body(pacienteResponseList);
+    }
+
+    @DeleteMapping(value = "delete/{id}")
+    public ResponseEntity<?> deletar(@PathVariable("id") Long id) {
+        if (!pacienteService.existsById(id))
+            return ResponseEntity.notFound().build();
+
+        pacienteService.deletar(id);
+        return ResponseEntity.status(HttpStatus.OK).build();
     }
 
 }

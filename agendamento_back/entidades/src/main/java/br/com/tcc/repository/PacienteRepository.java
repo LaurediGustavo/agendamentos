@@ -16,12 +16,14 @@ public interface PacienteRepository extends JpaRepository<Paciente, Long> {
     Optional<Paciente> findById(Long value);
 
     @Query("SELECT p FROM Paciente p " +
-            "WHERE p.nome LIKE %:nome% " +
-            "OR p.cpf LIKE %:cpf%")
+            "WHERE (p.nome LIKE %:nome% OR p.cpf LIKE %:cpf%) " +
+            "AND (p.desabilitado IS NULL OR p.desabilitado = false) " +
+            "ORDER BY p.nome")
     Optional<List<Paciente>> findByCpfNome(@Param("cpf") String cpf, @Param("nome") String nome);
 
     @Query("SELECT p FROM Paciente p " +
-            "WHERE p.nome LIKE %:nome% ")
+            "WHERE p.nome LIKE %:nome% " +
+            "AND (p.desabilitado IS NULL OR p.desabilitado = false) ")
     Optional<List<Paciente>> findByNome(@Param("nome") String nome);
 
     Optional<Paciente> findByCpf(String cpf);

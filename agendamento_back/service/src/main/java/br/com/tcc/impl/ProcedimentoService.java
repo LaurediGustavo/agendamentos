@@ -15,9 +15,10 @@ public class ProcedimentoService {
     @Autowired
     private ProcedimentoRepository procedimentoRepository;
 
-    public void cadastrar(ProcedimentoDto procedimentoDto) {
+    public Long cadastrar(ProcedimentoDto procedimentoDto) {
         Procedimento procedimento = gerarProcedimento(procedimentoDto);
         procedimentoRepository.save(procedimento);
+        return procedimento.getId();
     }
 
     private Procedimento gerarProcedimento(ProcedimentoDto procedimentoDto) {
@@ -25,7 +26,7 @@ public class ProcedimentoService {
         procedimento.setTratamento(procedimentoDto.getTratamento());
         procedimento.setTempo(procedimentoDto.getTempo());
         procedimento.setValor(procedimentoDto.getValor());
-        procedimento.setDesabilitado(procedimentoDto.getDesabilitado());
+        procedimento.setDesabilitado(procedimentoDto.getDesabilitado() != null && procedimentoDto.getDesabilitado());
 
         return procedimento;
     }
@@ -49,7 +50,7 @@ public class ProcedimentoService {
             procedimento.setValor(procedimentoDto.getValor());
         }
 
-        procedimento.setDesabilitado(procedimentoDto.getDesabilitado());
+        procedimento.setDesabilitado(procedimentoDto.getDesabilitado() != null && procedimentoDto.getDesabilitado());
     }
 
     private Procedimento gerarProcedimento(Long procedimentoId) {

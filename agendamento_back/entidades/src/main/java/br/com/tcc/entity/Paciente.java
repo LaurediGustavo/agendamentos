@@ -45,7 +45,10 @@ public class Paciente implements Serializable {
 	
 	@Column(name = "informacoesadicionais", length = 1000, nullable = true)
 	private String informacoesAdicionais;
-	
+
+	@Column(name = "cep", length = 9)
+	private String cep;
+
 	@Column(name = "logradouro", length = 100, nullable = true)
 	private String logradouro;
 	
@@ -67,5 +70,8 @@ public class Paciente implements Serializable {
 	
 	@Column(name = "chat_id", length = 50, nullable = true)
 	private Long chatId;
+
+	@Column(name = "desabilitado")
+	private Boolean desabilitado;
 	
 }

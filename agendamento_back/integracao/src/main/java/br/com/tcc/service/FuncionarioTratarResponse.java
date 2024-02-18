@@ -50,6 +50,7 @@ public class FuncionarioTratarResponse {
                     funcionario.getCpf(),
                     funcionario.getGenero(),
                     funcionario.getTelefone(),
+                    funcionario.getCep(),
                     funcionario.getLogradouro(),
                     funcionario.getBairro(),
                     funcionario.getNumero(),

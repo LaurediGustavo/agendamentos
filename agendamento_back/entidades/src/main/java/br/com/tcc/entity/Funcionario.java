@@ -49,7 +49,10 @@ public class Funcionario implements Serializable {
 	
 	@Column(name = "telefone", length = 15, nullable = false)
 	private String telefone;
-	
+
+	@Column(name = "cep", length = 9)
+	private String cep;
+
 	@Column(name = "logradouro", length = 100, nullable = false)
 	private String logradouro;
 	
@@ -65,5 +68,8 @@ public class Funcionario implements Serializable {
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "tipo_funcionario_id")
 	private TipoFuncionario tipoFuncionario;
+
+	@Column(name = "desabilitado")
+	private Boolean desabilitado;
 
 }

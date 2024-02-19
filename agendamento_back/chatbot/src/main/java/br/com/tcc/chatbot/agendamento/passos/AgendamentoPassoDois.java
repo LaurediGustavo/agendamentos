@@ -44,7 +44,7 @@ public class AgendamentoPassoDois implements AgendamentoPassosInterface {
             return montarMensagem(message.getChatId(), getTextoMensagem());
         }
         else {
-            return montarMensagem(message.getChatId(), "CPF inválido ou nao cadastrado! Por favor informe seu CPF");
+            return montarMensagem(message.getChatId(), "CPF inválido, nao cadastrado ou bloqueado! Por favor informe seu CPF ou entre em contato com a Clinica.");
         }
     }
 
@@ -61,7 +61,7 @@ public class AgendamentoPassoDois implements AgendamentoPassosInterface {
 
     private String getTextoMensagem() {
         StringBuilder procedimentos = procedimentoRepository
-                .findAll()
+                .findAllHabilitados()
                 .stream()
                 .map(procedimento ->
                         new StringBuilder()

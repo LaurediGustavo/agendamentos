@@ -14,6 +14,7 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 @Component
@@ -27,6 +28,9 @@ public class RemarcarPassoCinco implements RemarcarPassosInterface {
 
     @Autowired
     private DoutorRepository doutorRepository;
+
+    @Autowired
+    private PacienteRepository pacienteRepository;
 
     @Autowired
     private ConsultaRepository consultaRepository;
@@ -43,7 +47,7 @@ public class RemarcarPassoCinco implements RemarcarPassosInterface {
             RemarcarAgendamentoChatBot remarcarAgendamentoChatBot = getRemarcarAgendamento(message.getChatId());
             Consulta consulta = getConsulta(remarcarAgendamentoChatBot);
 
-            List<LocalTime> horarios = horariosDisponiveis(data, consulta.getProcedimentos());
+            List<LocalTime> horarios = horariosDisponiveis(data, consulta.getProcedimentos(), remarcarAgendamentoChatBot.getCpf());
 
             if(!horarios.isEmpty()) {
                 atualizarMonitor(monitorDeChatBot);
@@ -85,6 +89,8 @@ public class RemarcarPassoCinco implements RemarcarPassosInterface {
     }
 
     private String getTextoMensagem(List<LocalTime> horarios) {
+        Collections.sort(horarios);
+
         return """
                 Horários disponíveis:\n
                 """ +
@@ -107,9 +113,11 @@ public class RemarcarPassoCinco implements RemarcarPassosInterface {
         return string.toString();
     }
 
-    private List<LocalTime> horariosDisponiveis(LocalDate data, List<Procedimento> procedimentos) {
+    private List<LocalTime> horariosDisponiveis(LocalDate data, List<Procedimento> procedimentos, String cpf) {
         List<Doutor> doutorList = doutorRepository
-                .findAll();
+                .findAllToProcedureHabilitados(procedimentos.stream().map(Procedimento::getId).toArray(Long[]::new));
+
+        Paciente paciente = getPaciente(cpf);
 
         int intevalo = getIntervalo(procedimentos);
 
@@ -126,7 +134,7 @@ public class RemarcarPassoCinco implements RemarcarPassosInterface {
                 long possuiAgendamento = consultaRepository.consultarPorDataEDoutor(dataInicio, dataFinal, doutor.getId(), 0L).get();
                 horarioLivre = possuiAgendamento == 0;
 
-                possuiAgendamento = consultaRepository.consultarPorDataEDoutor(dataInicio, dataFinal, doutor.getId(), 0L).get();
+                possuiAgendamento = consultaRepository.consultarPorDataEPaciente(dataInicio, dataFinal, paciente.getId(), 0L).get();
                 horarioLivre = possuiAgendamento == 0;
 
                 if(horarioLivre) {
@@ -146,6 +154,10 @@ public class RemarcarPassoCinco implements RemarcarPassosInterface {
         }
 
         return listaFinal;
+    }
+
+    private Paciente getPaciente(String cpf) {
+        return pacienteRepository.findByCpf(cpf).get();
     }
 
     private int getIntervalo(List<Procedimento> procedimentos) {

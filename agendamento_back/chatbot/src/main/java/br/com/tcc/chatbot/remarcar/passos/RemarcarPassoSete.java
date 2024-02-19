@@ -82,7 +82,7 @@ public class RemarcarPassoSete implements RemarcarPassosInterface {
 
     private String getTextoMensagem() {
         StringBuilder procedimentos = procedimentoRepository
-                .findAll()
+                .findAllHabilitados()
                 .stream()
                 .map(procedimento ->
                         new StringBuilder()
@@ -120,7 +120,7 @@ public class RemarcarPassoSete implements RemarcarPassosInterface {
             consulta.setStatus(StatusConsultaEnum.AGUARDANDO);
             consulta.setValorTotal(consultaAnterior.getValorTotal());
             consulta.setDataHoraInicio(remarcar.getHorario());
-            consulta.setDataHoraFinal(remarcar.getHorario().plusMinutes(minutos));
+            consulta.setDataHoraFinal(remarcar.getHorario().plusMinutes(minutos).minusMinutes(1));
             consulta.setPaciente(paciente.get());
             consulta.setDoutor(getDoutorDisponivel(remarcar, minutos));
             consulta.setProcedimentos(consultaAnterior.getProcedimentos());
@@ -151,7 +151,12 @@ public class RemarcarPassoSete implements RemarcarPassosInterface {
         LocalDateTime horarioFinal = remarcarAgendamentoChatBot.getHorario()
                 .plusMinutes(minutos);
 
-        return doutorRepository.findDoutoresDisponiveis(remarcarAgendamentoChatBot.getHorario(), horarioFinal)
+        Long[] procedimentoIds = remarcarAgendamentoChatBot.getConsulta().getProcedimentos()
+                .stream()
+                .map(Procedimento::getId)
+                .toArray(Long[]::new);
+
+        return doutorRepository.findDoutoresDisponiveis(remarcarAgendamentoChatBot.getHorario(), horarioFinal, procedimentoIds)
                 .get(0);
     }
 

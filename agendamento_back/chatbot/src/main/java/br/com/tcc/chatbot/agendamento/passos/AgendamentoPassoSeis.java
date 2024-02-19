@@ -117,7 +117,7 @@ public class AgendamentoPassoSeis implements AgendamentoPassosInterface {
             consulta.setStatus(StatusConsultaEnum.AGUARDANDO);
             consulta.setValorTotal(agendamentoChatBot.getProcedimento().getValor());
             consulta.setDataHoraInicio(agendamentoChatBot.getHorario());
-            consulta.setDataHoraFinal(agendamentoChatBot.getHorario().plusMinutes(Long.parseLong(agendamentoChatBot.getProcedimento().getTempo())));
+            consulta.setDataHoraFinal(agendamentoChatBot.getHorario().plusMinutes(minutos).minusMinutes(1));
             consulta.setPaciente(paciente.get());
             consulta.setDoutor(getDoutorDisponivel(agendamentoChatBot));
             consulta.setProcedimentos(getProcedimentos(agendamentoChatBot.getProcedimento()));
@@ -135,7 +135,8 @@ public class AgendamentoPassoSeis implements AgendamentoPassosInterface {
         LocalDateTime horarioFinal = agendamentoChatBot.getHorario()
                 .plusMinutes(Long.parseLong(agendamentoChatBot.getProcedimento().getTempo()));
 
-        return doutorRepository.findDoutoresDisponiveis(agendamentoChatBot.getHorario(), horarioFinal)
+        return doutorRepository.findDoutoresDisponiveis(agendamentoChatBot.getHorario(), horarioFinal,
+                        new Long[] { agendamentoChatBot.getProcedimento().getId() })
                 .get(0);
     }
 

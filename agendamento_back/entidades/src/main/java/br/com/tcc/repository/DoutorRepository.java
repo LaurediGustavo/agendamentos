@@ -21,17 +21,25 @@ public interface DoutorRepository extends JpaRepository<Doutor, Long> {
             "ORDER BY d.nome")
     Optional<List<Doutor>> findByNomeContaining(String nome);
 
-    @Query("SELECT d FROM Doutor d WHERE d.id NOT IN " +
-            "(SELECT c.doutor.id FROM Consulta c " +
+    @Query("SELECT d FROM Doutor d " +
+            "JOIN d.procedimentos p " +
+            "WHERE d.id NOT IN (SELECT c.doutor.id FROM Consulta c " +
             "WHERE (:dataInicio BETWEEN c.dataHoraInicio AND c.dataHoraFinal) " +
-            "AND (:dataFim BETWEEN c.dataHoraInicio AND c.dataHoraFinal)) " +
-            "AND (d.desabilitado IS NULL OR d.desabilitado = false) ")
-    List<Doutor> findDoutoresDisponiveis(@Param("dataInicio") LocalDateTime dataInicio, @Param("dataFim") LocalDateTime dataFim);
+            "OR (:dataFim BETWEEN c.dataHoraInicio AND c.dataHoraFinal)) " +
+            "AND (p.id IN (:procedimentosId))" +
+            "AND (d.desabilitado IS NULL OR d.desabilitado = false)")
+    List<Doutor> findDoutoresDisponiveis(@Param("dataInicio") LocalDateTime dataInicio, @Param("dataFim") LocalDateTime dataFim, @Param("procedimentosId") Long[] procedimentoId);
 
     @Query("SELECT d FROM Doutor d " +
             "JOIN d.procedimentos p " +
-            "WHERE (p.id in (:procedimentosId) " +
-            "AND d.nome like %:nome%) " +
+            "WHERE ((p.id in (:procedimentosId) " +
+            "AND d.nome like %:nome%)) " +
             "AND (d.desabilitado IS NULL OR d.desabilitado = false) ")
     Optional<List<Doutor>> findByNomeAndProcedimentoId(@Param("nome") String nome, @Param("procedimentosId") Long[] procedimentoId);
+
+    @Query("SELECT d FROM Doutor d " +
+            "JOIN d.procedimentos p " +
+            "WHERE p.id in (:procedimentosId) " +
+            "AND (d.desabilitado IS NULL OR d.desabilitado = false) ")
+    List<Doutor> findAllToProcedureHabilitados(@Param("procedimentosId") Long[] procedimentoId);
 }

@@ -41,7 +41,7 @@ public class ConsultaPassoDois implements ConsultaPassosInterface {
             return montarMensagem(message.getChatId(), getTextoMensagem(mensagem));
         }
         else {
-            return montarMensagem(message.getChatId(), "CPF inválido ou nao cadastrado! Por favor informe seu CPF");
+            return montarMensagem(message.getChatId(), "CPF inválido, nao cadastrado ou bloqueado! Por favor informe seu CPF ou entre em contato com a Clinica.");
         }
     }
 

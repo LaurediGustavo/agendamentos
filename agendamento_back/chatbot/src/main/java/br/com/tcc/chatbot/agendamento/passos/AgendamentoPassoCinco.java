@@ -2,9 +2,7 @@ package br.com.tcc.chatbot.agendamento.passos;
 
 import br.com.tcc.chatbot.agendamento.enumerador.AgendamentoPassosEnum;
 import br.com.tcc.chatbot.agendamento.interfaces.AgendamentoPassosInterface;
-import br.com.tcc.entity.AgendamentoChatBot;
-import br.com.tcc.entity.Doutor;
-import br.com.tcc.entity.MonitorDeChatBot;
+import br.com.tcc.entity.*;
 import br.com.tcc.repository.*;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,6 +17,7 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 @Component
@@ -32,6 +31,9 @@ public class AgendamentoPassoCinco implements AgendamentoPassosInterface {
 
     @Autowired
     private DoutorRepository doutorRepository;
+
+    @Autowired
+    private PacienteRepository pacienteRepository;
 
     @Autowired
     private ConsultaRepository consultaRepository;
@@ -82,10 +84,12 @@ public class AgendamentoPassoCinco implements AgendamentoPassosInterface {
 
     private LocalTime horarioAtendimento(AgendamentoChatBot agendamentoChatBot, String opcao) {
         List<LocalTime> horarios = horariosDisponiveis(agendamentoChatBot.getHorario().toLocalDate(),
-                Integer.parseInt(agendamentoChatBot.getProcedimento().getTempo()));
+                agendamentoChatBot.getProcedimento(), agendamentoChatBot.getCpf());
 
         int opcaoInt;
         try {
+            Collections.sort(horarios);
+
             opcaoInt = Integer.parseInt(opcao);
 
             return horarios.get(opcaoInt - 1);
@@ -101,7 +105,7 @@ public class AgendamentoPassoCinco implements AgendamentoPassosInterface {
 
     private String getTextoMensagem(AgendamentoChatBot agendamentoChatBot) {
         List<LocalTime> horarios = horariosDisponiveis(agendamentoChatBot.getHorario().toLocalDate(),
-                Integer.parseInt(agendamentoChatBot.getProcedimento().getTempo()));
+                agendamentoChatBot.getProcedimento(), agendamentoChatBot.getCpf());
 
         return """
                 O horário ficou indisponível.
@@ -115,6 +119,8 @@ public class AgendamentoPassoCinco implements AgendamentoPassosInterface {
     }
 
     private String formatarHorarios(List<LocalTime> horarios) {
+        Collections.sort(horarios);
+
         StringBuilder string = new StringBuilder();
 
         for (int i = 0; i < horarios.size(); i++) {
@@ -127,24 +133,25 @@ public class AgendamentoPassoCinco implements AgendamentoPassosInterface {
         return string.toString();
     }
 
-    private List<LocalTime> horariosDisponiveis(LocalDate data, int intevalo) {
+    private List<LocalTime> horariosDisponiveis(LocalDate data, Procedimento procedimento, String cpf) {
         List<Doutor> doutorList = doutorRepository
-                .findAll();
+                .findAllToProcedureHabilitados(new Long[] { procedimento.getId() });
 
-        List<LocalTime> horarios = gerarHorarios(intevalo);
+        Paciente paciente = getPaciente(cpf);
+
+        List<LocalTime> horarios = gerarHorarios(Integer.parseInt(procedimento.getTempo()));
         List<LocalTime> listaFinal = new ArrayList<LocalTime>();
 
         for (Doutor doutor : doutorList) {
             for (int i = 0; i < horarios.size() - 1; i++) {
                 LocalDateTime dataInicio = data.atTime(horarios.get(i));
                 LocalDateTime dataFinal = data.atTime(horarios.get(i + 1));
-                dataFinal = dataFinal.minusSeconds(1);
 
                 boolean horarioLivre = false;
                 long possuiAgendamento = consultaRepository.consultarPorDataEDoutor(dataInicio, dataFinal, doutor.getId(), 0L).get();
                 horarioLivre = possuiAgendamento == 0;
 
-                possuiAgendamento = consultaRepository.consultarPorDataEDoutor(dataInicio, dataFinal, doutor.getId(), 0L).get();
+                possuiAgendamento = consultaRepository.consultarPorDataEPaciente(dataInicio, dataFinal, paciente.getId(), 0L).get();
                 horarioLivre = possuiAgendamento == 0;
 
                 if(horarioLivre) {
@@ -164,6 +171,10 @@ public class AgendamentoPassoCinco implements AgendamentoPassosInterface {
         }
 
         return listaFinal;
+    }
+
+    private Paciente getPaciente(String cpf) {
+        return pacienteRepository.findByCpf(cpf).get();
     }
 
     private List<LocalTime> gerarHorarios(int intervalo) {

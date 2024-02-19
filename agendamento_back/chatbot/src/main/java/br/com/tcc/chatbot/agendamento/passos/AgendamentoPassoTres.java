@@ -57,7 +57,7 @@ public class AgendamentoPassoTres implements AgendamentoPassosInterface {
 
     private String getTextoMensagemErro() {
         StringBuilder procedimentos = procedimentoRepository
-                .findAll()
+                .findAllHabilitados()
                 .stream()
                 .map(procedimento ->
                         new StringBuilder()
@@ -80,7 +80,7 @@ public class AgendamentoPassoTres implements AgendamentoPassosInterface {
     }
 
     private Optional<Procedimento> getProcedimento(String codigo) {
-        return procedimentoRepository.findById(Long.parseLong(StringUtils.isBlank(codigo)? (String) "0" : codigo));
+        return procedimentoRepository.findByIdHabilitado(Long.parseLong(StringUtils.isBlank(codigo) || !Uteis.isValorNumerico(codigo)? (String) "0" : codigo));
     }
 
     private void atualizarMonitor(MonitorDeChatBot monitorDeChatBot) {

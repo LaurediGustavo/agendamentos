@@ -5,6 +5,7 @@ import br.com.tcc.chatbot.remarcar.interfaces.RemarcarPassosInterface;
 import br.com.tcc.entity.*;
 import br.com.tcc.repository.*;
 import org.apache.commons.lang3.StringUtils;
+import org.checkerframework.checker.units.qual.A;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
@@ -16,6 +17,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 @Component
@@ -29,6 +31,9 @@ public class RemarcarPassoSeis implements RemarcarPassosInterface {
 
     @Autowired
     private DoutorRepository doutorRepository;
+
+    @Autowired
+    private PacienteRepository pacienteRepository;
 
     @Autowired
     private ConsultaRepository consultaRepository;
@@ -89,10 +94,11 @@ public class RemarcarPassoSeis implements RemarcarPassosInterface {
 
     private LocalTime horarioAtendimento(RemarcarAgendamentoChatBot remarcarAgendamentoChatBot, String opcao) {
         List<LocalTime> horarios = horariosDisponiveis(remarcarAgendamentoChatBot.getHorario().toLocalDate(),
-                getIntervalo(getConsulta(remarcarAgendamentoChatBot).getProcedimentos()));
+                getConsulta(remarcarAgendamentoChatBot).getProcedimentos(), remarcarAgendamentoChatBot.getCpf());
 
         int opcaoInt;
         try {
+            Collections.sort(horarios);
             opcaoInt = Integer.parseInt(opcao);
 
             return horarios.get(opcaoInt - 1);
@@ -120,7 +126,7 @@ public class RemarcarPassoSeis implements RemarcarPassosInterface {
 
     private String getTextoMensagem(RemarcarAgendamentoChatBot remarcarAgendamentoChatBot) {
         List<LocalTime> horarios = horariosDisponiveis(remarcarAgendamentoChatBot.getHorario().toLocalDate(),
-                getIntervalo(remarcarAgendamentoChatBot.getConsulta().getProcedimentos()));
+                remarcarAgendamentoChatBot.getConsulta().getProcedimentos(), remarcarAgendamentoChatBot.getCpf());
 
         return """
                 O horário ficou indisponível.
@@ -134,6 +140,8 @@ public class RemarcarPassoSeis implements RemarcarPassosInterface {
     }
 
     private String formatarHorarios(List<LocalTime> horarios) {
+        Collections.sort(horarios);
+
         StringBuilder string = new StringBuilder();
 
         for (int i = 0; i < horarios.size(); i++) {
@@ -146,9 +154,13 @@ public class RemarcarPassoSeis implements RemarcarPassosInterface {
         return string.toString();
     }
 
-    private List<LocalTime> horariosDisponiveis(LocalDate data, int intevalo) {
+    private List<LocalTime> horariosDisponiveis(LocalDate data, List<Procedimento> procedimentos, String cpf) {
         List<Doutor> doutorList = doutorRepository
-                .findAll();
+                .findAllToProcedureHabilitados(procedimentos.stream().map(Procedimento::getId).toArray(Long[]::new));
+
+        Paciente paciente = getPaciente(cpf);
+
+        int intevalo = getIntervalo(procedimentos);
 
         List<LocalTime> horarios = gerarHorarios(intevalo);
         List<LocalTime> listaFinal = new ArrayList<LocalTime>();
@@ -163,7 +175,7 @@ public class RemarcarPassoSeis implements RemarcarPassosInterface {
                 long possuiAgendamento = consultaRepository.consultarPorDataEDoutor(dataInicio, dataFinal, doutor.getId(), 0L).get();
                 horarioLivre = possuiAgendamento == 0;
 
-                possuiAgendamento = consultaRepository.consultarPorDataEDoutor(dataInicio, dataFinal, doutor.getId(), 0L).get();
+                possuiAgendamento = consultaRepository.consultarPorDataEPaciente(dataInicio, dataFinal, paciente.getId(), 0L).get();
                 horarioLivre = possuiAgendamento == 0;
 
                 if(horarioLivre) {
@@ -183,6 +195,10 @@ public class RemarcarPassoSeis implements RemarcarPassosInterface {
         }
 
         return listaFinal;
+    }
+
+    private Paciente getPaciente(String cpf) {
+        return pacienteRepository.findByCpf(cpf).get();
     }
 
     private List<LocalTime> gerarHorarios(int intervalo) {

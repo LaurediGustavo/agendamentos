@@ -26,6 +26,10 @@ public interface PacienteRepository extends JpaRepository<Paciente, Long> {
             "AND (p.desabilitado IS NULL OR p.desabilitado = false) ")
     Optional<List<Paciente>> findByNome(@Param("nome") String nome);
 
+    @Query("SELECT p FROM Paciente p " +
+            "WHERE p.cpf LIKE :cpf " +
+            "AND (p.desabilitado IS NULL OR p.desabilitado = false) " +
+            "ORDER BY p.nome")
     Optional<Paciente> findByCpf(String cpf);
 
     Optional<Paciente> findByChatId(Long chatId);

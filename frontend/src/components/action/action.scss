@@ -1,3 +1,5 @@
+/* action.scss */
+
 .activated {
   width: 100vw;
   min-height: 100vh;
@@ -19,6 +21,8 @@
   position: relative;
   z-index: 1000;
   max-width: 800px;
+  max-height: calc(100vh - 100px); /* Altura máxima do modal */
+  overflow-y: auto; /* Adiciona scroll vertical quando necessário */
 }
 
 .modal h1 {
@@ -37,18 +41,22 @@
 .modal form {
   display: flex;
   flex-wrap: wrap;
-  justify-content: center; /* Alterado de flex-start para center */
+  justify-content: space-between; /* Modificado para space-between */
 }
 
 .modal form .item {
-  width: calc(33.33% - 20px);
+  width: calc(45% - 10px); /* Redimensiona a largura dos itens */
   margin-bottom: 20px;
-  margin-right: 10px; /* Adicionado margem à direita */
 }
 
 /* Remova a margem à direita do último item em cada linha */
-.modal form .item:nth-child(3n) {
+.modal form .item:nth-child(2n) {
   margin-right: 0;
+}
+
+/* Adiciona mais espaçamento entre os campos adicionais do responsável legal */
+.modal form .item.responsible-item {
+  margin-bottom: 30px;
 }
 
 .modal form .item label {
@@ -69,6 +77,7 @@
   padding: 10px;
   cursor: pointer;
   background-color: #3fbabf;
+  margin-top: 20px; /* Adiciona margem ao topo do botão */
 }
 
 .modal button:hover {
@@ -103,7 +112,6 @@ textarea {
   .modal form .item {
     width: calc(50% - 10px);
     margin-right: 10px; /* Adicionado margem à direita */
-   
   }
 
   /* Remova a margem à direita do último item em cada linha */
@@ -111,3 +119,4 @@ textarea {
     margin-right: 0;
   }
 }
+

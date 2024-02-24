@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { patientsData } from "../../data/dados";
 import "./patients.scss";
 import { DataTable } from "../../components/dataTable/dataTable";
 import { Box, Fab } from "@mui/material";
@@ -81,6 +82,42 @@ const columns = [
     type: 'string',
     width: 300
   },
+  {
+    field: 'responsavelLegal',
+    headerName: 'Responsável Legal',
+    type: 'boolean',
+    width: 200
+  },
+  {
+    field: 'nomeResponsavel',
+    headerName: 'Nome do Responsável',
+    type: 'string',
+    width: 200
+  },
+  {
+    field: 'sobrenomeResponsavel',
+    headerName: 'Sobrenome do Responsável',
+    type: 'string',
+    width: 200
+  },
+  {
+    field: 'relacaoResponsavel',
+    headerName: 'Relação com o Paciente',
+    type: 'string',
+    width: 200
+  },
+  {
+    field: 'cpfResponsavel',
+    headerName: 'CPF do Responsável',
+    type: 'string',
+    width: 200
+  },
+  {
+    field: 'telefoneResponsavel',
+    headerName: 'Telefone do Responsável',
+    type: 'string',
+    width: 200
+  },
 ];
 
 
@@ -107,6 +144,13 @@ const Patients = () => {
         bairro: paciente.bairro,
         numero: paciente.numero,
         bloco: paciente.bloco,
+        // Usando dados do mock para campos relacionados ao responsável APAGARRR
+        responsavelLegal: patientsData.find(data => data.id === paciente.id)?.responsavelLegal || false,
+        nomeResponsavel: patientsData.find(data => data.id === paciente.id)?.nomeResponsavel || '',
+        sobrenomeResponsavel: patientsData.find(data => data.id === paciente.id)?.sobrenomeResponsavel || '',
+        relacaoResponsavel: patientsData.find(data => data.id === paciente.id)?.relacaoResponsavel || '',
+        cpfResponsavel: patientsData.find(data => data.id === paciente.id)?.cpfResponsavel || '',
+        telefoneResponsavel: patientsData.find(data => data.id === paciente.id)?.telefoneResponsavel || '',
       }));
       setInitialPatientsData(pacientes);
     } catch (error) {
@@ -175,6 +219,12 @@ const Patients = () => {
         bairro: paciente.bairro,
         numero: paciente.numero,
         bloco: paciente.bloco,
+        responsavelLegal: paciente.responsavelLegal,
+        nomeResponsavel: paciente.nomeResponsavel,
+        sobrenomeResponsavel: paciente.sobrenomeResponsavel,
+        relacaoResponsavel: paciente.relacaoResponsavel,
+        cpfResponsavel: paciente.cpfResponsavel,
+        telefoneResponsavel: paciente.telefoneResponsavel,
       });
       return response.data.id;
     } catch (error) {
@@ -198,6 +248,12 @@ const Patients = () => {
         bairro: paciente.bairro,
         numero: paciente.numero,
         bloco: paciente.bloco,
+        responsavelLegal: paciente.responsavelLegal,
+        nomeResponsavel: paciente.nomeResponsavel,
+        sobrenomeResponsavel: paciente.sobrenomeResponsavel,
+        relacaoResponsavel: paciente.relacaoResponsavel,
+        cpfResponsavel: paciente.cpfResponsavel,
+        telefoneResponsavel: paciente.telefoneResponsavel,
       });
     } catch (error) {
       throw new Error("Erro ao atualizar procedimento: " + error);

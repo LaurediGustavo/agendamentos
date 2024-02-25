@@ -54,7 +54,7 @@ export const DataTable = (props) => {
     <div className="dataTable" style={{ width: "100%", minWidth: "600px" }}>
       <DataGrid
         rows={props.rows}
-        columns={[...props.columns, actionColumn]}
+        columns={[actionColumn, ...props.columns]}
         initialState={{
           pagination: {
             paginationModel: {

@@ -1,6 +1,8 @@
-import  Doutores from "./scenes/doctors/Doctors";
+import React from "react";
+import Doutores from "./scenes/doctors/Doctors";
 import Pacientes from './scenes/patients/Patients';
 import Procedimentos from './scenes/procedures/Procedures';
+import Employees from './scenes/employees/Employees'; // Importando o componente de funcionários
 import { Navbar } from "./scenes/global/navbar/Navbar";
 import { Home } from "./scenes/home/Home"
 import  Sidebar  from './scenes/global/sidebar/Sidebar';
@@ -57,6 +59,10 @@ function App() {
         {
           path: "procedimentos",
           element: <ProtectedRoute element={<Procedimentos />} />,
+        },
+        {
+          path: "funcionarios",
+          element: <ProtectedRoute element={<Employees />} />, 
         },
       ]
     }

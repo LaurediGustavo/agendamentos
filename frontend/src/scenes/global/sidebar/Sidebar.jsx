@@ -1,5 +1,4 @@
-import React from "react";
-import { useState } from "react";
+import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Sidebar, Menu, MenuItem } from "react-pro-sidebar";
 import { Box, IconButton, Typography } from "@mui/material";
@@ -8,6 +7,7 @@ import HomeOutlinedIcon from "@mui/icons-material/HomeOutlined";
 import MedicationlinedIcon from "@mui/icons-material/Medication";
 import DescriptionlinedIcon from "@mui/icons-material/Description";
 import PersonlinedIcon from "@mui/icons-material/Person";
+import GroupOutlinedIcon from "@mui/icons-material/GroupOutlined"; // Importar o ícone de funcionários
 import "./sidebar.scss";
 
 const Item = ({ title, to, icon, selected, setSelected }) => {
@@ -87,6 +87,13 @@ const CustomSidebar = () => {
               title="Procedimentos"
               to="/procedimentos"
               icon={<DescriptionlinedIcon className="custom-icon" />}
+              selected={selected}
+              setSelected={setSelected}
+            />
+            <Item
+              title="Funcionários"
+              to="/funcionarios"
+              icon={<GroupOutlinedIcon className="custom-icon" />}
               selected={selected}
               setSelected={setSelected}
             />

@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from "react";
 import { Box, Fab } from "@mui/material";
-import { Add as AddIcon } from "@mui/icons-material"; 
+import { Add as AddIcon } from "@mui/icons-material";
 import Header from "../../components/headers/Headers";
 import { DataTable } from "../../components/dataTable/dataTable";
 import "./doctors.scss";
-import Action from "../../components/action/Action"; 
+import Action from "../../components/action/Action";
 import api from '../../services/api';
 import { formatarData_yyyy_MM_dd, formatarData_dd_MM_yyyy } from '../../services/dateFormat';
 
@@ -36,7 +36,7 @@ const columns = [
   {
     field: 'cpf',
     headerName: 'CPF',
-    type: 'string', 
+    type: 'string',
     width: 200
   },
   {
@@ -54,7 +54,7 @@ const columns = [
   {
     field: 'dataDeNascimento',
     headerName: 'Data de Nascimento',
-    type: 'string', 
+    type: 'string',
     width: 200
   },
   {
@@ -151,7 +151,7 @@ const Doctors = () => {
   };
 
   const handleAddClick = () => {
-    setIsEditing(false); 
+    setIsEditing(false);
     setOpen(true);
   };
 
@@ -165,7 +165,7 @@ const Doctors = () => {
           };
 
           atualizar(updatedDoctors)
-          
+
           return updatedDoctors;
         }
         return doctor;
@@ -177,7 +177,7 @@ const Doctors = () => {
         id: Math.random(),
         ...data
       };
-      
+
       const id = await gravar(newDoctor)
       newDoctor.id = id
 
@@ -260,7 +260,7 @@ const Doctors = () => {
       </Box>
 
       <DataTable slug="doctor" columns={columns} rows={initialDoctorsData} onEditClick={handleEditClick} onDeleteClick={handleDeleteClick} />
-      
+
       {open && (
         <Action
           slug="doutor"
@@ -272,9 +272,20 @@ const Doctors = () => {
           procedures={initialProceduresData} // Passando os procedimentos como propriedade
         />
       )}
-      
+
       <Box display="flex" justifyContent="flex-end">
-        <Fab onClick={handleAddClick} size="large" color="primary" aria-label="adicionar doutores" style={{ marginTop: '30px', marginRight: '20px', backgroundColor:"#3fbabf"}}>
+        <Fab
+          onClick={handleAddClick}
+          size="large"
+          color="primary"
+          aria-label="adicionar pacientes"
+          style={{
+            marginTop: '30px',
+            marginRight: '20px',
+            backgroundColor: "#3fbabf",
+            zIndex: '500' // Deve ser uma string
+          }}
+        >
           <AddIcon />
         </Fab>
       </Box>

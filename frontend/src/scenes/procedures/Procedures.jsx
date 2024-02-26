@@ -30,7 +30,7 @@ const columns = [
 
 const Procedures = () => {
   const [open, setOpen] = useState(false);
-  const [editProcedure, setEditProcedure] = useState(null); 
+  const [editProcedure, setEditProcedure] = useState(null);
   const [isEditing, setIsEditing] = useState(false);
   const [initialProceduresData, setInitialProceduresData] = useState([]);
 
@@ -155,9 +155,20 @@ const Procedures = () => {
         />
       )}
       <Box display="flex" justifyContent="flex-end">
-      <Fab onClick={handleAddClick} size="large" color="primary" aria-label="adicionar procedimento" style={{ marginTop: '30px', marginRight: '20px', backgroundColor:"#3fbabf"}}>
-        <AddIcon />
-      </Fab>
+        <Fab
+          onClick={handleAddClick}
+          size="large"
+          color="primary"
+          aria-label="adicionar pacientes"
+          style={{
+            marginTop: '30px',
+            marginRight: '20px',
+            backgroundColor: "#3fbabf",
+            zIndex: '500' // Deve ser uma string
+          }}
+        >
+          <AddIcon />
+        </Fab>
       </Box>
     </Box>
   );

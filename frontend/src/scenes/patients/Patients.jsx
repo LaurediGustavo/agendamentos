@@ -5,7 +5,7 @@ import { DataTable } from "../../components/dataTable/dataTable";
 import { Box, Fab } from "@mui/material";
 import { Add as AddIcon } from "@mui/icons-material";
 import Header from "../../components/headers/Headers";
-import Action from "../../components/action/Action"; 
+import Action from "../../components/action/Action";
 import api from '../../services/api';
 import { formatarData_yyyy_MM_dd, formatarData_dd_MM_yyyy } from '../../services/dateFormat';
 
@@ -89,26 +89,14 @@ const columns = [
     width: 200
   },
   {
-    field: 'nomeResponsavel',
-    headerName: 'Nome do Responsável',
-    type: 'string',
-    width: 200
-  },
-  {
-    field: 'sobrenomeResponsavel',
-    headerName: 'Sobrenome do Responsável',
-    type: 'string',
-    width: 200
-  },
-  {
     field: 'relacaoResponsavel',
     headerName: 'Relação com o Paciente',
     type: 'string',
     width: 200
   },
   {
-    field: 'cpfResponsavel',
-    headerName: 'CPF do Responsável',
+    field: 'responsavel',
+    headerName: 'Responsável',
     type: 'string',
     width: 200
   },
@@ -144,13 +132,10 @@ const Patients = () => {
         bairro: paciente.bairro,
         numero: paciente.numero,
         bloco: paciente.bloco,
-        // Usando dados do mock para campos relacionados ao responsável APAGARRR
-        responsavelLegal: patientsData.find(data => data.id === paciente.id)?.responsavelLegal || false,
-        nomeResponsavel: patientsData.find(data => data.id === paciente.id)?.nomeResponsavel || '',
-        sobrenomeResponsavel: patientsData.find(data => data.id === paciente.id)?.sobrenomeResponsavel || '',
-        relacaoResponsavel: patientsData.find(data => data.id === paciente.id)?.relacaoResponsavel || '',
-        cpfResponsavel: patientsData.find(data => data.id === paciente.id)?.cpfResponsavel || '',
-        telefoneResponsavel: patientsData.find(data => data.id === paciente.id)?.telefoneResponsavel || '',
+        responsavelLegal: paciente.responsavelLegal,
+        relacaoResponsavel: paciente.relacaoResponsavel,
+        responsavel: paciente.responsavel,
+        telefoneResponsavel: paciente.telefoneResponsavel,
       }));
       setInitialPatientsData(pacientes);
     } catch (error) {
@@ -169,7 +154,7 @@ const Patients = () => {
   };
 
   const handleAddClick = () => {
-    setIsEditing(false); 
+    setIsEditing(false);
     setOpen(true);
   };
 
@@ -220,10 +205,8 @@ const Patients = () => {
         numero: paciente.numero,
         bloco: paciente.bloco,
         responsavelLegal: paciente.responsavelLegal,
-        nomeResponsavel: paciente.nomeResponsavel,
-        sobrenomeResponsavel: paciente.sobrenomeResponsavel,
         relacaoResponsavel: paciente.relacaoResponsavel,
-        cpfResponsavel: paciente.cpfResponsavel,
+        responsavel: paciente.responsavel,
         telefoneResponsavel: paciente.telefoneResponsavel,
       });
       return response.data.id;
@@ -249,10 +232,8 @@ const Patients = () => {
         numero: paciente.numero,
         bloco: paciente.bloco,
         responsavelLegal: paciente.responsavelLegal,
-        nomeResponsavel: paciente.nomeResponsavel,
-        sobrenomeResponsavel: paciente.sobrenomeResponsavel,
         relacaoResponsavel: paciente.relacaoResponsavel,
-        cpfResponsavel: paciente.cpfResponsavel,
+        responsavel: paciente.responsavel,
         telefoneResponsavel: paciente.telefoneResponsavel,
       });
     } catch (error) {
@@ -282,7 +263,7 @@ const Patients = () => {
       </Box>
 
       <DataTable slug="patients" columns={columns} rows={initialPatientsData} onEditClick={handleEditClick} onDeleteClick={handleDeleteClick} />
-      
+
       {open && (
         <Action
           slug="paciente"
@@ -293,9 +274,20 @@ const Patients = () => {
           initialData={isEditing ? editPatient : null}
         />
       )}
-      
+
       <Box display="flex" justifyContent="flex-end">
-        <Fab onClick={handleAddClick} size="large" color="primary" aria-label="adicionar pacientes" style={{ marginTop: '30px', marginRight: '20px', backgroundColor:"#3fbabf"}}>
+        <Fab
+          onClick={handleAddClick}
+          size="large"
+          color="primary"
+          aria-label="adicionar pacientes"
+          style={{
+            marginTop: '30px',
+            marginRight: '20px',
+            backgroundColor: "#3fbabf",
+            zIndex: '500' // Deve ser uma string
+          }}
+        >
           <AddIcon />
         </Fab>
       </Box>

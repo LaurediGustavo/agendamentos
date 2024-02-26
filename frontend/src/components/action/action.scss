@@ -1,5 +1,10 @@
 /* action.scss */
 
+
+.modal-open {
+  overflow: hidden;
+}
+
 .activated {
   width: 100vw;
   min-height: 100vh;
@@ -41,46 +46,38 @@
 .modal form {
   display: flex;
   flex-wrap: wrap;
-  justify-content: space-between; /* Modificado para space-between */
+  justify-content: space-between; 
 }
 
 .modal form .item {
-  width: calc(45% - 10px); /* Redimensiona a largura dos itens */
+  width: calc(45% - 10px); 
   margin-bottom: 20px;
 }
 
-/* Remova a margem à direita do último item em cada linha */
 .modal form .item:nth-child(2n) {
   margin-right: 0;
 }
 
-/* Adiciona mais espaçamento entre os campos adicionais do responsável legal */
 .modal form .item.responsible-item {
   margin-bottom: 30px;
 }
 
 .modal form .item label {
   font-size: 15px;
+  
 }
 
-.modal form .item input,
-.modal form .item textarea {
-  width: 100%;
-  padding: 10px;
-  outline: none;
-  border: 1px solid #b4b4b4;
-  border-radius: 3px;
-}
 
-.modal button {
+.modal .custom-button {
   width: 100%;
   padding: 10px;
   cursor: pointer;
   background-color: #3fbabf;
-  margin-top: 20px; /* Adiciona margem ao topo do botão */
+  margin-top: 20px; 
 }
 
-.modal button:hover {
+
+.modal .custom-button:hover {
   background-color: #2d8f92;
 }
 
@@ -102,21 +99,13 @@
   align-self: flex-start;
 }
 
-textarea {
-  font-family: Arial, sans-serif;
-  box-sizing: border-box;
-  font-size: 16px;
-}
+
 
 @media screen and (max-width: 767px) {
   .modal form .item {
-    width: calc(50% - 10px);
-    margin-right: 10px; /* Adicionado margem à direita */
-  }
-
-  /* Remova a margem à direita do último item em cada linha */
-  .modal form .item:nth-child(2n) {
-    margin-right: 0;
+    width: 100%; 
+    margin-right: 0; 
+    margin-bottom: 10px; 
   }
 }
 

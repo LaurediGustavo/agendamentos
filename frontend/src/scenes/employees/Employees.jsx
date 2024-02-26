@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from "react";
 import { Box, Fab } from "@mui/material";
-import { Add as AddIcon } from "@mui/icons-material"; 
+import { Add as AddIcon } from "@mui/icons-material";
 import Header from "../../components/headers/Headers";
 import { DataTable } from "../../components/dataTable/dataTable";
 import "./employees.scss";
-import Action from "../../components/action/Action"; 
+import Action from "../../components/action/Action";
 import api from '../../services/api';
 import { formatarData_yyyy_MM_dd } from '../../services/dateFormat';
 import { employeesData } from "../../data/dados"; // Importando o mock de dados de funcionários
@@ -37,7 +37,7 @@ const columns = [
   {
     field: 'cpf',
     headerName: 'CPF',
-    type: 'string', 
+    type: 'string',
     width: 200
   },
   {
@@ -49,7 +49,7 @@ const columns = [
   {
     field: 'dataDeNascimento',
     headerName: 'Data de Nascimento',
-    type: 'string', 
+    type: 'string',
     width: 200
   },
   {
@@ -171,12 +171,23 @@ const Employees = () => {
           onSave={handleSaveEmployee}
           isEditing={isEditing}
           initialData={isEditing ? editEmployee : null}
-          procedures={initialProceduresData} 
+          procedures={initialProceduresData}
         />
       )}
 
       <Box display="flex" justifyContent="flex-end">
-        <Fab onClick={handleAddClick} size="large" color="primary" aria-label="adicionar funcionários" style={{ marginTop: '30px', marginRight: '20px', backgroundColor:"#3fbabf"}}>
+        <Fab
+          onClick={handleAddClick}
+          size="large"
+          color="primary"
+          aria-label="adicionar pacientes"
+          style={{
+            marginTop: '30px',
+            marginRight: '20px',
+            backgroundColor: "#3fbabf",
+            zIndex: '500' // Deve ser uma string
+          }}
+        >
           <AddIcon />
         </Fab>
       </Box>

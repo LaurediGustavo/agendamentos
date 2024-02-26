@@ -33,6 +33,8 @@ const Procedures = () => {
   const [editProcedure, setEditProcedure] = useState(null);
   const [isEditing, setIsEditing] = useState(false);
   const [initialProceduresData, setInitialProceduresData] = useState([]);
+  const [removedItems, setRemovedItems] = useState([]);
+  const [showDeleted, setShowDeleted] = useState(false);
 
   const getConsultas = async () => {
     try {
@@ -61,21 +63,21 @@ const Procedures = () => {
 
   const handleAddClick = () => {
     setIsEditing(false);
-    setOpen(true); // Definir open como true ao clicar no botão de adicionar
+    setOpen(true);
   };
 
   const handleSaveProcedure = async (data) => {
     if (isEditing) {
       const updatedProcedures = initialProceduresData.map(procedure => {
         if (procedure.id === editProcedure.id) {
-          const updatedProcedures = {
+          const updatedProcedure = {
             ...procedure,
             ...data
           };
 
-          atualizar(updatedProcedures);
+          atualizar(updatedProcedure);
 
-          return updatedProcedures;
+          return updatedProcedure;
         }
         return procedure;
       });
@@ -124,17 +126,32 @@ const Procedures = () => {
   };
 
   const handleDeleteClick = (procedure) => {
-    remove(procedure)
-
+    setRemovedItems([...removedItems, procedure]);
     const updatedProcedures = initialProceduresData.filter(p => p.id !== procedure.id);
     setInitialProceduresData(updatedProcedures);
+    remove(procedure);
+  };
+
+  const handleReturnClick = (procedure) => {
+    const updatedRemovedItems = removedItems.filter(item => item.id !== procedure.id);
+    setRemovedItems(updatedRemovedItems);
+    setInitialProceduresData([...initialProceduresData, procedure]);
+    returnProcedure(procedure);
   };
 
   const remove = async (procedure) => {
     try {
       await api.delete("/procedimento/delete/" + procedure.id);
     } catch (error) {
-      throw new Error("Erro ao atualizar procedimento: " + error);
+      throw new Error("Erro ao remover procedimento: " + error);
+    }
+  };
+
+  const returnProcedure = async (procedure) => {
+    // Lógica para retornar um procedimento excluído
+    try {
+    } catch (error) {
+      console.error("Erro ao retornar procedimento: " + error);
     }
   };
 
@@ -143,7 +160,14 @@ const Procedures = () => {
       <Box display="flex" justifyContent="space-between" alignItems="center">
         <Header title="Procedimentos" subtitle="Registre e gerencie seus procedimentos." />
       </Box>
-      <DataTable slug="procedures" columns={columns} rows={initialProceduresData} onEditClick={handleEditClick} onDeleteClick={handleDeleteClick} />
+      <DataTable
+        columns={columns}
+        rows={showDeleted ? [...initialProceduresData, ...removedItems] : initialProceduresData}
+        deletedRows={removedItems}
+        onEditClick={handleEditClick}
+        onDeleteClick={handleDeleteClick}
+        onReturnClick={handleReturnClick}
+      />
       {open && (
         <Action
           slug="procedimento"
@@ -164,7 +188,7 @@ const Procedures = () => {
             marginTop: '30px',
             marginRight: '20px',
             backgroundColor: "#3fbabf",
-            zIndex: '500' // Deve ser uma string
+            zIndex: '500'
           }}
         >
           <AddIcon />

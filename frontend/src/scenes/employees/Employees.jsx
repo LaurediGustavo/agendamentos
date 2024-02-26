@@ -90,6 +90,8 @@ const Employees = () => {
   const [isEditing, setIsEditing] = useState(false);
   const [initialEmployeesData, setInitialEmployeesData] = useState([]);
   const [initialProceduresData, setInitialProceduresData] = useState([]);
+  const [removedItems, setRemovedItems] = useState([]);
+  const [showDeleted, setShowDeleted] = useState(false);
 
   const getEmployees = async () => {
     try {
@@ -155,14 +157,42 @@ const Employees = () => {
     setOpen(false);
   };
 
+  const handleDeleteClick = (employee) => {
+    setRemovedItems([...removedItems, employee]);
+    const updatedEmployees = initialEmployeesData.filter(e => e.id !== employee.id);
+    setInitialEmployeesData(updatedEmployees);
+  };
+
+
+
+  const handleReturnClick = (employee) => {
+    const updatedRemovedItems = removedItems.filter(item => item.id !== employee.id);
+    setRemovedItems(updatedRemovedItems);
+    setInitialEmployeesData([...initialEmployeesData, employee]);
+  };
+
+  const returnEmployee = async (employee) => {
+    // Lógica para retornar um funcionario excluído
+    try {
+    } catch (error) {
+      console.error("Erro ao retornar funcionario: " + error);
+    }
+  };
+
   return (
     <Box m="20px">
       <Box display="flex" justifyContent="space-between" alignItems="center">
         <Header title="Funcionários" subtitle="Registre e gerencie seus funcionários." />
       </Box>
-
-      <DataTable slug="employee" columns={columns} rows={initialEmployeesData} onEditClick={handleEditClick} />
-
+      <DataTable
+        slug="employee"
+        columns={columns}
+        rows={showDeleted ? [...initialEmployeesData, ...removedItems] : initialEmployeesData}
+        deletedRows={removedItems}
+        onEditClick={handleEditClick}
+        onDeleteClick={handleDeleteClick}
+        onReturnClick={handleReturnClick}
+      />
       {open && (
         <Action
           slug="funcionário"
@@ -185,7 +215,7 @@ const Employees = () => {
             marginTop: '30px',
             marginRight: '20px',
             backgroundColor: "#3fbabf",
-            zIndex: '500' // Deve ser uma string
+            zIndex: '500' 
           }}
         >
           <AddIcon />

@@ -339,22 +339,6 @@ const Action = (props) => {
                             />
                           )}
                         </InputMask>
-                      ) : column.field === 'tempo' ? (
-                        <InputMask
-                          mask="99:99"
-                          placeholder={column.headerName}
-                          name={column.field}
-                          value={formData[column.field] || ''}
-                          onChange={handleInputChange}
-                          style={{ width: '100%' }}
-                          className={errors[column.field] ? 'error' : ''}
-                        >
-                          {(inputProps) => (
-                            <TextField
-                              {...inputProps}
-                            />
-                          )}
-                        </InputMask>
                       ) : column.field === 'genero' ? (
                         <Select
                           name={column.field}

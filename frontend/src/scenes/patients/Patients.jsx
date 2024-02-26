@@ -1,10 +1,8 @@
 import { useState, useEffect } from "react";
-import { patientsData } from "../../data/dados";
-import "./patients.scss";
-import { DataTable } from "../../components/dataTable/dataTable";
 import { Box, Fab } from "@mui/material";
 import { Add as AddIcon } from "@mui/icons-material";
 import Header from "../../components/headers/Headers";
+import { DataTable } from "../../components/dataTable/dataTable";
 import Action from "../../components/action/Action";
 import api from '../../services/api';
 import { formatarData_yyyy_MM_dd, formatarData_dd_MM_yyyy } from '../../services/dateFormat';
@@ -108,12 +106,14 @@ const columns = [
   },
 ];
 
-
 const Patients = () => {
   const [open, setOpen] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
   const [editPatient, setEditPatient] = useState(null);
   const [initialPatientsData, setInitialPatientsData] = useState([]);
+  const [removedItems, setRemovedItems] = useState([]);
+  const [showDeleted, setShowDeleted] = useState(false);
+
 
   const getPacientes = async () => {
     try {
@@ -162,14 +162,14 @@ const Patients = () => {
     if (isEditing) {
       const updatedPatients = initialPatientsData.map(patient => {
         if (patient.id === editPatient.id) {
-          const updatedPatients = {
+          const updatedPatient = {
             ...patient,
             ...data
           };
 
-          atualizar(updatedPatients);
+          atualizar(updatedPatient);
 
-          return updatedPatients;
+          return updatedPatient;
         }
         return patient;
       });
@@ -181,7 +181,7 @@ const Patients = () => {
       };
 
       const id = await gravar(newPatient);
-      newPatient.id = id
+      newPatient.id = id;
 
       const updatedPatients = [...initialPatientsData, newPatient];
       setInitialPatientsData(updatedPatients);
@@ -237,22 +237,37 @@ const Patients = () => {
         telefoneResponsavel: paciente.telefoneResponsavel,
       });
     } catch (error) {
-      throw new Error("Erro ao atualizar procedimento: " + error);
+      throw new Error("Erro ao atualizar paciente: " + error);
     }
   };
 
-  const handleDeleteClick = (paciente) => {
-    remove(paciente)
-
-    const updatedPacientes = initialPatientsData.filter(p => p.id !== paciente.id);
-    setInitialPatientsData(updatedPacientes);
+  const handleDeleteClick = (patient) => {
+    setRemovedItems([...removedItems, patient]);
+    const updatedPatients = initialPatientsData.filter(p => p.id !== patient.id);
+    setInitialPatientsData(updatedPatients);
+    remove(patient);
   };
 
-  const remove = async (paciente) => {
+  const handleReturnClick = (patient) => {
+    const updatedRemovedItems = removedItems.filter(item => item.id !== patient.id);
+    setRemovedItems(updatedRemovedItems);
+    setInitialPatientsData([...initialPatientsData, patient]);
+    returnPatient(patient);
+  };
+
+  const remove = async (patient) => {
     try {
-      await api.delete("/paciente/delete/" + paciente.id);
+      await api.delete("/paciente/delete/" + patient.id);
     } catch (error) {
-      throw new Error("Erro ao atualizar paciente: " + error);
+      throw new Error("Erro ao remover paciente: " + error);
+    }
+  };
+
+  const returnPatient = async (patient) => {
+    // Lógica para retornar um paciente excluído
+    try {
+    } catch (error) {
+      console.error("Erro ao retornar paciente: " + error);
     }
   };
 
@@ -261,9 +276,14 @@ const Patients = () => {
       <Box display="flex" justifyContent="space-between" alignItems="center">
         <Header title="Pacientes" subtitle="Registre e gerencie seus pacientes." />
       </Box>
-
-      <DataTable slug="patients" columns={columns} rows={initialPatientsData} onEditClick={handleEditClick} onDeleteClick={handleDeleteClick} />
-
+      <DataTable
+        columns={columns}
+        rows={showDeleted ? [...initialPatientsData, ...removedItems] : initialPatientsData}
+        deletedRows={removedItems}
+        onEditClick={handleEditClick}
+        onDeleteClick={handleDeleteClick}
+        onReturnClick={handleReturnClick}
+      />
       {open && (
         <Action
           slug="paciente"
@@ -274,7 +294,6 @@ const Patients = () => {
           initialData={isEditing ? editPatient : null}
         />
       )}
-
       <Box display="flex" justifyContent="flex-end">
         <Fab
           onClick={handleAddClick}
@@ -285,7 +304,7 @@ const Patients = () => {
             marginTop: '30px',
             marginRight: '20px',
             backgroundColor: "#3fbabf",
-            zIndex: '500' // Deve ser uma string
+            zIndex: '500'
           }}
         >
           <AddIcon />

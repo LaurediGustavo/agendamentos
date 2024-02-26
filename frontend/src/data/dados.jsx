@@ -241,59 +241,62 @@ export const proceduresData = [
   {
     "id": 1,
     "procedimento": "Avaliação de rotina",
-    "tempo": "00:30"
+    "tempo": "00:30",
   },
   {
     "id": 2,
     "procedimento": "Extração de Dente",
-    "tempo": "00:45"
+    "tempo": "00:45",
   },
   {
     "id": 3,
     "procedimento": "Limpeza Dental",
-    "tempo": "01:00"
+    "tempo": "01:00",
   },
   {
     "id": 4,
     "procedimento": "Tratamento de Canal",
-    "tempo": "01:20"
+    "tempo": "01:20",
   },
   {
     "id": 5,
     "procedimento": "Coroa Dentária",
-    "tempo": "00:20"
+    "tempo": "00:20",
+
   },
   {
     "id": 6,
     "procedimento": "Implante Dentário",
-    "tempo": "01:40"
+    "tempo": "01:40",
   },
   {
     "id": 7,
     "procedimento": "Aparelho Ortodôntico",
-    "tempo": "00:10"
+    "tempo": "00:10",
   },
   {
     "id": 8,
     "procedimento": "Clareamento Dental",
-    "tempo": "00:30"
+    "tempo": "00:30",
+
   },
   {
     "id": 9,
     "procedimento": "Prótese Dentária",
-    "tempo": "02:20"
+    "tempo": "02:20",
   },
   {
     "id": 10,
     "procedimento": "Periodontia (Tratamento de Gengivas)",
-    "tempo": "01:20"
+    "tempo": "01:20",
   },
   {
     "id": 11,
     "procedimento": "Obturação Dentária",
-    "tempo": "01:50"
+    "tempo": "01:50",
   }
 ];
+
 
 export const employeesData = [
   {
@@ -309,7 +312,8 @@ export const employeesData = [
     "bairro": "Bairro 1",
     "logradouro": "Rua 1",
     "numero": "1",
-    "bloco": ""
+    "bloco": "",
+    "excluido": true
   },
   {
     "id": 2,
@@ -324,7 +328,8 @@ export const employeesData = [
     "bairro": "Bairro 2",
     "logradouro": "Rua 2",
     "numero": "2",
-    "bloco": ""
+    "bloco": "",
+    "excluido": true
   },
   {
     "id": 3,
@@ -339,7 +344,8 @@ export const employeesData = [
     "bairro": "Bairro 3",
     "logradouro": "Rua 3",
     "numero": "3",
-    "bloco": "Bloco 3"
+    "bloco": "Bloco 3",
+    "excluido": false
   },
   {
     "id": 4,
@@ -354,7 +360,8 @@ export const employeesData = [
     "bairro": "Bairro 4",
     "logradouro": "Rua 4",
     "numero": "4",
-    "bloco": ""
+    "bloco": "",
+    "excluido": false
   },
   {
     "id": 5,
@@ -369,7 +376,8 @@ export const employeesData = [
     "bairro": "Bairro 5",
     "logradouro": "Rua 5",
     "numero": "5",
-    "bloco": ""
+    "bloco": "",
+    "excluido": true
   },
   {
     "id": 6,
@@ -384,7 +392,8 @@ export const employeesData = [
     "bairro": "Bairro 6",
     "logradouro": "Rua 6",
     "numero": "6",
-    "bloco": ""
+    "bloco": "",
+    "excluido": true
   },
   {
     "id": 7,
@@ -399,7 +408,8 @@ export const employeesData = [
     "bairro": "Bairro 7",
     "logradouro": "Rua 7",
     "numero": "7",
-    "bloco": ""
+    "bloco": "",
+    "excluido": false
   },
   {
     "id": 8,
@@ -414,7 +424,8 @@ export const employeesData = [
     "bairro": "Bairro 8",
     "logradouro": "Rua 8",
     "numero": "8",
-    "bloco": ""
+    "bloco": "",
+    "excluido": false
   },
   {
     "id": 9,
@@ -429,6 +440,70 @@ export const employeesData = [
     "bairro": "Bairro 9",
     "logradouro": "Rua 9",
     "numero": "9",
-    "bloco": ""
+    "bloco": "",
+    "excluido": false
   },
+];
+
+export const proceduresDataDeleted = [
+  {
+    "id": 1,
+    "tratamento": "Limpeza Dental",
+    "valor": 50,
+    "tempo": "30"
+  },
+  {
+    "id": 2,
+    "tratamento": "Extração de Dente",
+    "valor": 80,
+    "tempo": "60"
+  },
+  {
+    "id": 3,
+    "tratamento": "Obturação de Cárie",
+    "valor": 70,
+    "tempo": "45"
+  },
+  {
+    "id": 4,
+    "tratamento": "Implante Dentário",
+    "valor": 150,
+    "tempo": "90"
+  },
+  {
+    "id": 5,
+    "tratamento": "Tratamento de Canal",
+    "valor": 200,
+    "tempo": "120"
+  },
+  {
+    "id": 6,
+    "tratamento": "Clareamento Dental",
+    "valor": 100,
+    "tempo": "60"
+  },
+  {
+    "id": 7,
+    "tratamento": "Colocação de Aparelho Ortodôntico",
+    "valor": 150,
+    "tempo": "90"
+  },
+  {
+    "id": 8,
+    "tratamento": "Coroa Dentária",
+    "valor": 200,
+    "tempo": "120"
+  },
+  {
+    "id": 9,
+    "tratamento": "Profilaxia (limpeza profissional)",
+    "valor": 70,
+    "tempo": "45"
+  },
+  {
+    "id": 10,
+    "tratamento": "Restauração de Dente Quebrado",
+    "valor": 80,
+    "tempo": "60"
+  }
 ];

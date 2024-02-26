@@ -3,7 +3,6 @@ import { Box, Fab } from "@mui/material";
 import { Add as AddIcon } from "@mui/icons-material";
 import Header from "../../components/headers/Headers";
 import { DataTable } from "../../components/dataTable/dataTable";
-import "./doctors.scss";
 import Action from "../../components/action/Action";
 import api from '../../services/api';
 import { formatarData_yyyy_MM_dd, formatarData_dd_MM_yyyy } from '../../services/dateFormat';
@@ -89,7 +88,6 @@ const columns = [
   },
 ];
 
-
 const Doctors = () => {
 
   const [open, setOpen] = useState(false);
@@ -97,6 +95,8 @@ const Doctors = () => {
   const [isEditing, setIsEditing] = useState(false);
   const [initialDoctorsData, setInitialDoctorsData] = useState([]);
   const [initialProceduresData, setInitialProceduresData] = useState([]);
+  const [removedItems, setRemovedItems] = useState([]);
+  const [showDeleted, setShowDeleted] = useState(false);
 
   const getDoutores = async () => {
     try {
@@ -239,11 +239,20 @@ const Doctors = () => {
   };
 
   const handleDeleteClick = (doutor) => {
-    remove(doutor)
-
-    const updatedDoctors = initialDoctorsData.filter(p => p.id !== doutor.id);
+    setRemovedItems([...removedItems, doutor]);
+    const updatedDoctors = initialDoctorsData.filter(d => d.id !== doutor.id);
     setInitialDoctorsData(updatedDoctors);
+    remove(doutor);
   };
+  
+
+  const handleReturnClick = (doutor) => {
+    const updatedRemovedItems = removedItems.filter(item => item.id !== doutor.id);
+    setRemovedItems(updatedRemovedItems);
+    setInitialDoctorsData([...initialDoctorsData, doutor]);
+    returnDoctor(doutor);
+  };
+  
 
   const remove = async (doutor) => {
     try {
@@ -253,13 +262,21 @@ const Doctors = () => {
     }
   };
 
+  const returnDoctor = async (doutor) => {
+    // Lógica para retornar um procedimento excluído
+    try {
+    } catch (error) {
+      console.error("Erro ao retornar doutor: " + error);
+    }
+  };
+
   return (
     <Box m="20px">
       <Box display="flex" justifyContent="space-between" alignItems="center">
         <Header title="Doutores" subtitle="Registre e gerencie seus doutores." />
       </Box>
 
-      <DataTable slug="doctor" columns={columns} rows={initialDoctorsData} onEditClick={handleEditClick} onDeleteClick={handleDeleteClick} />
+      <DataTable slug="doctor" columns={columns} rows={showDeleted ? [...initialDoctorsData, ...removedItems] : initialDoctorsData} deletedRows={removedItems} onEditClick={handleEditClick} onDeleteClick={handleDeleteClick} onReturnClick={handleReturnClick} />
 
       {open && (
         <Action

@@ -82,6 +82,13 @@ const Action = (props) => {
           ...formData,
           [name]: maskedCPF
         });
+      } else if (name === 'cro') {
+        // Limite o campo CRO para 10 caracteres
+        const croValue = value.slice(0, 10);
+        setFormData({
+          ...formData,
+          [name]: croValue
+        });
       } else if (name === 'numero') {
         // Para o campo 'numero', remova todos os caracteres não numéricos
         const numericValue = value.replace(/[^\d]/g, '');
@@ -358,7 +365,7 @@ const Action = (props) => {
                           value={formData[column.field] || []}
                           onChange={handleInputChange}
                           className={errors[column.field] ? 'error' : ''}
-                          style={{ width: '100%', height: '60%' }}
+                          style={{ width: '100%' }}
                         >
                           {props.procedures && props.procedures.map((procedure) => (
                             <MenuItem key={procedure.id} value={procedure.id}>

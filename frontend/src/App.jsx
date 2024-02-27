@@ -16,7 +16,6 @@ import {
   Outlet
 } from "react-router-dom";
 
-
 function App() {
   const Global = () => {
     return (
@@ -46,23 +45,23 @@ function App() {
       children: [
         {
           path: "",
-          element: <ProtectedRoute element={<Home />} />,
+          element: <ProtectedRoute element={<Home />} roles={["ROLE_DOUTOR", "ROLE_ATENDENTE", "ROLE_NEGOCIO"]} />,
         },
         {
           path: "doutores",
-          element: <ProtectedRoute element={<Doutores />} />,
+          element: <ProtectedRoute element={<Doutores />} roles={["ROLE_ATENDENTE", "ROLE_NEGOCIO"]} />,
         },
         {
           path: "pacientes",
-          element: <ProtectedRoute element={<Pacientes />} />,
+          element: <ProtectedRoute element={<Pacientes />} roles={["ROLE_ATENDENTE", "ROLE_NEGOCIO"]} />,
         },
         {
           path: "procedimentos",
-          element: <ProtectedRoute element={<Procedimentos />} />,
+          element: <ProtectedRoute element={<Procedimentos />} roles={["ROLE_ATENDENTE", "ROLE_NEGOCIO"]} />,
         },
         {
           path: "funcionarios",
-          element: <ProtectedRoute element={<Employees />} />, 
+          element: <ProtectedRoute element={<Employees />} roles={["ROLE_ATENDENTE", "ROLE_NEGOCIO"]} />,
         },
       ]
     }

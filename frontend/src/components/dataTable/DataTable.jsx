@@ -16,7 +16,7 @@ export const DataTable = (props) => {
 
   const handleEditClick = (id) => {
     const selectedDoctor = props.rows.find(row => row.id === id);
-    if (!selectedDoctor.showDeleted) { 
+    if (!selectedDoctor.showDeleted) {
       props.onEditClick(selectedDoctor);
     }
   };
@@ -61,18 +61,23 @@ export const DataTable = (props) => {
   function CustomToolbar() {
     return (
       <GridToolbarContainer>
-        <GridToolbarFilterButton />
-        <GridToolbarExport />
-        <Button 
-          onClick={() => setShowDeleted(!showDeleted)}
-          sx={{ ml: 140, fontSize: 13 }} 
-        >
-          {showDeleted ? 'Ocultar Excluídos' : 'Mostrar excluídos'}
-        </Button>
-        <GridToolbarQuickFilter/>
+        <div>
+        <Button
+            onClick={() => setShowDeleted(!showDeleted)}
+            sx={{ mr: 5, fontSize: 13 }}
+          >
+            {showDeleted ? 'Ocultar Excluídos' : 'Mostrar excluídos'}
+          </Button>
+          <GridToolbarExport />
+          
+        </div>
+
+        <GridToolbarQuickFilter />
       </GridToolbarContainer>
     );
   }
+
+
 
   const actionColumn = {
     field: "action",
@@ -141,7 +146,7 @@ export const DataTable = (props) => {
       <Dialog open={returnConfirmationOpen} onClose={handleCancelReturn}>
         <DialogTitle>Confirmar retorno</DialogTitle>
         <DialogContent>
-        Tem certeza de que deseja restaurar este item?
+          Tem certeza de que deseja restaurar este item?
         </DialogContent>
         <DialogActions>
           <Button onClick={handleCancelReturn}>Cancelar</Button>

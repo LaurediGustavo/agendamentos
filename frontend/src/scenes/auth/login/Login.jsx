@@ -1,4 +1,4 @@
-import { React, forwardRef, useState } from "react";
+import { React, forwardRef, useState, useEffect } from "react";
 import Typography from "@mui/material/Typography";
 import { ThemeProvider, createTheme } from "@mui/material/styles";
 import { Avatar, Box, Button, Container, Grid, Snackbar, TextField } from "@mui/material";
@@ -8,8 +8,8 @@ import loginImage from '../../../assets/login.png';
 import MuiAlert from '@mui/material/Alert';
 import Slide from '@mui/material/Slide';
 import api from '../../../services/api';
-import { login } from '../../../services/auth_service';
-import './login.scss'; 
+import { login, isAuthenticated } from '../../../services/auth_service'; // Adicionado isAuthenticated
+import './login.scss';
 
 const Alert = forwardRef(function Alert(props, ref) {
     return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />;
@@ -31,6 +31,12 @@ export const Login = () => {
     function TransitionLeft(props) {
         return <Slide {...props} direction="left" />
     }
+
+    useEffect(() => { // Adicionado para verificar se o usuário está autenticado e redirecionar
+        if (isAuthenticated()) {
+            navigate("/"); // Redirecionar para a página inicial se o usuário já estiver autenticado
+        }
+    }, []);
 
     const handleSubmit = async (event) => {
         event.preventDefault();
@@ -59,7 +65,13 @@ export const Login = () => {
                 password: password
             });
             login(result.data.tokenJwt, result.data.roles);
-            navigate("/");
+            // Verificar os papéis do usuário e redirecionar para a página apropriada
+            const roles = result.data.roles; // Obtém os papéis do usuário do resultado do login
+            if (roles.includes("ROLE_DOUTOR")) {
+                navigate("/");
+            } else {
+                navigate("/");
+            }
         } catch (error) {
             if (error.response && error.response.status === 401) {
                 setErrorMessage("Falha no login! Entre com o usuário e senha corretos.");
@@ -113,7 +125,7 @@ export const Login = () => {
                             <Box className="rightBox">
                                 <ThemeProvider theme={darkTheme}>
                                     <Container>
-                                        <Box  />
+                                        <Box />
                                         <Box
                                             display="flex"
                                             flexDirection="column"
@@ -139,7 +151,7 @@ export const Login = () => {
                                                         label="E-mail"
                                                         name="username"
                                                         autoComplete="email"
-                                                        />
+                                                    />
                                                 </Grid>
                                                 <Grid item xs={12} sx={{ ml: "3em", mr: "3em" }}>
                                                     <TextField

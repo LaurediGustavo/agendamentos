@@ -1,6 +1,8 @@
-import  Doutores from "./scenes/doctors/Doctors";
+import React from "react";
+import Doutores from "./scenes/doctors/Doctors";
 import Pacientes from './scenes/patients/Patients';
 import Procedimentos from './scenes/procedures/Procedures';
+import Employees from './scenes/employees/Employees'; // Importando o componente de funcionários
 import { Navbar } from "./scenes/global/navbar/Navbar";
 import { Home } from "./scenes/home/Home"
 import  Sidebar  from './scenes/global/sidebar/Sidebar';
@@ -13,7 +15,6 @@ import {
   RouterProvider,
   Outlet
 } from "react-router-dom";
-
 
 function App() {
   const Global = () => {
@@ -44,19 +45,23 @@ function App() {
       children: [
         {
           path: "",
-          element: <ProtectedRoute element={<Home />} />,
+          element: <ProtectedRoute element={<Home />} roles={["ROLE_DOUTOR", "ROLE_ATENDENTE", "ROLE_NEGOCIO"]} />,
         },
         {
           path: "doutores",
-          element: <ProtectedRoute element={<Doutores />} />,
+          element: <ProtectedRoute element={<Doutores />} roles={["ROLE_ATENDENTE", "ROLE_NEGOCIO"]} />,
         },
         {
           path: "pacientes",
-          element: <ProtectedRoute element={<Pacientes />} />,
+          element: <ProtectedRoute element={<Pacientes />} roles={["ROLE_ATENDENTE", "ROLE_NEGOCIO"]} />,
         },
         {
           path: "procedimentos",
-          element: <ProtectedRoute element={<Procedimentos />} />,
+          element: <ProtectedRoute element={<Procedimentos />} roles={["ROLE_ATENDENTE", "ROLE_NEGOCIO"]} />,
+        },
+        {
+          path: "funcionarios",
+          element: <ProtectedRoute element={<Employees />} roles={["ROLE_ATENDENTE", "ROLE_NEGOCIO"]} />,
         },
       ]
     }

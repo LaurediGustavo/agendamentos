@@ -5,6 +5,7 @@ export const isAuthenticated = () => localStorage.getItem(TOKEN_KEY) !== null;
 export const getToken = () => localStorage.getItem(TOKEN_KEY);
 export const getRoles = () => localStorage.getItem(ROLES_KEY);
 
+
 export const logout = () => {
   localStorage.removeItem(TOKEN_KEY);
   localStorage.removeItem(ROLES_KEY);

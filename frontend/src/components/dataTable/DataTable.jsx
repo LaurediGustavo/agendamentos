@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { DataGrid, GridToolbar } from "@mui/x-data-grid";
+import { DataGrid, GridToolbarContainer, GridToolbarExport, GridToolbarFilterButton, GridToolbarQuickFilter } from "@mui/x-data-grid";
 import Dialog from '@mui/material/Dialog';
 import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
@@ -9,28 +9,75 @@ import "./dataTable.scss";
 
 export const DataTable = (props) => {
   const [confirmationOpen, setConfirmationOpen] = useState(false);
-  const [selectedIdToDelete, setSelectedIdToDelete] = useState(null);
+  const [selectedRowIndexToDelete, setSelectedRowIndexToDelete] = useState(null);
+  const [showDeleted, setShowDeleted] = useState(false);
+  const [returnConfirmationOpen, setReturnConfirmationOpen] = useState(false);
+  const [selectedRowToReturn, setSelectedRowToReturn] = useState(null);
 
   const handleEditClick = (id) => {
     const selectedDoctor = props.rows.find(row => row.id === id);
-    props.onEditClick(selectedDoctor);
+    if (!selectedDoctor.showDeleted) {
+      props.onEditClick(selectedDoctor);
+    }
   };
-  
+
   const handleDeleteClick = (id) => {
-    setSelectedIdToDelete(id);
+    const selectedRowIndex = props.rows.findIndex(row => row.id === id);
+    setSelectedRowIndexToDelete(selectedRowIndex);
     setConfirmationOpen(true);
   };
 
+  const handleReturnClick = (id) => {
+    const selectedRow = props.deletedRows.find(row => row.id === id);
+    setSelectedRowToReturn(selectedRow);
+    setReturnConfirmationOpen(true);
+  };
+
   const handleConfirmDelete = () => {
-    const selectedDoctor = props.rows.find(row => row.id === selectedIdToDelete);
-    props.onDeleteClick(selectedDoctor);
+    const selectedRow = props.rows[selectedRowIndexToDelete];
+    props.onDeleteClick(selectedRow);
     setConfirmationOpen(false);
+    setSelectedRowIndexToDelete(null);
+  };
+
+  const handleConfirmReturn = () => {
+    props.onReturnClick(selectedRowToReturn);
+    setReturnConfirmationOpen(false);
+    setSelectedRowToReturn(null);
   };
 
   const handleCancelDelete = () => {
     setConfirmationOpen(false);
-    setSelectedIdToDelete(null);
+    setSelectedRowIndexToDelete(null);
   };
+
+  const handleCancelReturn = () => {
+    setReturnConfirmationOpen(false);
+    setSelectedRowToReturn(null);
+  };
+
+
+
+  function CustomToolbar() {
+    return (
+      <GridToolbarContainer>
+        <div>
+        <Button
+            onClick={() => setShowDeleted(!showDeleted)}
+            sx={{ mr: 5, fontSize: 13 }}
+          >
+            {showDeleted ? 'Ocultar Excluídos' : 'Mostrar excluídos'}
+          </Button>
+          <GridToolbarExport />
+          
+        </div>
+
+        <GridToolbarQuickFilter />
+      </GridToolbarContainer>
+    );
+  }
+
+
 
   const actionColumn = {
     field: "action",
@@ -39,12 +86,20 @@ export const DataTable = (props) => {
     renderCell: (params) => {
       return (
         <div className="action">
-          <div className="edit" onClick={() => handleEditClick(params.row.id)}>
-            <img className="img" src="./edit.png" alt="Editar" />
-          </div>
-          <div className="delete" onClick={() => handleDeleteClick(params.row.id)}>
-            <img className="img" src="./apagar.png" alt="Deletar" />
-          </div>
+          {!showDeleted && (
+            <div className="edit" onClick={() => handleEditClick(params.row.id)}>
+              <img className="img" src="./edit.png" alt="Editar" />
+            </div>
+          )}
+          {showDeleted ? (
+            <div className="return" onClick={() => handleReturnClick(params.row.id)}>
+              <img className="img" src="./retornar.png" alt="Retornar" />
+            </div>
+          ) : (
+            <div className="delete" onClick={() => handleDeleteClick(params.row.id)}>
+              <img className="img" src="./apagar.png" alt="Deletar" />
+            </div>
+          )}
         </div>
       );
     },
@@ -53,8 +108,8 @@ export const DataTable = (props) => {
   return (
     <div className="dataTable" style={{ width: "100%", minWidth: "600px" }}>
       <DataGrid
-        rows={props.rows}
-        columns={[...props.columns, actionColumn]}
+        rows={showDeleted ? props.deletedRows : props.rows}
+        columns={[actionColumn, ...props.columns]}
         initialState={{
           pagination: {
             paginationModel: {
@@ -62,7 +117,7 @@ export const DataTable = (props) => {
             },
           },
         }}
-        slots={{ toolbar: GridToolbar }}
+        slots={{ toolbar: CustomToolbar }}
         slotProps={{
           toolbar: {
             showQuickFilter: true,
@@ -76,6 +131,7 @@ export const DataTable = (props) => {
         disableColumnSelector
       />
 
+
       <Dialog open={confirmationOpen} onClose={handleCancelDelete}>
         <DialogTitle>Confirmar exclusão</DialogTitle>
         <DialogContent>
@@ -84,6 +140,17 @@ export const DataTable = (props) => {
         <DialogActions>
           <Button onClick={handleCancelDelete}>Cancelar</Button>
           <Button onClick={handleConfirmDelete} autoFocus>Confirmar</Button>
+        </DialogActions>
+      </Dialog>
+
+      <Dialog open={returnConfirmationOpen} onClose={handleCancelReturn}>
+        <DialogTitle>Confirmar retorno</DialogTitle>
+        <DialogContent>
+          Tem certeza de que deseja restaurar este item?
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleCancelReturn}>Cancelar</Button>
+          <Button onClick={handleConfirmReturn} autoFocus>Confirmar</Button>
         </DialogActions>
       </Dialog>
     </div>

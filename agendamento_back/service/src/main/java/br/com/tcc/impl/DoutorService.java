@@ -28,9 +28,15 @@ public class DoutorService {
     @Autowired
     private ProcedimentoRepository procedimentoRepository;
 
+    @Autowired
+    private UsuarioService usuarioService;
+
     public Long cadastrar(DoutorDto doutorDto) {
         Doutor doutor = gerarDoutor(doutorDto);
         doutorRepository.save(doutor);
+
+        usuarioService.cadastrar(doutor);
+
         return doutor.getId();
     }
 

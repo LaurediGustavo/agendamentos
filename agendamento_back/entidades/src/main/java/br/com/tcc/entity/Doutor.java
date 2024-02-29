@@ -26,8 +26,8 @@ public class Doutor extends Funcionario implements Serializable {
 	)
 	private List<Procedimento> procedimentos;
 
-	public Doutor(Long id, String nome, String sobrenome, LocalDate dataDeNascimento, String cpf, String genero, String telefone, String cep, String logradouro, String bairro, Integer numero, String bloco, TipoFuncionario tipoFuncionario, String cro, Boolean desabilitado) {
-		super(id, nome, sobrenome, dataDeNascimento, cpf, genero, telefone, cep, logradouro, bairro, numero, bloco, tipoFuncionario, desabilitado);
+	public Doutor(Long id, String nome, String sobrenome, LocalDate dataDeNascimento, String cpf, String genero, String telefone, String cep, String logradouro, String bairro, Integer numero, String bloco, TipoFuncionario tipoFuncionario, String cro, Boolean desabilitado, String email) {
+		super(id, nome, sobrenome, dataDeNascimento, cpf, genero, telefone, cep, logradouro, bairro, numero, bloco, tipoFuncionario, desabilitado, email);
 		this.cro = cro;
 	}
 

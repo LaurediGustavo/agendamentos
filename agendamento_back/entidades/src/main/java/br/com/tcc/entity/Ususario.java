@@ -4,21 +4,10 @@ import java.io.Serializable;
 import java.util.Collection;
 import java.util.List;
 
+import jakarta.persistence.*;
 import lombok.Data;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
-
-import jakarta.persistence.CascadeType;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.JoinTable;
-import jakarta.persistence.ManyToMany;
-import jakarta.persistence.OneToOne;
-import jakarta.persistence.Table;
 
 @Data
 @Entity
@@ -46,6 +35,12 @@ public class Ususario implements Serializable, UserDetails {
 	@OneToOne(cascade = CascadeType.ALL)
 	@JoinColumn(name = "funcionario_id", nullable = false)
 	private Funcionario funcionario;
+
+	@Transient
+	private String passwordSemCriptografia;
+
+	@Transient
+	private String email;
 	
 	@Override
 	public Collection<? extends GrantedAuthority> getAuthorities() {

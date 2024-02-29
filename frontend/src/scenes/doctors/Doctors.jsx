@@ -22,6 +22,12 @@ const columns = [
     type: 'string'
   },
   {
+    field: 'email',
+    headerName: 'E-mail',
+    width: 200,
+    type: 'string'
+  },
+  {
     field: 'genero',
     headerName: 'Gênero',
     width: 200,
@@ -114,6 +120,7 @@ const Doctors = () => {
         bairro: doutore.funcionarioResponse.bairro,
         numero: doutore.funcionarioResponse.numero,
         bloco: doutore.funcionarioResponse.bloco,
+        email: doutore.funcionarioResponse.email,
         cro: doutore.cro,
         especialidade: doutore.procedimentos.map(procedimento => procedimento.id),
         especialidadeNome: doutore.procedimentos.map(procedimento => procedimento.tratamento),
@@ -202,6 +209,7 @@ const Doctors = () => {
           bairro: doutore.bairro,
           numero: doutore.numero,
           bloco: doutore.bloco,
+          email: doutore.email,
         },
         cro: doutore.cro,
         procedimentos: doutore.especialidade
@@ -229,6 +237,7 @@ const Doctors = () => {
           bairro: doutore.bairro,
           numero: doutore.numero,
           bloco: doutore.bloco,
+          email: doutore.email,
         },
         cro: doutore.cro,
         procedimentos: doutore.especialidade

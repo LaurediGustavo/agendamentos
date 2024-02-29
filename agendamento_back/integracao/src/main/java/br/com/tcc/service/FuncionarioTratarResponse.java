@@ -55,7 +55,8 @@ public class FuncionarioTratarResponse {
                     funcionario.getBairro(),
                     funcionario.getNumero(),
                     funcionario.getBloco(),
-                    getTipoFuncionarioResponse(funcionario.getTipoFuncionario())
+                    getTipoFuncionarioResponse(funcionario.getTipoFuncionario()),
+                    funcionario.getEmail()
             );
         }
 

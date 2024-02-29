@@ -31,4 +31,6 @@ public class FuncionarioDto {
 
     private String bloco;
 
+    private String email;
+
 }

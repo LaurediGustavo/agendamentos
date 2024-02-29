@@ -23,4 +23,5 @@ public class FuncionarioResponse {
     private Integer numero;
     private String bloco;
     private TipoFuncionarioResponse tipoFuncionarioResponse;
+    private String email;
 }

@@ -72,4 +72,7 @@ public class Funcionario implements Serializable {
 	@Column(name = "desabilitado")
 	private Boolean desabilitado;
 
+	@Column(name = "email")
+	private String email;
+
 }

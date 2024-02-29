@@ -41,12 +41,6 @@ export const Login = () => {
         // Validar o formato do e-mail
         const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
-        if (!emailRegex.test(username)) {
-            setErrorMessage("Por favor, digite um endereço de e-mail válido.");
-            setOpen(true);
-            return;
-        }
-
         if (!username || !password) {
             setErrorMessage("Falha no login! Entre com o usuário e senha corretos.");
             setOpen(true);

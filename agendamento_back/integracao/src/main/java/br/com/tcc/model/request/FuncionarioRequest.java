@@ -49,4 +49,8 @@ public class FuncionarioRequest {
     @JsonProperty(required = false)
     private String bloco;
 
+    @ValidObrigatorio
+    @JsonProperty(required = false)
+    private String email;
+
 }

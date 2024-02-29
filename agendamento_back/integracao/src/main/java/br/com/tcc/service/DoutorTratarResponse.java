@@ -91,7 +91,8 @@ public class DoutorTratarResponse {
                 doutor.getBairro(),
                 doutor.getNumero(),
                 doutor.getBloco(),
-                getTipoFuncionarioResponse(doutor.getTipoFuncionario())
+                getTipoFuncionarioResponse(doutor.getTipoFuncionario()),
+                doutor.getEmail()
         );
     }
 

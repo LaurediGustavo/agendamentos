@@ -18,8 +18,15 @@ public class PacienteTratarResponse {
     @Autowired
     private PacienteRepository pacienteRepository;
 
-    public List<PacienteResponse> consultarPorCpfNome(String cpf, String nome) {
-        Optional<List<Paciente>> optionalPacienteList = pacienteRepository.findByCpfNome(cpf, nome);
+    public List<PacienteResponse> consultarPorCpfNome(String cpf, String nome, Boolean desabilitado) {
+        Optional<List<Paciente>> optionalPacienteList = null;
+
+        if (!Boolean.TRUE.equals(desabilitado)) {
+            optionalPacienteList = pacienteRepository.findByCpfNomeHabilitado(cpf, nome);
+        }
+        else {
+            optionalPacienteList = pacienteRepository.findByCpfNomeDesabilitado(cpf, nome);
+        }
 
         List<PacienteResponse> pacienteResponseList = optionalPacienteList
                 .map(pacientes -> pacientes.stream()

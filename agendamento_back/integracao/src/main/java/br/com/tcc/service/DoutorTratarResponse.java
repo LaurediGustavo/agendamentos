@@ -31,9 +31,17 @@ public class DoutorTratarResponse {
     @Autowired
     private ConsultaRepository consultaRepository;
 
-    public List<DoutorResponse> consultarPorNome(String nome) {
-        Optional<List<Doutor>> optionalDoutorList = doutorRepository
-                .findByNomeContaining(nome);
+    public List<DoutorResponse> consultarPorNome(String nome, Boolean desabilitado) {
+        Optional<List<Doutor>> optionalDoutorList = null;
+
+        if (!Boolean.TRUE.equals(desabilitado)) {
+            optionalDoutorList = doutorRepository
+                    .findByNomeContainingAndHabilitado(nome);
+        }
+        else {
+            optionalDoutorList = doutorRepository
+                    .findByNomeContainingAndDesabilitado(nome);
+        }
 
         List<DoutorResponse> doutorResponseList = optionalDoutorList
                 .map(doutor -> doutor.stream()

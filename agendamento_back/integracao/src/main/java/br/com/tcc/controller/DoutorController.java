@@ -62,9 +62,9 @@ public class DoutorController {
     }
 
     @GetMapping(value = "/consultar")
-    public ResponseEntity<?> consultarDoutorPorNome(@Param("nome") String nome) {
+    public ResponseEntity<?> consultarDoutorPorNome(@Param("nome") String nome, @Param("desabilitado") Boolean desabilitado) {
         List<DoutorResponse> doutorResponseList = doutorTratarResponse
-                .consultarPorNome(nome);
+                .consultarPorNome(nome, desabilitado);
 
         return ResponseEntity.status(HttpStatus.OK).body(doutorResponseList);
     }
@@ -94,11 +94,22 @@ public class DoutorController {
     }
 
     @DeleteMapping(value = "delete/{id}")
+    @PreAuthorize("hasRole('ROLE_ATENDENTE')")
     public ResponseEntity<?> deletar(@PathVariable("id") Long id) {
         if (!doutorService.existsById(id))
             return ResponseEntity.notFound().build();
 
         doutorService.deletar(id);
+        return ResponseEntity.status(HttpStatus.OK).build();
+    }
+
+    @PostMapping(value = "revertdelete/{id}")
+    @PreAuthorize("hasRole('ROLE_ATENDENTE')")
+    public ResponseEntity<?> revertDeleta(@PathVariable("id") Long id) {
+        if (!doutorService.existsById(id))
+            return ResponseEntity.notFound().build();
+
+        doutorService.revertDelete(id);
         return ResponseEntity.status(HttpStatus.OK).build();
     }
 

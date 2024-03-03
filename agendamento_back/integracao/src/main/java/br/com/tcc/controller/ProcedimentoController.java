@@ -32,9 +32,9 @@ public class ProcedimentoController {
     private ProcedimentoService procedimentoService;
 
     @GetMapping(value = "/consultar")
-    public ResponseEntity<?> consultarPorTratamento(@Param("tratamento") String tratamento) {
+    public ResponseEntity<?> consultarPorTratamento(@Param("tratamento") String tratamento, @Param("desabilitado") Boolean desabilitado) {
         List<ProcedimentoResponse> procedimentoResponseList = procedimentoTratarResponse
-                .consultarPorTratamento(tratamento);
+                .consultarPorTratamento(tratamento, desabilitado);
 
         return ResponseEntity.status(HttpStatus.OK).body(procedimentoResponseList);
     }
@@ -76,6 +76,15 @@ public class ProcedimentoController {
             return ResponseEntity.notFound().build();
 
         procedimentoService.deletar(id);
+        return ResponseEntity.status(HttpStatus.OK).build();
+    }
+
+    @PostMapping(value = "revertdelete/{id}")
+    public ResponseEntity<?> revertDelete(@PathVariable("id") Long id) {
+        if (!procedimentoService.existsById(id))
+            return ResponseEntity.notFound().build();
+
+        procedimentoService.revertDelete(id);
         return ResponseEntity.status(HttpStatus.OK).build();
     }
 

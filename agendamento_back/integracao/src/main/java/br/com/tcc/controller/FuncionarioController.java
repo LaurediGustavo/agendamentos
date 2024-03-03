@@ -15,7 +15,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/funcionario")
@@ -32,9 +34,12 @@ public class FuncionarioController {
     public ResponseEntity<?> cadastro(@Valid @RequestBody FuncionarioRequest funcionarioRequest) {
         FuncionarioDto funcionarioDto = new FuncionarioDto();
         BeanUtils.copyProperties(funcionarioRequest, funcionarioDto);
-        funcionarioService.cadastrar(funcionarioDto);
+        Long id = funcionarioService.cadastrar(funcionarioDto);
 
-        return ResponseEntity.status(HttpStatus.CREATED).build();
+        Map<String, Object> responseBody = new HashMap<>();
+        responseBody.put("id", id);
+
+        return ResponseEntity.status(HttpStatus.CREATED).body(responseBody);
     }
 
     @PutMapping(value = "/atualizar", consumes = MediaType.APPLICATION_JSON_VALUE)
@@ -48,9 +53,9 @@ public class FuncionarioController {
     }
 
     @GetMapping(value = "/consultar")
-    public ResponseEntity<?> consultarFuncionarioPorNome(@Param("nome") String nome) {
+    public ResponseEntity<?> consultarFuncionarioPorNome(@Param("nome") String nome, @Param("desabilitado") Boolean desabilitado) {
         List<FuncionarioResponse> funcionarioResponseList = funcionarioTratarResponse
-                .consultarPorNome(nome);
+                .consultarPorNome(nome, desabilitado);
 
         return ResponseEntity.status(HttpStatus.OK).body(funcionarioResponseList);
     }
@@ -61,6 +66,26 @@ public class FuncionarioController {
                 .consultarPorId(id);
 
         return ResponseEntity.status(HttpStatus.OK).body(funcionarioResponse);
+    }
+
+    @DeleteMapping(value = "delete/{id}")
+    @PreAuthorize("hasRole('ROLE_ATENDENTE')")
+    public ResponseEntity<?> deletar(@PathVariable("id") Long id) {
+        if (!funcionarioService.existsById(id))
+            return ResponseEntity.notFound().build();
+
+        funcionarioService.deletar(id);
+        return ResponseEntity.status(HttpStatus.OK).build();
+    }
+
+    @PostMapping(value = "revertdelete/{id}")
+    @PreAuthorize("hasRole('ROLE_ATENDENTE')")
+    public ResponseEntity<?> revertDeleta(@PathVariable("id") Long id) {
+        if (!funcionarioService.existsById(id))
+            return ResponseEntity.notFound().build();
+
+        funcionarioService.revertDelete(id);
+        return ResponseEntity.status(HttpStatus.OK).build();
     }
 
 }

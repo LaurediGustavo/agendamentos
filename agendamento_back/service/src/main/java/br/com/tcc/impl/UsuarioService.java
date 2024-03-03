@@ -46,6 +46,7 @@ public class UsuarioService {
         Ususario usuario = new Ususario();
         usuario.setFuncionario(funcionario);
         usuario.setUserName(funcionario.getCpf());
+        usuario.setEmail(funcionario.getEmail());
 
         List<Role> roles = new ArrayList<>();
         roles.add(getRole(funcionario));

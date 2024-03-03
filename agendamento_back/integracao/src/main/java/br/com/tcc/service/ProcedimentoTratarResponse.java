@@ -16,9 +16,17 @@ public class ProcedimentoTratarResponse {
     @Autowired
     private ProcedimentoRepository procedimentoRepository;
 
-    public List<ProcedimentoResponse> consultarPorTratamento(String tratamento) {
-        Optional<List<Procedimento>> optionalProcedimentoList = procedimentoRepository
-                .findByTratamentoLike(tratamento);
+    public List<ProcedimentoResponse> consultarPorTratamento(String tratamento, Boolean desabilitado) {
+        Optional<List<Procedimento>> optionalProcedimentoList = null;
+
+        if (!Boolean.TRUE.equals(desabilitado)) {
+            optionalProcedimentoList = procedimentoRepository
+                    .findByTratamentoLikeHabilitado(tratamento);
+        }
+        else {
+            optionalProcedimentoList = procedimentoRepository
+                    .findByTratamentoLikeDesabilitado(tratamento);
+        }
 
         return optionalProcedimentoList
                 .map(procedimentos -> procedimentos.stream()

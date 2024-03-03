@@ -1,6 +1,7 @@
 package br.com.tcc.impl;
 
 import br.com.tcc.dto.FuncionarioDto;
+import br.com.tcc.email.EmailService;
 import br.com.tcc.entity.Doutor;
 import br.com.tcc.entity.Funcionario;
 import br.com.tcc.entity.TipoFuncionario;
@@ -22,9 +23,16 @@ public class FuncionarioService {
     @Autowired
     private TipoFuncionarioRepository tipoFuncionarioRepository;
 
-    public void cadastrar(FuncionarioDto funcionarioDto) {
+    @Autowired
+    private UsuarioService usuarioService;
+
+    public Long cadastrar(FuncionarioDto funcionarioDto) {
         Funcionario funcionario = gerarFuncionario(funcionarioDto);
         funcionarioRepository.save(funcionario);
+
+        usuarioService.cadastrar(funcionario);
+
+        return funcionario.getId();
     }
 
     private Funcionario gerarFuncionario(FuncionarioDto funcionarioDto) {
@@ -39,8 +47,10 @@ public class FuncionarioService {
         funcionario.setLogradouro(funcionarioDto.getLogradouro());
         funcionario.setBairro(funcionarioDto.getBairro());
         funcionario.setNumero(funcionarioDto.getNumero());
+        funcionario.setCep(funcionarioDto.getCep());
         funcionario.setBloco(funcionarioDto.getBloco());
         funcionario.setTipoFuncionario(getTipoFuncionario());
+        funcionario.setEmail(funcionarioDto.getEmail());
 
         return funcionario;
     }
@@ -74,6 +84,24 @@ public class FuncionarioService {
 
     private TipoFuncionario getTipoFuncionario() {
         return tipoFuncionarioRepository.findByNome(this.ATENDENTE);
+    }
+
+    public boolean existsById(Long id) {
+        return funcionarioRepository.existsById(id);
+    }
+
+    public void deletar(Long id) {
+        Funcionario funcionario = funcionarioRepository.findById(id).get();
+        funcionario.setDesabilitado(Boolean.TRUE);
+
+        funcionarioRepository.save(funcionario);
+    }
+
+    public void revertDelete(Long id) {
+        Funcionario funcionario = funcionarioRepository.findById(id).get();
+        funcionario.setDesabilitado(Boolean.FALSE);
+
+        funcionarioRepository.save(funcionario);
     }
 
 }

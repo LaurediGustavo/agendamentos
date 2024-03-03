@@ -5,6 +5,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.domain.EntityScan;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
+import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.scheduling.annotation.EnableScheduling;
 
 @SpringBootApplication
@@ -16,6 +17,8 @@ import org.springframework.scheduling.annotation.EnableScheduling;
                 "br.com.tcc.security.securityConfig",
                 "br.com.tcc.security.jwtConfig",
                 "br.com.tcc.controller",
+                "br.com.tcc.swagger",
+                "br.com.tcc.email",
                 "br.com.tcc.impl",
                 "br.com.tcc.validation.agendamento.impl",
                 "br.com.tcc.validation.agendamento.interfaces",
@@ -23,6 +26,7 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 @EntityScan(basePackages = {"br.com.tcc.entity"})
 @EnableJpaRepositories(basePackages = {"br.com.tcc.repository"})
 @EnableScheduling
+@EnableAsync
 public class App {
 
     public static void main(String[] args) {

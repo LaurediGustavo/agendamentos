@@ -54,9 +54,9 @@ public class PacienteController {
     }
 
     @GetMapping(value = "/consultar")
-    public ResponseEntity<?> consultarPorCpfNome(@Param("cpf") String cpf, @Param("nome") String nome) {
+    public ResponseEntity<?> consultarPorCpfNome(@Param("cpf") String cpf, @Param("nome") String nome, @Param("desabilitado") Boolean desabilitado) {
         List<PacienteResponse> pacienteResponseList = pacienteTratarResponse
-                .consultarPorCpfNome(cpf, nome);
+                .consultarPorCpfNome(cpf, nome, desabilitado);
 
         return ResponseEntity.status(HttpStatus.OK).body(pacienteResponseList);
     }
@@ -83,6 +83,15 @@ public class PacienteController {
             return ResponseEntity.notFound().build();
 
         pacienteService.deletar(id);
+        return ResponseEntity.status(HttpStatus.OK).build();
+    }
+
+    @PostMapping(value = "revertdelete/{id}")
+    public ResponseEntity<?> revertDelete(@PathVariable("id") Long id) {
+        if (!pacienteService.existsById(id))
+            return ResponseEntity.notFound().build();
+
+        pacienteService.revertDelete(id);
         return ResponseEntity.status(HttpStatus.OK).build();
     }
 

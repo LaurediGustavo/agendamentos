@@ -17,7 +17,13 @@ public interface ProcedimentoRepository extends JpaRepository<Procedimento, Long
             "WHERE p.tratamento LIKE %:tratamento% " +
             "AND (p.desabilitado IS NULL OR p.desabilitado = false) " +
             "ORDER BY p.tratamento")
-    Optional<List<Procedimento>> findByTratamentoLike(String tratamento);
+    Optional<List<Procedimento>> findByTratamentoLikeHabilitado(String tratamento);
+
+    @Query("SELECT p FROM Procedimento p " +
+            "WHERE p.tratamento LIKE %:tratamento% " +
+            "AND (p.desabilitado = true) " +
+            "ORDER BY p.tratamento")
+    Optional<List<Procedimento>> findByTratamentoLikeDesabilitado(String tratamento);
 
     @Query("SELECT p FROM Procedimento p " +
             "WHERE p.desabilitado IS NULL OR p.desabilitado = false " +

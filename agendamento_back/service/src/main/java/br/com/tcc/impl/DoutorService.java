@@ -57,6 +57,7 @@ public class DoutorService {
         doutor.setCro(doutorDto.getCro());
         doutor.setCep(doutorDto.getFuncionario().getCep());
         doutor.setProcedimentos(getProcedimentos(doutorDto.getProcedimentos()));
+        doutor.setEmail(doutorDto.getFuncionario().getEmail());
 
         return doutor;
     }
@@ -101,6 +102,9 @@ public class DoutorService {
 
                     if (StringUtils.isNotBlank(doutorDto.getFuncionario().getBloco()))
                         doutor.setBloco(doutorDto.getFuncionario().getBloco());
+
+                    if (StringUtils.isNotBlank(doutorDto.getFuncionario().getEmail()))
+                        doutor.setEmail(doutorDto.getFuncionario().getEmail());
 
                     if (StringUtils.isNotBlank(doutorDto.getCro()))
                         doutor.setCro(doutorDto.getCro());
@@ -154,6 +158,13 @@ public class DoutorService {
     public void deletar(Long id) {
         Doutor doutor = doutorRepository.findById(id).get();
         doutor.setDesabilitado(Boolean.TRUE);
+
+        doutorRepository.save(doutor);
+    }
+
+    public void revertDelete(Long id) {
+        Doutor doutor = doutorRepository.findById(id).get();
+        doutor.setDesabilitado(Boolean.FALSE);
 
         doutorRepository.save(doutor);
     }

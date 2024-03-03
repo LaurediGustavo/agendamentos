@@ -6,8 +6,7 @@ import { DataTable } from "../../components/dataTable/dataTable";
 import "./employees.scss";
 import Action from "../../components/action/Action";
 import api from '../../services/api';
-import { formatarData_yyyy_MM_dd } from '../../services/dateFormat';
-import { employeesData } from "../../data/dados"; // Importando o mock de dados de funcionários
+import { formatarData_yyyy_MM_dd, formatarData_dd_MM_yyyy } from '../../services/dateFormat';
 
 const columns = [
   {
@@ -23,16 +22,16 @@ const columns = [
     type: 'string'
   },
   {
-    field: 'genero',
-    headerName: 'Gênero',
+    field: 'email',
+    headerName: 'E-mail',
     width: 200,
     type: 'string'
   },
   {
-    field: 'especialidade',
-    headerName: 'Especialidade',
+    field: 'genero',
+    headerName: 'Gênero',
     width: 200,
-    type: 'string',
+    type: 'string'
   },
   {
     field: 'cpf',
@@ -95,22 +94,22 @@ const Employees = () => {
 
   const getEmployees = async () => {
     try {
-      // Utilizando o mock de dados de funcionários
-      const employees = employeesData.map(employee => ({
+      const response = await api.get("/funcionario/consultar?nome=");
+
+      const employees = response.data.map(employee => ({
         id: employee.id,
         nome: employee.nome,
         sobrenome: employee.sobrenome,
-        dataDeNascimento: employee.dataDeNascimento,
+        dataDeNascimento: formatarData_dd_MM_yyyy(employee.dataDeNascimento),
         cpf: employee.cpf,
         genero: employee.genero,
         telefone: employee.telefone,
         cep: employee.cep,
-        cidade: employee.cidade,
         bairro: employee.bairro,
         logradouro: employee.logradouro,
         numero: employee.numero,
         bloco: employee.bloco,
-        especialidade: employee.especialidade
+        email: employee.email
       }));
       setInitialEmployeesData(employees);
     } catch (error) {
@@ -136,20 +135,31 @@ const Employees = () => {
   const handleSaveEmployee = async (data) => {
     try {
       if (isEditing) {
-        // Atualizar funcionário
-        await api.put(`/funcionario/atualizar/${editEmployee.id}`, data);
         const updatedEmployees = initialEmployeesData.map(employee => {
           if (employee.id === editEmployee.id) {
-            return { ...employee, ...data };
+            const updatedEmployee = {
+              ...employee,
+              ...data
+            };
+  
+            atualizar(updatedEmployee)
+  
+            return updatedEmployee;
           }
           return employee;
         });
         setInitialEmployeesData(updatedEmployees);
       } else {
-        // Adicionar novo funcionário
-        const response = await api.post("/funcionario/cadastro", data);
-        const newEmployee = { id: response.data.id, ...data };
-        setInitialEmployeesData([...initialEmployeesData, newEmployee]);
+        const newEmployees = {
+          id: Math.random(),
+          ...data
+        };
+  
+        const id = await gravar(newEmployees)
+        newEmployees.id = id
+  
+        const updatedEmployee = [...initialEmployeesData, newEmployees];
+        setInitialEmployeesData(updatedEmployee);
       }
     } catch (error) {
       console.error("Erro ao salvar funcionário: " + error);
@@ -157,13 +167,64 @@ const Employees = () => {
     setOpen(false);
   };
 
-  const handleDeleteClick = (employee) => {
-    setRemovedItems([...removedItems, employee]);
-    const updatedEmployees = initialEmployeesData.filter(e => e.id !== employee.id);
-    setInitialEmployeesData(updatedEmployees);
+  const gravar = async (employee) => {
+    try {
+      const response = await api.post("/funcionario/cadastro", {
+          nome: employee.nome,
+          sobrenome: employee.sobrenome,
+          dataDeNascimento: formatarData_yyyy_MM_dd(employee.dataDeNascimento),
+          cpf: employee.cpf,
+          genero: employee.genero,
+          telefone: employee.telefone,
+          cep: employee.cep,
+          logradouro: employee.logradouro,
+          bairro: employee.bairro,
+          numero: employee.numero,
+          bloco: employee.bloco,
+          email: employee.email,
+      });
+      return response.data.id;
+    } catch (error) {
+      throw new Error("Erro ao gravar funcionario: " + error.message);
+    }
   };
 
+  const atualizar = async (employee) => {
+    try {
+      await api.put("/funcionario/atualizar", {
+        id: employee.id,
+        nome: employee.nome,
+        sobrenome: employee.sobrenome,
+        dataDeNascimento: formatarData_yyyy_MM_dd(employee.dataDeNascimento),
+        cpf: employee.cpf,
+        genero: employee.genero,
+        telefone: employee.telefone,
+        cep: employee.cep,
+        logradouro: employee.logradouro,
+        bairro: employee.bairro,
+        numero: employee.numero,
+        bloco: employee.bloco,
+        email: employee.email,
+      });
+    } catch (error) {
+      throw new Error("Erro ao atualizar funcionario: " + error);
+    }
+  };
 
+  const handleDeleteClick = (employee) => {
+    setRemovedItems([...removedItems, employee]);
+    const updatedEmployees = initialEmployeesData.filter(d => d.id !== employee.id);
+    setInitialEmployeesData(updatedEmployees);
+    remove(employee);
+  };
+
+  const remove = async (doutor) => {
+    try {
+      await api.delete("/funcionario/delete/" + doutor.id);
+    } catch (error) {
+      throw new Error("Erro ao atualizar funcionario: " + error);
+    }
+  };
 
   const handleReturnClick = (employee) => {
     const updatedRemovedItems = removedItems.filter(item => item.id !== employee.id);

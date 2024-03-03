@@ -117,6 +117,13 @@ public class PacienteService {
 		pacienteRepository.save(paciente);
 	}
 
+	public void revertDelete(Long id) {
+		Paciente paciente = getPaciente(id);
+		paciente.setDesabilitado(Boolean.FALSE);
+
+		pacienteRepository.save(paciente);
+	}
+
 	public boolean existsById(Long id) {
 		return pacienteRepository.existsById(id);
 	}

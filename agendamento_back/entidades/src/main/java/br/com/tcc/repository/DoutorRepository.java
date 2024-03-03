@@ -1,7 +1,6 @@
 package br.com.tcc.repository;
 
 import br.com.tcc.entity.Doutor;
-import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -19,7 +18,13 @@ public interface DoutorRepository extends JpaRepository<Doutor, Long> {
             "WHERE d.nome LIKE %:nome% " +
             "AND (d.desabilitado IS NULL OR d.desabilitado = false) " +
             "ORDER BY d.nome")
-    Optional<List<Doutor>> findByNomeContaining(String nome);
+    Optional<List<Doutor>> findByNomeContainingAndHabilitado(String nome);
+
+    @Query("SELECT d FROM Doutor d " +
+            "WHERE d.nome LIKE %:nome% " +
+            "AND d.desabilitado = true " +
+            "ORDER BY d.nome")
+    Optional<List<Doutor>> findByNomeContainingAndDesabilitado(String nome);
 
     @Query("SELECT d FROM Doutor d " +
             "JOIN d.procedimentos p " +

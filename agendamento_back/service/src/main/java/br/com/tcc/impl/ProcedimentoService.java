@@ -64,6 +64,13 @@ public class ProcedimentoService {
         procedimentoRepository.save(procedimento);
     }
 
+    public void revertDelete(Long id) {
+        Procedimento procedimento = gerarProcedimento(id);
+        procedimento.setDesabilitado(Boolean.FALSE);
+
+        procedimentoRepository.save(procedimento);
+    }
+
     public boolean existsById(Long id) {
         return procedimentoRepository.existsById(id);
     }

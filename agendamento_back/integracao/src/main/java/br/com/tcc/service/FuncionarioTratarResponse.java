@@ -18,9 +18,17 @@ public class FuncionarioTratarResponse {
     @Autowired
     private FuncionarioRepository funcionarioRepository;
 
-    public List<FuncionarioResponse> consultarPorNome(String nome) {
-        Optional<List<Funcionario>> funcOptionalList = funcionarioRepository
-                .findByNomeContaining(nome);
+    public List<FuncionarioResponse> consultarPorNome(String nome, Boolean desabilitado) {
+        Optional<List<Funcionario>> funcOptionalList = null;
+
+        if (!Boolean.TRUE.equals(desabilitado)) {
+            funcOptionalList = funcionarioRepository
+                    .findByNomeContainingAndHabilitado(nome);
+        }
+        else {
+            funcOptionalList = funcionarioRepository
+                    .findByNomeContainingAndDesabilitado(nome);
+        }
 
         List<FuncionarioResponse> funcionarioResponseList = funcOptionalList
                 .map(funcionario -> funcionario.stream()

@@ -23,22 +23,22 @@ public class ValidAgendamentoDataHoraFinalValidator implements ConstraintValidat
             LocalDateTime dataFinal = value.getDataHoraFim();
 
             if (isDataValida(dataIncio, dataFinal, context)) {
-                boolean disponivel = validarHorarioDoutor(dataIncio, dataFinal, value);
+                boolean disponivelDoutor = validarHorarioDoutor(dataIncio, dataFinal, value);
 
-                if(!disponivel) {
+                if(!disponivelDoutor) {
                     context.disableDefaultConstraintViolation();
                     context.buildConstraintViolationWithTemplate("{agendamento.horarioIndisponivel.doutor}")
                             .addConstraintViolation();
                 }
 
-                disponivel = validarHorarioPaciente(dataIncio, dataFinal, value);
-                if(!disponivel) {
+                boolean disponivelPaciente = validarHorarioPaciente(dataIncio, dataFinal, value);
+                if(!disponivelPaciente) {
                     context.disableDefaultConstraintViolation();
                     context.buildConstraintViolationWithTemplate("{agendamento.horarioIndisponivel.paciente}")
                             .addConstraintViolation();
                 }
 
-                return disponivel;
+                return disponivelDoutor && disponivelPaciente;
             }
         }
 

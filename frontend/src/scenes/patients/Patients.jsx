@@ -143,6 +143,34 @@ const Patients = () => {
     }
   };
 
+  const handleRemovedItensClick = async () => {
+    try {
+      const response = await api.get("/paciente/consultar?cpf=&nome=&desabilitado=true");
+      const pacientes = response.data.map((paciente) => ({
+        id: paciente.id,
+        nome: paciente.nome,
+        sobrenome: paciente.sobrenome,
+        dataDeNascimento: formatarData_dd_MM_yyyy(paciente.dataDeNascimento),
+        cpf: paciente.cpf,
+        genero: paciente.genero,
+        telefone: paciente.telefone,
+        informacoesAdicionais: paciente.informacoesAdicionais,
+        cep: paciente.cep,
+        logradouro: paciente.logradouro,
+        bairro: paciente.bairro,
+        numero: paciente.numero,
+        bloco: paciente.bloco,
+        responsavelLegal: paciente.responsavelLegal,
+        relacaoResponsavel: paciente.relacaoResponsavel,
+        responsavel: paciente.responsavel,
+        telefoneResponsavel: paciente.telefoneResponsavel,
+      }));
+      setRemovedItems(pacientes);
+    } catch (error) {
+      console.error("Ops! Ocorreu um erro: " + error);
+    }
+  };
+
   useEffect(() => {
     getPacientes();
   }, []);
@@ -266,6 +294,7 @@ const Patients = () => {
   const returnPatient = async (patient) => {
     // Lógica para retornar um paciente excluído
     try {
+      await api.post("/paciente/revertdelete/" + patient.id);
     } catch (error) {
       console.error("Erro ao retornar paciente: " + error);
     }
@@ -283,6 +312,7 @@ const Patients = () => {
         onEditClick={handleEditClick}
         onDeleteClick={handleDeleteClick}
         onReturnClick={handleReturnClick}
+        onShowRemovedClick={handleRemovedItensClick}
       />
       {open && (
         <Action

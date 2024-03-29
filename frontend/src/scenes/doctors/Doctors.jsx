@@ -131,6 +131,33 @@ const Doctors = () => {
     }
   };
 
+  const handleRemovedItensClick = async () => {
+    try {
+      const response = await api.get("/doutor/consultar?nome=&desabilitado=true");
+      const doutores = response.data.map((doutore) => ({
+        id: doutore.funcionarioResponse.id,
+        nome: doutore.funcionarioResponse.nome,
+        sobrenome: doutore.funcionarioResponse.sobrenome,
+        dataDeNascimento: formatarData_dd_MM_yyyy(doutore.funcionarioResponse.dataDeNascimento),
+        cpf: doutore.funcionarioResponse.cpf,
+        genero: doutore.funcionarioResponse.genero,
+        telefone: doutore.funcionarioResponse.telefone,
+        cep: doutore.funcionarioResponse.cep,
+        logradouro: doutore.funcionarioResponse.logradouro,
+        bairro: doutore.funcionarioResponse.bairro,
+        numero: doutore.funcionarioResponse.numero,
+        bloco: doutore.funcionarioResponse.bloco,
+        email: doutore.funcionarioResponse.email,
+        cro: doutore.cro,
+        especialidade: doutore.procedimentos.map(procedimento => procedimento.id),
+        especialidadeNome: doutore.procedimentos.map(procedimento => procedimento.tratamento),
+      }));
+      setRemovedItems(doutores);
+    } catch (error) {
+      console.error("Ops! Ocorreu um erro: " + error);
+    }
+  };
+
   const getProcedures = async () => {
     try {
       const response = await api.get("/procedimento/consultar?tratamento= ");
@@ -274,6 +301,7 @@ const Doctors = () => {
   const returnDoctor = async (doutor) => {
     // Lógica para retornar um procedimento excluído
     try {
+      await api.post("/doutor/revertdelete/" + doutor.id);
     } catch (error) {
       console.error("Erro ao retornar doutor: " + error);
     }
@@ -285,7 +313,7 @@ const Doctors = () => {
         <Header title="Doutores" subtitle="Registre e gerencie seus doutores." />
       </Box>
 
-      <DataTable slug="doctor" columns={columns} rows={showDeleted ? [...initialDoctorsData, ...removedItems] : initialDoctorsData} deletedRows={removedItems} onEditClick={handleEditClick} onDeleteClick={handleDeleteClick} onReturnClick={handleReturnClick} />
+      <DataTable slug="doctor" columns={columns} rows={showDeleted ? [...initialDoctorsData, ...removedItems] : initialDoctorsData} deletedRows={removedItems} onEditClick={handleEditClick} onDeleteClick={handleDeleteClick} onReturnClick={handleReturnClick} onShowRemovedClick={handleRemovedItensClick} />
 
       {open && (
         <Action

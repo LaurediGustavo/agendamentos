@@ -38,7 +38,7 @@ const Procedures = () => {
 
   const getConsultas = async () => {
     try {
-      const response = await api.get("/procedimento/consultar?tratamento= ");
+      const response = await api.get("/procedimento/consultar?tratamento=");
       const procedimentos = response.data.map((procedimento) => ({
         id: procedimento.id,
         tratamento: procedimento.tratamento,
@@ -46,6 +46,21 @@ const Procedures = () => {
         tempo: procedimento.tempo,
       }));
       setInitialProceduresData(procedimentos);
+    } catch (error) {
+      console.error("Ops! Ocorreu um erro: " + error);
+    }
+  };
+
+  const handleRemovedItensClick = async () => {
+    try {
+      const response = await api.get("/procedimento/consultar?tratamento=&desabilitado=true");
+      const procedimentos = response.data.map((procedimento) => ({
+        id: procedimento.id,
+        tratamento: procedimento.tratamento,
+        valor: procedimento.valor,
+        tempo: procedimento.tempo,
+      }));
+      setRemovedItems(procedimentos);
     } catch (error) {
       console.error("Ops! Ocorreu um erro: " + error);
     }
@@ -150,6 +165,7 @@ const Procedures = () => {
   const returnProcedure = async (procedure) => {
     // Lógica para retornar um procedimento excluído
     try {
+      await api.post("/procedimento/revertdelete/" + procedure.id);
     } catch (error) {
       console.error("Erro ao retornar procedimento: " + error);
     }
@@ -167,6 +183,7 @@ const Procedures = () => {
         onEditClick={handleEditClick}
         onDeleteClick={handleDeleteClick}
         onReturnClick={handleReturnClick}
+        onShowRemovedClick={handleRemovedItensClick}
       />
       {open && (
         <Action

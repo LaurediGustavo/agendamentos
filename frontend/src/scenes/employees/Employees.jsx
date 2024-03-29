@@ -117,6 +117,31 @@ const Employees = () => {
     }
   };
 
+  const handleRemovedItensClick = async () => {
+    try {
+      const response = await api.get("/funcionario/consultar?nome=&desabilitado=true");
+
+      const employees = response.data.map(employee => ({
+        id: employee.id,
+        nome: employee.nome,
+        sobrenome: employee.sobrenome,
+        dataDeNascimento: formatarData_dd_MM_yyyy(employee.dataDeNascimento),
+        cpf: employee.cpf,
+        genero: employee.genero,
+        telefone: employee.telefone,
+        cep: employee.cep,
+        bairro: employee.bairro,
+        logradouro: employee.logradouro,
+        numero: employee.numero,
+        bloco: employee.bloco,
+        email: employee.email
+      }));
+      setRemovedItems(employees);
+    } catch (error) {
+      console.error("Ops! Ocorreu um erro: " + error);
+    }
+  };
+
   useEffect(() => {
     getEmployees();
   }, []);
@@ -230,11 +255,13 @@ const Employees = () => {
     const updatedRemovedItems = removedItems.filter(item => item.id !== employee.id);
     setRemovedItems(updatedRemovedItems);
     setInitialEmployeesData([...initialEmployeesData, employee]);
+    returnEmployee(employee);
   };
 
   const returnEmployee = async (employee) => {
     // Lógica para retornar um funcionario excluído
     try {
+      await api.post("/funcionario/revertdelete/" + employee.id);
     } catch (error) {
       console.error("Erro ao retornar funcionario: " + error);
     }
@@ -253,6 +280,7 @@ const Employees = () => {
         onEditClick={handleEditClick}
         onDeleteClick={handleDeleteClick}
         onReturnClick={handleReturnClick}
+        onShowRemovedClick={handleRemovedItensClick}
       />
       {open && (
         <Action

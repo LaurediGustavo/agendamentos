@@ -56,14 +56,17 @@ export const DataTable = (props) => {
     setSelectedRowToReturn(null);
   };
 
-
+  const handleShowRemovedClick = () => {
+    props.onShowRemovedClick();
+    setShowDeleted(!showDeleted)
+  };
 
   function CustomToolbar() {
     return (
       <GridToolbarContainer>
         <div>
         <Button
-            onClick={() => setShowDeleted(!showDeleted)}
+            onClick={() => handleShowRemovedClick()}
             sx={{ mr: 5, fontSize: 13 }}
           >
             {showDeleted ? 'Ocultar Excluídos' : 'Mostrar excluídos'}
@@ -76,8 +79,6 @@ export const DataTable = (props) => {
       </GridToolbarContainer>
     );
   }
-
-
 
   const actionColumn = {
     field: "action",

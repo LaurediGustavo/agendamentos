@@ -46,7 +46,7 @@ public class ProcedimentoService {
             procedimento.setTempo(procedimentoDto.getTempo());
         }
 
-        if (procedimentoDto.getValor() != null && BigDecimal.ZERO.equals(procedimentoDto.getValor())) {
+        if (procedimentoDto.getValor() != null && !BigDecimal.ZERO.equals(procedimentoDto.getValor())) {
             procedimento.setValor(procedimentoDto.getValor());
         }
 

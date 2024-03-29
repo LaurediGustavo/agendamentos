@@ -98,7 +98,17 @@ const Action = (props) => {
           ...formData,
           [name]: numericValue
         });
-      } else {
+      }
+      else if (name === 'tempo') {
+        const cleanedTime = value.replace(/[^\d]/g, '');
+        const maskedTime = cleanedTime.replace(/(\d{2})(\d{2})/, '$1:$2');
+
+        setFormData({
+          ...formData,
+          [name]: maskedTime
+        });
+      } 
+      else {
         // Para outros campos, atualize diretamente o estado formData
         setFormData({
           ...formData,
@@ -298,7 +308,24 @@ const Action = (props) => {
                             />
                           )}
                         </InputMask>
-                      ) : column.field === 'telefone' || column.field === 'telefoneResponsavel' ? (
+                      ): column.field === 'tempo' ? (
+                        <InputMask
+                          className="time-input"
+                          mask="99:99"
+                          placeholder={column.headerName}
+                          name={column.field}
+                          defaultValue={formData[column.field] || ''}
+                          onChange={handleInputChange}
+                          style={{ width: '100%' }}
+                        >
+                          {(inputProps) => (
+                            <TextField
+                              {...inputProps}
+                              className={errors[column.field] ? 'error' : ''}
+                            />
+                          )}
+                        </InputMask>
+                      ):column.field === 'telefone' || column.field === 'telefoneResponsavel' ? (
                         <InputMask
                           mask="(99) 99999-9999"
                           placeholder={column.headerName}

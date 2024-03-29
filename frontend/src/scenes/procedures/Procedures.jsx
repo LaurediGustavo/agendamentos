@@ -18,7 +18,7 @@ const columns = [
     field: 'valor',
     headerName: 'Valor',
     width: 200,
-    type: 'number'
+    type: 'string'
   },
   {
     field: 'tempo',
@@ -42,8 +42,8 @@ const Procedures = () => {
       const procedimentos = response.data.map((procedimento) => ({
         id: procedimento.id,
         tratamento: procedimento.tratamento,
-        valor: procedimento.valor,
-        tempo: procedimento.tempo,
+        valor: formatarValor(procedimento.valor),
+        tempo: minutosParaHoraMinuto(procedimento.tempo),
       }));
       setInitialProceduresData(procedimentos);
     } catch (error) {
@@ -57,14 +57,33 @@ const Procedures = () => {
       const procedimentos = response.data.map((procedimento) => ({
         id: procedimento.id,
         tratamento: procedimento.tratamento,
-        valor: procedimento.valor,
-        tempo: procedimento.tempo,
+        valor: formatarValor(procedimento.valor),
+        tempo: minutosParaHoraMinuto(procedimento.tempo),
       }));
       setRemovedItems(procedimentos);
     } catch (error) {
       console.error("Ops! Ocorreu um erro: " + error);
     }
   };
+
+  const minutosParaHoraMinuto = (minutos) => {
+    const horas = Math.floor(minutos / 60);
+    const minutosRestantes = minutos % 60;
+    const horasFormatadas = horas < 10 ? '0' + horas : horas;
+    const minutosFormatados = minutosRestantes < 10 ? '0' + minutosRestantes : minutosRestantes;
+    return `${horasFormatadas}:${minutosFormatados}`;
+  };
+
+  const formatarValor = (valor) => {
+    const valorFormatado = valor?.toLocaleString('pt-BR', {
+      style: 'currency',
+      currency: 'BRL',
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2,
+    });
+
+    return valorFormatado;
+  }
 
   useEffect(() => {
     getConsultas();
@@ -116,8 +135,8 @@ const Procedures = () => {
     try {
       const response = await api.post("/procedimento/cadastro", {
         tratamento: procedimento.tratamento,
-        valor: parseFloat(procedimento.valor),
-        tempo: procedimento.tempo,
+        valor: removerFormatacaoMoeda(procedimento.valor),
+        tempo: horaMinutoParaMinutos(procedimento.tempo),
         desabilitado: false,
       });
       return response.data.id;
@@ -131,14 +150,24 @@ const Procedures = () => {
       await api.put("/procedimento/atualizar", {
         id: procedimento.id,
         tratamento: procedimento.tratamento,
-        valor: parseFloat(procedimento.valor),
-        tempo: procedimento.tempo,
+        valor: removerFormatacaoMoeda(procedimento.valor),
+        tempo: horaMinutoParaMinutos(procedimento.tempo),
         desabilitado: false,
       });
     } catch (error) {
       throw new Error("Erro ao atualizar procedimento: " + error);
     }
   };
+
+  const removerFormatacaoMoeda = (valorFormatado) => {
+    console.log(valorFormatado.replace(/[^\d,]/g, '').replace(',', '.'))
+    return parseFloat(valorFormatado.replace(/[^\d,]/g, '').replace(',', '.'));
+  };
+
+  const horaMinutoParaMinutos = (horaMinuto) => {
+    const [horas, minutos] = horaMinuto.split(':').map(Number);
+    return (horas * 60) + minutos;
+  };  
 
   const handleDeleteClick = (procedure) => {
     setRemovedItems([...removedItems, procedure]);

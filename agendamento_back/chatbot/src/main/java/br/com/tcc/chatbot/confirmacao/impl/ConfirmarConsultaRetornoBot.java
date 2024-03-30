@@ -29,11 +29,18 @@ public class ConfirmarConsultaRetornoBot extends RetornoChatBotInterface {
 
     public List<SendMessage> processarRetorno(Message message, MonitorDeChatBot monitorDeChatBot) {
         String messageText = message.getText().toUpperCase();
-        Optional<Consulta> consultaOptional = consultas(monitorDeChatBot);
 
-        atualizarConsulta(consultaOptional, messageText);
-        atualizarMonitor(monitorDeChatBot);
-        return montarMensagem(message.getChatId(), "Consulta confirmada com sucesso!");
+        if ("sim".equals(messageText.toLowerCase()) || "não".equals(messageText.toLowerCase())) {
+            Optional<Consulta> consultaOptional = consultas(monitorDeChatBot);
+
+            atualizarConsulta(consultaOptional, messageText);
+            atualizarMonitor(monitorDeChatBot);
+
+            return montarMensagem(message.getChatId(), "sim".equals(messageText.toLowerCase())? "Consulta confirmada com sucesso!" : "Consulta cancelada com sucesso!");
+        }
+        else {
+            return montarMensagem(message.getChatId(), "Opção inválida! Informe Sim ou Não.");
+        }
     }
 
     private List<SendMessage> montarMensagem(Long chatId, String mensagem) {

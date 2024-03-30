@@ -58,11 +58,11 @@ public class ConfirmarConsultaBot extends BotListener implements ConfirmarConsul
                 .append(consulta.getPaciente().getSobrenome())
                 .append(". ")
     		    .append("Você possui uma consulta agendada para amanhã às ")
-                .append(consulta.getDataHoraInicio().getHour())
+                .append(consulta.getDataHoraInicio().getHour() < 10? "0" + consulta.getDataHoraInicio().getHour() : consulta.getDataHoraInicio().getHour())
                 .append(":")
-                .append(consulta.getDataHoraInicio().getMinute())
+                .append(consulta.getDataHoraInicio().getMinute() == 0? "00" : consulta.getDataHoraInicio().getMinute())
                 .append(". ")
-    		    .append("Deseja confirmar ela?");
+    		    .append("Deseja confirmar ela? Inform Sim ou Não.");
     	
     	return string.toString();
     }

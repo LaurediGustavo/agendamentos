@@ -14,6 +14,7 @@ import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.Message;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -32,7 +33,15 @@ public class ConfirmarConsultaRetornoBot extends RetornoChatBotInterface {
 
         atualizarConsulta(consultaOptional, messageText);
         atualizarMonitor(monitorDeChatBot);
-        return null;
+        return montarMensagem(message.getChatId(), "Consulta confirmada com sucesso!");
+    }
+
+    private List<SendMessage> montarMensagem(Long chatId, String mensagem) {
+        SendMessage sendMessage = new SendMessage();
+        sendMessage.setChatId(chatId.toString());
+        sendMessage.setText(mensagem);
+
+        return new ArrayList<>(List.of(sendMessage));
     }
 
     void atualizarMonitor(MonitorDeChatBot monitorDeChatBot) {

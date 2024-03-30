@@ -120,7 +120,7 @@ public class RemarcarPassoSete implements RemarcarPassosInterface {
             consulta.setStatus(StatusConsultaEnum.AGUARDANDO);
             consulta.setValorTotal(consultaAnterior.getValorTotal());
             consulta.setDataHoraInicio(remarcar.getHorario());
-            consulta.setDataHoraFinal(remarcar.getHorario().plusMinutes(minutos).minusMinutes(1));
+            consulta.setDataHoraFinal(remarcar.getHorario().plusHours(horas).plusMinutes(minutos).minusMinutes(1));
             consulta.setPaciente(paciente.get());
             consulta.setDoutor(getDoutorDisponivel(remarcar, minutos));
             consulta.setProcedimentos(consultaAnterior.getProcedimentos());

@@ -117,7 +117,7 @@ public class AgendamentoPassoSeis implements AgendamentoPassosInterface {
             consulta.setStatus(StatusConsultaEnum.AGUARDANDO);
             consulta.setValorTotal(agendamentoChatBot.getProcedimento().getValor());
             consulta.setDataHoraInicio(agendamentoChatBot.getHorario());
-            consulta.setDataHoraFinal(agendamentoChatBot.getHorario().plusMinutes(minutos).minusMinutes(1));
+            consulta.setDataHoraFinal(agendamentoChatBot.getHorario().plusHours(horas).plusMinutes(minutos).minusMinutes(1));
             consulta.setPaciente(paciente.get());
             consulta.setDoutor(getDoutorDisponivel(agendamentoChatBot));
             consulta.setProcedimentos(getProcedimentos(agendamentoChatBot.getProcedimento()));

@@ -28,8 +28,9 @@ const Action = (props) => {
     setFormData({
       ...formData,
       pacienteId: newValue ? newValue.id : '', // Define pacienteId como '' se não houver nenhum paciente selecionado
-      responsavel: newValue ? newValue.nome : '', // Define o responsavel como o nome do paciente selecionado, ou '' se nenhum paciente for selecionado
-
+      responsavel: newValue ? newValue.id : '', // Define o responsavel como o nome do paciente selecionado, ou '' se nenhum paciente for selecionado
+      telefoneResponsavel: newValue ? newValue.telefone : '',
+      responsavelNome: newValue.nome + " - " + newValue.cpf,
     });
   };
 
@@ -60,7 +61,7 @@ const Action = (props) => {
           ...prevData,
           [name]: checked,
           relacaoResponsavel: checked ? prevData.relacaoResponsavel : '',
-          responsavel: checked ? prevData.responsavel : '',
+          responsavel: checked ? prevData.responsavel : null,
           telefoneResponsavel: checked ? prevData.telefoneResponsavel : ''
         }));
       } else {
@@ -107,7 +108,18 @@ const Action = (props) => {
           ...formData,
           [name]: maskedTime
         });
-      } 
+      }
+      else if (name === 'especialidade') {
+        const arrayFiltrado = props.procedures.filter(item => value.includes(item.id));
+
+        const especialidadesNomes = arrayFiltrado.map(p => p.tratamento);
+      
+        setFormData({
+          ...formData,
+          [name]: value,
+          'especialidadeNome': especialidadesNomes,
+        });
+      }
       else {
         // Para outros campos, atualize diretamente o estado formData
         setFormData({
@@ -131,7 +143,7 @@ const Action = (props) => {
     let valid = true;
     const newErrors = {};
 
-    props.columns.forEach(column => {
+    props.columns.filter(coluna => coluna.renderedForm !== false).forEach(column => {
       const { field, headerName } = column;
 
       if (!formData[field] && field !== 'bloco' && field !== 'responsavelLegal' && field !== 'informacoesAdicionais' && (showResponsavelCampos || !['relacaoResponsavel', 'telefoneResponsavel', 'responsavel'].includes(field))) {
@@ -224,6 +236,11 @@ const Action = (props) => {
     return true;
   }
 
+  const mascaraCpf = (value) => {
+    const cleanedCPF = value.replace(/[^\d]/g, '');
+    return cleanedCPF.replace(/(\d{3})(\d{3})(\d{3})(\d{2})/, '$1.$2.$3-$4');
+  }
+
   //Para impedir rolagem se o modal estiver aberto:
   useEffect(() => {
     document.body.classList.add('modal-open');
@@ -238,7 +255,7 @@ const Action = (props) => {
         <span className="close" onClick={() => props.setOpen(false)}><CloseIcon /></span>
         <h1>{props.isEditing ? `Editar ${props.slug}` : `Cadastrar um novo ${props.slug}`}</h1>
         <form onSubmit={handleSubmit}>
-          {props.columns.map(column => (
+          {props.columns.filter(coluna => coluna.renderedForm !== false).map(column => (
             <React.Fragment key={column.field}>
               {column.field === 'responsavelLegal' ? (
                 <div style={{ width: '100%', marginBottom: '10px' }}>
@@ -259,10 +276,10 @@ const Action = (props) => {
                   {column.field === 'responsavel' ? (
                     <><label>{column.headerName}:</label>
                       <Autocomplete
-                        value={pacientes.find(paciente => paciente.id === formData.pacienteId) || null}
+                        value={pacientes.find(paciente => paciente.id === formData.responsavel) || null}
                         onChange={handleAutocompleteChange} // Aqui está passando a função handleInputChange para o onChange
                         options={pacientes}
-                        getOptionLabel={(option) => `${option.nome} - ${option.cpf}`}
+                        getOptionLabel={(option) => `${option.nome} - ${mascaraCpf(option.cpf)}`}
                         renderInput={(params) => (
                           <TextField
                             {...params}
@@ -325,7 +342,7 @@ const Action = (props) => {
                             />
                           )}
                         </InputMask>
-                      ):column.field === 'telefone' || column.field === 'telefoneResponsavel' ? (
+                      ):column.field === 'telefone' ? (
                         <InputMask
                           mask="(99) 99999-9999"
                           placeholder={column.headerName}
@@ -334,6 +351,22 @@ const Action = (props) => {
                           onChange={handleInputChange}
                           style={{ width: '100%' }}
                           className={errors[column.field] ? 'error' : ''}
+                        >
+                          {(inputProps) => (
+                            <TextField
+                              {...inputProps}
+                            />
+                          )}
+                        </InputMask>
+                      ):column.field === 'telefoneResponsavel' ? (
+                        <InputMask
+                          mask="(99) 99999-9999"
+                          placeholder={column.headerName}
+                          name={column.field}
+                          value={formData[column.field] || ''}
+                          onChange={handleInputChange}
+                          className={errors[column.field] ? 'error' : ''}
+                          style={{ pointerEvents: 'none', backgroundColor: '#eeeeee', width: '100%' }}
                         >
                           {(inputProps) => (
                             <TextField

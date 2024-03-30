@@ -62,7 +62,7 @@ public class ConfirmarConsultaBot extends BotListener implements ConfirmarConsul
                 .append(":")
                 .append(consulta.getDataHoraInicio().getMinute() == 0? "00" : consulta.getDataHoraInicio().getMinute())
                 .append(". ")
-    		    .append("Deseja confirmar ela? Inform Sim ou Não.");
+    		    .append("Deseja confirmar ela? Informe Sim ou Não.");
     	
     	return string.toString();
     }

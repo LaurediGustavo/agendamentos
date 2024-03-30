@@ -60,7 +60,7 @@ public class CancelarPassoDois implements CancelarPassosInterface {
             }
         }
         else {
-            return montarMensagem(message.getChatId(), "CPF inválido, nao cadastrado ou bloqueado! Por favor informe seu CPF ou entre em contato com a Clinica.");
+            return montarMensagem(message.getChatId(), "CPF inválido, nao cadastrado ou bloqueado! Por favor informe seu CPF ou entre em contato com a Clínica.");
         }
     }
 

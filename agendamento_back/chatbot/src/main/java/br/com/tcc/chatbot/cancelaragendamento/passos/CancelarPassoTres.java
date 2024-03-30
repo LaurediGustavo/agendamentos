@@ -48,7 +48,7 @@ public class CancelarPassoTres implements CancelarPassosInterface {
                 return montarMensagemSucesso(message.getChatId(), cancelarAgendamentoChatBot.get().getConsulta());
             }
             else {
-                return montarMensagemErro(message.getChatId(), "Opção informada iválida! Por favor informa uma opção válida.");
+                return montarMensagemErro(message.getChatId(), "Opção informada iválida! Por favor informe uma opção válida.");
             }
         }
         else {

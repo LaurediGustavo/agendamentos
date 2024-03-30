@@ -96,7 +96,15 @@ const columns = [
     field: 'responsavel',
     headerName: 'Responsável',
     type: 'string',
-    width: 200
+    width: 200,
+    renderedList: false
+  },
+  {
+    field: 'responsavelNome',
+    headerName: 'Responsável',
+    type: 'string',
+    width: 200,
+    renderedForm: false
   },
   {
     field: 'telefoneResponsavel',
@@ -123,7 +131,7 @@ const Patients = () => {
         nome: paciente.nome,
         sobrenome: paciente.sobrenome,
         dataDeNascimento: formatarData_dd_MM_yyyy(paciente.dataDeNascimento),
-        cpf: paciente.cpf,
+        cpf: mascaraCpf(paciente.cpf),
         genero: paciente.genero,
         telefone: paciente.telefone,
         informacoesAdicionais: paciente.informacoesAdicionais,
@@ -132,10 +140,11 @@ const Patients = () => {
         bairro: paciente.bairro,
         numero: paciente.numero,
         bloco: paciente.bloco,
-        responsavelLegal: paciente.responsavelLegal,
-        relacaoResponsavel: paciente.relacaoResponsavel,
-        responsavel: paciente.responsavel,
-        telefoneResponsavel: paciente.telefoneResponsavel,
+        responsavelLegal: paciente.responsavel !== null,
+        relacaoResponsavel: paciente.parentesco,
+        responsavel: paciente.responsavel !== null ? paciente.responsavel.id : null,
+        responsavelNome: paciente.responsavel !== null ? paciente.responsavel.nome + " - " + mascaraCpf(paciente.responsavel.cpf) : null,
+        telefoneResponsavel: paciente.responsavel !== null ? paciente.responsavel.telefone : null,
       }));
       setInitialPatientsData(pacientes);
     } catch (error) {
@@ -151,7 +160,7 @@ const Patients = () => {
         nome: paciente.nome,
         sobrenome: paciente.sobrenome,
         dataDeNascimento: formatarData_dd_MM_yyyy(paciente.dataDeNascimento),
-        cpf: paciente.cpf,
+        cpf: mascaraCpf(paciente.cpf),
         genero: paciente.genero,
         telefone: paciente.telefone,
         informacoesAdicionais: paciente.informacoesAdicionais,
@@ -160,16 +169,22 @@ const Patients = () => {
         bairro: paciente.bairro,
         numero: paciente.numero,
         bloco: paciente.bloco,
-        responsavelLegal: paciente.responsavelLegal,
-        relacaoResponsavel: paciente.relacaoResponsavel,
-        responsavel: paciente.responsavel,
-        telefoneResponsavel: paciente.telefoneResponsavel,
+        responsavelLegal: paciente.responsavel !== null,
+        relacaoResponsavel: paciente.parentesco,
+        responsavel: paciente.responsavel !== null ? paciente.responsavel.id : null,
+        responsavelNome: paciente.responsavel !== null ? paciente.responsavel.nome + " - " + mascaraCpf(paciente.responsavel.cpf) : null,
+        telefoneResponsavel: paciente.responsavel !== null ? paciente.responsavel.telefone : null,
       }));
       setRemovedItems(pacientes);
     } catch (error) {
       console.error("Ops! Ocorreu um erro: " + error);
     }
   };
+
+  const mascaraCpf = (value) => {
+    const cleanedCPF = value.replace(/[^\d]/g, '');
+    return cleanedCPF.replace(/(\d{3})(\d{3})(\d{3})(\d{2})/, '$1.$2.$3-$4');
+  }
 
   useEffect(() => {
     getPacientes();
@@ -232,10 +247,8 @@ const Patients = () => {
         bairro: paciente.bairro,
         numero: paciente.numero,
         bloco: paciente.bloco,
-        responsavelLegal: paciente.responsavelLegal,
-        relacaoResponsavel: paciente.relacaoResponsavel,
-        responsavel: paciente.responsavel,
-        telefoneResponsavel: paciente.telefoneResponsavel,
+        responsavel_paciente_id: paciente.responsavel,
+        parentesco: paciente.relacaoResponsavel,
       });
       return response.data.id;
     } catch (error) {
@@ -259,10 +272,8 @@ const Patients = () => {
         bairro: paciente.bairro,
         numero: paciente.numero,
         bloco: paciente.bloco,
-        responsavelLegal: paciente.responsavelLegal,
-        relacaoResponsavel: paciente.relacaoResponsavel,
-        responsavel: paciente.responsavel,
-        telefoneResponsavel: paciente.telefoneResponsavel,
+        responsavel_paciente_id: paciente.responsavel,
+        parentesco: paciente.relacaoResponsavel,
       });
     } catch (error) {
       throw new Error("Erro ao atualizar paciente: " + error);

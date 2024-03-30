@@ -69,13 +69,13 @@ public class RemarcarPassoSete implements RemarcarPassosInterface {
                 }
                 default ->
                 {
-                    return montarMensagem(message.getChatId(), "Opção inválida. \n Por favor inform:\n1. Confirmar\n 2. Ajustar");
+                    return montarMensagem(message.getChatId(), "Opção inválida. \n Por favor informe:\n1. Confirmar\n 2. Ajustar");
                 }
             }
         }
         catch (Exception e) {
             e.printStackTrace();
-            return montarMensagem(message.getChatId(), "Opção inválida. \n Por favor inform:\n1. Confirmar\n 2. Ajustar");
+            return montarMensagem(message.getChatId(), "Opção inválida. \n Por favor informe:\n1. Confirmar\n 2. Ajustar");
         }
 
     }

@@ -45,7 +45,7 @@ public class RemarcarPassoTres implements RemarcarPassosInterface {
                 return montarMensagemSucesso(message.getChatId(), remarcarAgendamentoChatBot.get().getConsulta());
             }
             else {
-                return montarMensagemErro(message.getChatId(), "Opção informada inválida! Por favor informa uma opção válida.");
+                return montarMensagemErro(message.getChatId(), "Opção informada inválida! Por favor informe uma opção válida.");
             }
         }
         else {

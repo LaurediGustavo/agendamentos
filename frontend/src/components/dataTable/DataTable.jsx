@@ -106,11 +106,13 @@ export const DataTable = (props) => {
     },
   };
 
+  const colunas = props.columns.filter(coluna => coluna.renderedList !== false);
+
   return (
     <div className="dataTable" style={{ width: "100%", minWidth: "600px" }}>
       <DataGrid
         rows={showDeleted ? props.deletedRows : props.rows}
-        columns={[actionColumn, ...props.columns]}
+        columns={[actionColumn, ...colunas]}
         initialState={{
           pagination: {
             paginationModel: {

@@ -101,7 +101,7 @@ const Employees = () => {
         nome: employee.nome,
         sobrenome: employee.sobrenome,
         dataDeNascimento: formatarData_dd_MM_yyyy(employee.dataDeNascimento),
-        cpf: employee.cpf,
+        cpf: mascaraCpf(employee.cpf),
         genero: employee.genero,
         telefone: employee.telefone,
         cep: employee.cep,
@@ -126,7 +126,7 @@ const Employees = () => {
         nome: employee.nome,
         sobrenome: employee.sobrenome,
         dataDeNascimento: formatarData_dd_MM_yyyy(employee.dataDeNascimento),
-        cpf: employee.cpf,
+        cpf: mascaraCpf(employee.cpf),
         genero: employee.genero,
         telefone: employee.telefone,
         cep: employee.cep,
@@ -141,6 +141,11 @@ const Employees = () => {
       console.error("Ops! Ocorreu um erro: " + error);
     }
   };
+
+  const mascaraCpf = (value) => {
+    const cleanedCPF = value.replace(/[^\d]/g, '');
+    return cleanedCPF.replace(/(\d{3})(\d{3})(\d{3})(\d{2})/, '$1.$2.$3-$4');
+  }
 
   useEffect(() => {
     getEmployees();

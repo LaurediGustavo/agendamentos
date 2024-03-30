@@ -37,6 +37,14 @@ const columns = [
     headerName: 'Especialidade',
     width: 200,
     type: 'string',
+    renderedList: false
+  },
+  {
+    field: 'especialidadeNome',
+    headerName: 'Especialidade',
+    width: 200,
+    type: 'string',
+    renderedForm: false
   },
   {
     field: 'cpf',
@@ -112,7 +120,7 @@ const Doctors = () => {
         nome: doutore.funcionarioResponse.nome,
         sobrenome: doutore.funcionarioResponse.sobrenome,
         dataDeNascimento: formatarData_dd_MM_yyyy(doutore.funcionarioResponse.dataDeNascimento),
-        cpf: doutore.funcionarioResponse.cpf,
+        cpf: mascaraCpf(doutore.funcionarioResponse.cpf),
         genero: doutore.funcionarioResponse.genero,
         telefone: doutore.funcionarioResponse.telefone,
         cep: doutore.funcionarioResponse.cep,
@@ -139,7 +147,7 @@ const Doctors = () => {
         nome: doutore.funcionarioResponse.nome,
         sobrenome: doutore.funcionarioResponse.sobrenome,
         dataDeNascimento: formatarData_dd_MM_yyyy(doutore.funcionarioResponse.dataDeNascimento),
-        cpf: doutore.funcionarioResponse.cpf,
+        cpf: mascaraCpf(doutore.funcionarioResponse.cpf),
         genero: doutore.funcionarioResponse.genero,
         telefone: doutore.funcionarioResponse.telefone,
         cep: doutore.funcionarioResponse.cep,
@@ -157,6 +165,11 @@ const Doctors = () => {
       console.error("Ops! Ocorreu um erro: " + error);
     }
   };
+
+  const mascaraCpf = (value) => {
+    const cleanedCPF = value.replace(/[^\d]/g, '');
+    return cleanedCPF.replace(/(\d{3})(\d{3})(\d{3})(\d{2})/, '$1.$2.$3-$4');
+  }
 
   const getProcedures = async () => {
     try {

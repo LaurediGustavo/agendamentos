@@ -8,7 +8,9 @@ public enum TipoChatBotEnum {
 	REMARCAR("3"),
 	CANCELAR("4"),
 	CONSULTAR("5"),
-	CANCELAR_OPERACAO("6");
+	RECEBER_NOTIFICACAO("6"),
+	DESATIVAR_NOTIFICACAO("7"),
+	CANCELAR_OPERACAO("8");
 
 	private final String VALUE;
 

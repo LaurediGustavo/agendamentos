@@ -28,6 +28,8 @@ public class MenuChatBot {
                 3. Remarcar Consulta;
                 4. Cancelar Consulta;
                 5. Consultar Agendamentos;
+                6. Ativar Notificações;
+                7. Desativar Notificações;
                 
                 Para cancelar qualquer operação digite: CANCELAR
                 
@@ -50,9 +52,11 @@ public class MenuChatBot {
         KeyboardButton btnTres = new KeyboardButton("3");
         KeyboardButton btnQuatro = new KeyboardButton("4");
         KeyboardButton btnCinco = new KeyboardButton("5");
+        KeyboardButton btnSeis = new KeyboardButton("6");
+        KeyboardButton btnSete = new KeyboardButton("7");
 
-        linhaUm.addAll(List.of(btnUm, btnDois, btnTres));
-        linhaDois.addAll(List.of(btnQuatro, btnCinco));
+        linhaUm.addAll(List.of(btnUm, btnDois, btnTres, btnQuatro));
+        linhaDois.addAll(List.of(btnCinco, btnSeis, btnSete));
 
         teclado.setKeyboard(List.of(linhaUm, linhaDois));
 

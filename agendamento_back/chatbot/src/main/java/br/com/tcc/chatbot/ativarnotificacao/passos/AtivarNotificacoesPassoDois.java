@@ -60,7 +60,7 @@ public class AtivarNotificacoesPassoDois implements AtivarNotificacoesPassosInte
 
     private boolean cpfUtilizado(String mensagem) {
         return pacienteRepository
-                .findByCpf(mensagem).isPresent();
+                .findByCpf(Uteis.removerCaracteresNaoNumericos(mensagem)).isPresent();
     }
 
     private void atualizarMonitor(MonitorDeChatBot monitorDeChatBot, StatusDaMensagemChatBotEnum status) {

@@ -49,7 +49,7 @@ public class ConsultaPassoDois implements ConsultaPassosInterface {
         StringBuilder consultas = new StringBuilder();
 
         List<Consulta> consultaList = consultaRepository
-                .findConsultasByStatusAndCpfAndDataHoraInicio(cpf);
+                .findConsultasByStatusAndCpfAndDataHoraInicio(Uteis.removerCaracteresNaoNumericos(cpf));
 
         if(!consultaList.isEmpty()) {
             consultas.append("Lista de consultas agendadas: \n\n");
@@ -88,7 +88,7 @@ public class ConsultaPassoDois implements ConsultaPassosInterface {
 
     private boolean cpfUtilizado(String mensagem) {
         return pacienteRepository
-                .findByCpf(mensagem).isPresent();
+                .findByCpf(Uteis.removerCaracteresNaoNumericos(mensagem)).isPresent();
     }
 
     private void atualizarMonitor(MonitorDeChatBot monitorDeChatBot) {

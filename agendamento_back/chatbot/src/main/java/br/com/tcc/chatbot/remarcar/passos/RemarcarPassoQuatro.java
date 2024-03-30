@@ -56,10 +56,8 @@ public class RemarcarPassoQuatro implements RemarcarPassosInterface {
             }
         }
         else {
-            montarMensagem(message.getChatId(), "Opção inválida!\nInforme uma opção válida");
+            return montarMensagem(message.getChatId(), "Opção inválida!\nInforme uma opção válida");
         }
-
-        return null;
     }
 
     private String getTexto(Long chatId) {

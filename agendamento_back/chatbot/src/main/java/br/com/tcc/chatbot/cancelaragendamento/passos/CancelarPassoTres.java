@@ -29,9 +29,6 @@ public class CancelarPassoTres implements CancelarPassosInterface {
     private MonitorDeChatBotRepository monitorDeChatBotRepository;
 
     @Autowired
-    private PacienteRepository pacienteRepository;
-
-    @Autowired
     private ConsultaRepository consultaRepository;
 
     @Autowired
@@ -51,7 +48,7 @@ public class CancelarPassoTres implements CancelarPassosInterface {
                 return montarMensagemSucesso(message.getChatId(), cancelarAgendamentoChatBot.get().getConsulta());
             }
             else {
-                return montarMensagemErro(message.getChatId(), "Opção informada inálida! Por favor informa uma opção válida.");
+                return montarMensagemErro(message.getChatId(), "Opção informada iválida! Por favor informa uma opção válida.");
             }
         }
         else {

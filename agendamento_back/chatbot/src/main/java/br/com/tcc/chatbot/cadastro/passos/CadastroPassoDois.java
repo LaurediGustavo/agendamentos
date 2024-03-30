@@ -51,7 +51,7 @@ public class CadastroPassoDois implements CadastroPassosInterface {
 
     private void cadastrarPaciente(Message message) {
         PacienteChatBot pacienteChatBot = new PacienteChatBot();
-        pacienteChatBot.setCpf(message.getText());
+        pacienteChatBot.setCpf(Uteis.removerCaracteresNaoNumericos(message.getText()));
         pacienteChatBot.setChatId(message.getChatId());
 
         this.pacienteChatBotRepository.save(pacienteChatBot);
@@ -59,7 +59,7 @@ public class CadastroPassoDois implements CadastroPassosInterface {
 
     private boolean cpfNaoUtilizado(String mensagem) {
         return pacienteRepository
-                .findByCpf(mensagem).isEmpty();
+                .findByCpf(Uteis.removerCaracteresNaoNumericos(mensagem)).isEmpty();
     }
 
     private void atualizarMonitor(MonitorDeChatBot monitorDeChatBot, StatusDaMensagemChatBotEnum status) {

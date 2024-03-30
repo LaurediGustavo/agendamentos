@@ -80,7 +80,7 @@ public class AgendamentoPassoSeis implements AgendamentoPassosInterface {
 
     private String getTextoMensagem() {
         StringBuilder procedimentos = procedimentoRepository
-                .findAll()
+                .findAllHabilitados()
                 .stream()
                 .map(procedimento ->
                         new StringBuilder()

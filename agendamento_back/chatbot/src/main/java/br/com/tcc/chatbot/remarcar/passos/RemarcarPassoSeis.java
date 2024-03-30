@@ -121,7 +121,7 @@ public class RemarcarPassoSeis implements RemarcarPassosInterface {
     }
 
     private RemarcarAgendamentoChatBot getRemarcarAgendamento(Long chatId) {
-        return remarcarAgendamentoChatBotRepository.findByChatId(chatId).get();
+        return remarcarAgendamentoChatBotRepository.findTopByChatIdOrderByIdDesc(chatId).get();
     }
 
     private String getTextoMensagem(RemarcarAgendamentoChatBot remarcarAgendamentoChatBot) {

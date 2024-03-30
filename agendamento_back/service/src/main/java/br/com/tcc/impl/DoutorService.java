@@ -10,6 +10,7 @@ import br.com.tcc.repository.TipoFuncionarioRepository;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import uteis.Uteis;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -46,7 +47,7 @@ public class DoutorService {
         doutor.setNome(doutorDto.getFuncionario().getNome());
         doutor.setSobrenome(doutorDto.getFuncionario().getSobrenome());
         doutor.setDataDeNascimento(doutorDto.getFuncionario().getDataDeNascimento());
-        doutor.setCpf(doutorDto.getFuncionario().getCpf());
+        doutor.setCpf(Uteis.removerCaracteresNaoNumericos(doutorDto.getFuncionario().getCpf()));
         doutor.setGenero(doutorDto.getFuncionario().getGenero());
         doutor.setTelefone(doutorDto.getFuncionario().getTelefone());
         doutor.setLogradouro(doutorDto.getFuncionario().getLogradouro());

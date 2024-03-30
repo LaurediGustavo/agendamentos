@@ -54,7 +54,7 @@ public class AgendamentoPassoDois implements AgendamentoPassosInterface {
         AgendamentoChatBot agendamentoChatBot = null;
         agendamentoChatBot = agendamentoChatBotOptional.orElseGet(AgendamentoChatBot::new);
 
-        agendamentoChatBot.setCpf(message.getText());
+        agendamentoChatBot.setCpf(Uteis.removerCaracteresNaoNumericos(message.getText()));
         agendamentoChatBot.setChatId(message.getChatId());
         agendamentoChatBotRepository.save(agendamentoChatBot);
     }
@@ -84,7 +84,7 @@ public class AgendamentoPassoDois implements AgendamentoPassosInterface {
 
     private boolean cpfUtilizado(String mensagem) {
         return pacienteRepository
-                .findByCpf(mensagem).isPresent();
+                .findByCpf(Uteis.removerCaracteresNaoNumericos(mensagem)).isPresent();
     }
 
     private void atualizarMonitor(MonitorDeChatBot monitorDeChatBot) {

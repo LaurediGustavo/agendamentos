@@ -55,7 +55,8 @@ public class PacienteTratarResponse {
                     paciente.getId(),
                     paciente.getNome(),
                     paciente.getSobrenome(),
-                    paciente.getCpf()
+                    paciente.getCpf(),
+                    paciente.getTelefone()
             );
         }
 

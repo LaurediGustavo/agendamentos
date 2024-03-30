@@ -1,5 +1,6 @@
 package uteis;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
@@ -74,4 +75,13 @@ public class Uteis {
             return false;
         }
     }
+
+    public static String removerCaracteresNaoNumericos(String value) {
+        if (StringUtils.isNotBlank(value)) {
+            value = value.replaceAll("[^0-9]", "");
+        }
+
+        return value;
+    }
+
 }

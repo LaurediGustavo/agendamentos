@@ -75,7 +75,7 @@ public class RemarcarPassoCinco implements RemarcarPassosInterface {
     }
 
     private RemarcarAgendamentoChatBot getRemarcarAgendamento(Long chatId) {
-        return remarcarAgendamentoChatBotRepository.findByChatId(chatId).get();
+        return remarcarAgendamentoChatBotRepository.findTopByChatIdOrderByIdDesc(chatId).get();
     }
 
     private LocalDate getData(String data) {

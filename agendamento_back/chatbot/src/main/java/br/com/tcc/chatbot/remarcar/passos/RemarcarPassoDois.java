@@ -47,7 +47,7 @@ public class RemarcarPassoDois implements RemarcarPassosInterface {
             if(isExisteConsulta(mensagem)) {
                 cadastrarRemarcar(message);
                 atualizarMonitor(monitorDeChatBot, StatusDaMensagemChatBotEnum.AGUARDANDO);
-                return montarMensagem(message.getChatId(), remarcarOperacaoChatBot.consultasDisponiveis(mensagem));
+                return montarMensagem(message.getChatId(), remarcarOperacaoChatBot.consultasDisponiveis(Uteis.removerCaracteresNaoNumericos(mensagem)));
             }
             else {
                 atualizarMonitor(monitorDeChatBot, StatusDaMensagemChatBotEnum.FINALIZADO);
@@ -62,12 +62,12 @@ public class RemarcarPassoDois implements RemarcarPassosInterface {
     }
 
     private boolean isExisteConsulta(String cpf) {
-        return consultaRepository.hasConsultasByStatusAndCpfAndDataHoraInicio(cpf) > 0L;
+        return consultaRepository.hasConsultasByStatusAndCpfAndDataHoraInicio(Uteis.removerCaracteresNaoNumericos(cpf)) > 0L;
     }
 
     private void cadastrarRemarcar(Message mensagem) {
         RemarcarAgendamentoChatBot remarcarAgendamentoChatBot = new RemarcarAgendamentoChatBot();
-        remarcarAgendamentoChatBot.setCpf(mensagem.getText());
+        remarcarAgendamentoChatBot.setCpf(Uteis.removerCaracteresNaoNumericos(mensagem.getText()));
         remarcarAgendamentoChatBot.setChatId(mensagem.getChatId());
 
         remarcarAgendamentoChatBotRepository.save(remarcarAgendamentoChatBot);
@@ -75,7 +75,7 @@ public class RemarcarPassoDois implements RemarcarPassosInterface {
 
     private boolean cpfUtilizado(String mensagem) {
         return pacienteRepository
-                .findByCpf(mensagem).isPresent();
+                .findByCpf(Uteis.removerCaracteresNaoNumericos(mensagem)).isPresent();
     }
 
     private void atualizarMonitor(MonitorDeChatBot monitorDeChatBot, StatusDaMensagemChatBotEnum status) {

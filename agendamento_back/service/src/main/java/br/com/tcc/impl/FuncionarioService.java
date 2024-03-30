@@ -11,6 +11,7 @@ import br.com.tcc.repository.TipoFuncionarioRepository;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import uteis.Uteis;
 
 @Service("FuncionarioService")
 public class FuncionarioService {
@@ -41,7 +42,7 @@ public class FuncionarioService {
         funcionario.setNome(funcionarioDto.getNome());
         funcionario.setSobrenome(funcionarioDto.getSobrenome());
         funcionario.setDataDeNascimento(funcionarioDto.getDataDeNascimento());
-        funcionario.setCpf(funcionarioDto.getCpf());
+        funcionario.setCpf(Uteis.removerCaracteresNaoNumericos(funcionarioDto.getCpf()));
         funcionario.setGenero(funcionarioDto.getGenero());
         funcionario.setTelefone(funcionarioDto.getTelefone());
         funcionario.setLogradouro(funcionarioDto.getLogradouro());
@@ -67,7 +68,7 @@ public class FuncionarioService {
                         funcionarioDto.getNome(),
                         funcionarioDto.getSobrenome(),
                         funcionarioDto.getDataDeNascimento(),
-                        funcionarioDto.getCpf(),
+                        Uteis.removerCaracteresNaoNumericos(funcionarioDto.getCpf()),
                         funcionarioDto.getGenero(),
                         funcionarioDto.getTelefone(),
                         funcionarioDto.getCep(),

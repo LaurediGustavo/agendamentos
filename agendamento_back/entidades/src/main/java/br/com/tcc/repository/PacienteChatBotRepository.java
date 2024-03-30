@@ -13,7 +13,8 @@ import java.util.Optional;
 @Repository
 public interface PacienteChatBotRepository extends JpaRepository<PacienteChatBot, Long> {
 
-    Optional<PacienteChatBot> findByChatId(Long chatId);
+    @Query("SELECT m FROM PacienteChatBot m WHERE m.chatId = :chatId ORDER BY m.id desc limit 1")
+    Optional<PacienteChatBot> findByChatId(@Param("chatId") Long chatId);
 
     @Transactional
     @Modifying

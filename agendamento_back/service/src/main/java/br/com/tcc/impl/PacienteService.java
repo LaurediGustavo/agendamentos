@@ -7,6 +7,7 @@ import br.com.tcc.repository.PacienteRepository;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import uteis.Uteis;
 
 @Service("PacienteService")
 public class PacienteService {
@@ -25,7 +26,7 @@ public class PacienteService {
 		paciente.setNome(pacienteDto.getNome());
 		paciente.setSobrenome(pacienteDto.getSobrenome());
 		paciente.setDataDeNascimento(pacienteDto.getDataDeNascimento());
-		paciente.setCpf(pacienteDto.getCpf());
+		paciente.setCpf(Uteis.removerCaracteresNaoNumericos(pacienteDto.getCpf()));
 		paciente.setGenero(pacienteDto.getGenero());
 		paciente.setTelefone(pacienteDto.getTelefone());
 		paciente.setInformacoesAdicionais(pacienteDto.getInformacoesAdicionais());
@@ -101,13 +102,17 @@ public class PacienteService {
 
 	private void setarResponsavel(Paciente paciente, PacienteDto pacienteDto) {
 		Long responsavelId = pacienteDto.getResponsavel_paciente_id();
-		if(responsavelId != null && responsavelId != 0) {
-			paciente.setResponsavelPacienteId(getPaciente(pacienteDto.getResponsavel_paciente_id()));
+		if(responsavelId == null || responsavelId == 0) {
+			paciente.setParentesco(null);
 		}
+		paciente.setResponsavelPacienteId(getPaciente(pacienteDto.getResponsavel_paciente_id()));
 	}
 
 	private Paciente getPaciente(Long pacienteId) {
-		return pacienteRepository.findById(pacienteId).get();
+		if (pacienteId != null && pacienteId != 0)
+			return pacienteRepository.findById(pacienteId).get();
+
+		return null;
 	}
 
 	public void deletar(Long id) {

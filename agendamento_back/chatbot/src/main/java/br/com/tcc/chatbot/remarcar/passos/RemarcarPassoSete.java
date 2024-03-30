@@ -104,7 +104,7 @@ public class RemarcarPassoSete implements RemarcarPassosInterface {
     }
 
     private void cadastrarAgendamento(Long chatId) {
-        Optional<RemarcarAgendamentoChatBot> remarcarAgendamentoChatBot = remarcarAgendamentoChatBotRepository.findByChatId(chatId);
+        Optional<RemarcarAgendamentoChatBot> remarcarAgendamentoChatBot = remarcarAgendamentoChatBotRepository.findTopByChatIdOrderByIdDesc(chatId);
 
         if(remarcarAgendamentoChatBot.isPresent()) {
             RemarcarAgendamentoChatBot remarcar = remarcarAgendamentoChatBot.get();

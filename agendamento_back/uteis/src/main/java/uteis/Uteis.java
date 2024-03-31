@@ -1,12 +1,14 @@
 package uteis;
 
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.text.NumberFormat;
 import java.util.List;
 import java.util.Locale;
+import java.util.regex.Pattern;
 
 @Service
 public class Uteis {
@@ -82,6 +84,41 @@ public class Uteis {
         }
 
         return value;
+    }
+
+    public static String getFileExtension(String filename) {
+        if (filename == null) {
+            return null;
+        }
+        int lastDotIndex = filename.lastIndexOf('.');
+        if (lastDotIndex == -1) {
+            return null;
+        }
+        return filename.substring(lastDotIndex + 1);
+    }
+
+    public static String fileNameFromPath(String path) {
+        String[] paths = path.split("\\\\");
+        return paths[paths.length - 1];
+    }
+
+    public static MediaType getMediaType(String fileName) {
+        String extension = getFileExtension(fileName);
+
+        switch (extension) {
+            case "jpg" -> {
+                return MediaType.IMAGE_JPEG;
+            }
+            case "png" -> {
+                return MediaType.IMAGE_PNG;
+            }
+            case "gif" -> {
+                return MediaType.IMAGE_GIF;
+            }
+            default -> {
+                return null;
+            }
+        }
     }
 
 }

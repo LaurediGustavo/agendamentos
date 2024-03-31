@@ -9,11 +9,19 @@ import br.com.tcc.enumerador.RoleNameEnum;
 import br.com.tcc.repository.RoleRepository;
 import br.com.tcc.repository.UserRepository;
 import jakarta.transaction.Transactional;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
+import uteis.Uteis;
 
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.security.SecureRandom;
 import java.util.ArrayList;
 import java.util.List;
@@ -23,6 +31,8 @@ import java.util.Optional;
 public class UsuarioService {
 
     private final Integer TAMANHO_DA_SENHA = 12;
+
+    private final String UPLOAD_DIR = "C:/img/";
 
     @Autowired
     private UserRepository userRepository;
@@ -88,14 +98,50 @@ public class UsuarioService {
     }
 
     public void alterarSenha(String senhaNova) {
-        String userName = SecurityContextHolder.getContext().getAuthentication().getName();
-        Optional<Ususario> usuarioOptional = userRepository.findByUserName(userName);
+        Ususario user = getUsuarioLogado();
+        user.setPassword(passwordEncoder.encode(senhaNova));
+        userRepository.save(user);
+    }
 
-        if (usuarioOptional.isPresent()) {
-            Ususario user = usuarioOptional.get();
-            user.setPassword(passwordEncoder.encode(senhaNova));
-            userRepository.save(user);
+    public void alterarImagem(MultipartFile image) throws IOException {
+        removerImagem();
+
+        Path directory = Paths.get(UPLOAD_DIR);
+
+        if (!Files.exists(directory)) {
+            Files.createDirectories(directory);
         }
+
+        Ususario ususario = getUsuarioLogado();
+
+        String nome = ususario.getUsername() + "." + Uteis.getFileExtension(image.getOriginalFilename());
+
+        Path filePath = Paths.get(UPLOAD_DIR, nome);
+        Files.write(filePath, image.getBytes());
+
+        ususario.setImagePath(filePath.toString());
+        userRepository.save(ususario);
+    }
+
+    public void removerImagem() {
+        Ususario ususario = getUsuarioLogado();
+
+        if (StringUtils.isNotBlank(ususario.getImagePath())) {
+            File file = new File(ususario.getImagePath());
+            if (file.exists()) {
+                boolean deleted = file.delete();
+
+                if (deleted) {
+                    ususario.setImagePath(null);
+                    userRepository.save(ususario);
+                }
+            }
+        }
+    }
+
+    private Ususario getUsuarioLogado() {
+        String userName = SecurityContextHolder.getContext().getAuthentication().getName();
+        return userRepository.findByUserName(userName).get();
     }
 
 }

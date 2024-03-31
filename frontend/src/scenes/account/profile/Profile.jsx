@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Box, Grid, Card, CardContent, Tab, Tabs, Divider } from "@mui/material";
 import Header from "../../../components/headers/Headers";
 import ProfileOverview from "../profileOverview/ProfileOverview";
@@ -6,26 +6,77 @@ import ProfileEdit from "../profileEdit/ProfileEdit";
 import ChangePassword from "../changePassword/ChangePassword";
 import minhaImagem from '../../../assets/nulo.jpg';
 import "./profile.scss";
+import api from '../../../services/api';
+import { formatarData_yyyy_MM_dd, formatarData_dd_MM_yyyy } from '../../../services/dateFormat';
 
 const Profile = () => {
     const [activeTab, setActiveTab] = useState(0);
     const [profileData, setProfileData] = useState({
-        nome: 'Rodrigo',
-        sobrenome: 'Prado',
-        email: 'rodrigo@example.com',
-        genero: 'Masculino',
-        cpf: '123.456.789-00',
-        telefone: '(11) 1234-56789',
-        endereco: 'Rua Exemplo',
-        dataNascimento: '01/01/1990',
-        cep: '12345-678',
-        bairro: 'Centro',
-        logradouro: 'Avenida Exemplo',
-        numero: '123',
-        bloco: 'A'
+        id: 0,
+        nome: '',
+        sobrenome: '',
+        email: '',
+        genero: '',
+        cpf: '',
+        telefone: '',
+        dataNascimento: '',
+        cep: '',
+        bairro: '',
+        logradouro: '',
+        numero: '',
+        bloco: ''
     });
 
     const [profileImage, setProfileImage] = useState(minhaImagem); 
+
+    const usuario = async () => {
+        try {
+          const response = await api.get("/usuario/usuariologado");
+          const user = response.data;
+          const usuario = {
+              id: user.id,
+              nome: user.nome,
+              sobrenome: user.sobrenome,
+              email: user.email,
+              genero: user.genero,
+              cpf: mascaraCpf(user.cpf),
+              telefone: user.telefone,
+              dataDeNascimento: formatarData_dd_MM_yyyy(user.dataDeNascimento),
+              cep: user.cep,
+              logradouro: user.logradouro,
+              bairro: user.bairro,
+              numero: user.numero,
+              bloco: user.bloco,
+          };
+          setProfileData(usuario);
+        } catch (error) {
+          console.error("Ops! Ocorreu um erro: " + error);
+        }
+    };
+
+    const imagem = async () => {
+        try {
+            const response = await api.get("/usuario/imagem", { responseType: 'arraybuffer' });
+
+            if (response.data.byteLength > 0) {
+                const blob = new Blob([response.data], { type: 'image/png' }); // ou 'image/png', dependendo do tipo de imagem
+                const imageUrl = URL.createObjectURL(blob);
+                setProfileImage(imageUrl);
+            }
+        } catch (error) {
+          console.error("Ops! Ocorreu um erro: " + error);
+        }
+    };
+
+    const mascaraCpf = (value) => {
+        const cleanedCPF = value.replace(/[^\d]/g, '');
+        return cleanedCPF.replace(/(\d{3})(\d{3})(\d{3})(\d{2})/, '$1.$2.$3-$4');
+    }
+
+    useEffect(() => {
+        usuario();
+        imagem();
+    }, []);
 
     const handleTabChange = (event, newValue) => {
         setActiveTab(newValue);

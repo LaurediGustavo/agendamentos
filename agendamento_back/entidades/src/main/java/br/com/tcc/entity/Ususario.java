@@ -36,6 +36,9 @@ public class Ususario implements Serializable, UserDetails {
 	@JoinColumn(name = "funcionario_id", nullable = false)
 	private Funcionario funcionario;
 
+	@Column(name = "imagepath", length = 200)
+	private String imagePath;
+
 	@Transient
 	private String passwordSemCriptografia;
 

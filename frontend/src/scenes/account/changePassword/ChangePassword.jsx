@@ -4,11 +4,13 @@ import { useTheme } from '@mui/material/styles';
 import useMediaQuery from '@mui/material/useMediaQuery';
 import { Formik, Field, Form } from 'formik';
 import * as Yup from 'yup';
+import api from '../../../services/api';
 
 const ChangePassword = () => {
     const theme = useTheme();
     const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
     const [openDialog, setOpenDialog] = useState(false);
+    const [form, setForm] = useState();
 
     const validationSchema = Yup.object().shape({
         currentPassword: Yup.string().required('Senha atual é obrigatória'),
@@ -17,6 +19,26 @@ const ChangePassword = () => {
     });
 
     const handleCloseDialog = () => {
+        setOpenDialog(false);
+    };
+
+    const handleConfirmDialog = async () => {
+        try {
+            await api.put("/usuario/alterarsenha", {
+                currentPassword: form.currentPassword,
+                newPassword: form.newPassword,
+                confirmNewPassword: form.confirmNewPassword
+            });
+        } catch (error) {
+            if (error.response && error.response.status === 400) {
+                console.log(error.response.data.errors)
+                console.log(error.response.data.errors[0].message)
+            }
+            else {
+                throw new Error("Erro ao atualizar paciente: " + error);
+            }
+        }
+
         setOpenDialog(false);
     };
 
@@ -29,6 +51,7 @@ const ChangePassword = () => {
                 onSubmit={(values, { setSubmitting }) => {
                     // lógica de alteração de senha
                     console.log(values);
+                    setForm(values)
                     setOpenDialog(true); 
                     setSubmitting(false);
                 }}
@@ -51,7 +74,7 @@ const ChangePassword = () => {
                 </DialogContent>
                 <DialogActions>
                     <Button onClick={handleCloseDialog} color="primary">Cancelar</Button>
-                    <Button onClick={handleCloseDialog} color="primary">Confirmar</Button>
+                    <Button onClick={handleConfirmDialog} color="primary">Confirmar</Button>
                 </DialogActions>
             </Dialog>
         </div>

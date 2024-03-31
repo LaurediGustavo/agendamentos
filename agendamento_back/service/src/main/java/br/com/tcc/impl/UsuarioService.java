@@ -10,12 +10,14 @@ import br.com.tcc.repository.RoleRepository;
 import br.com.tcc.repository.UserRepository;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.security.SecureRandom;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Service("UsuarioService")
 public class UsuarioService {
@@ -83,6 +85,17 @@ public class UsuarioService {
         }
 
         return senha.toString();
+    }
+
+    public void alterarSenha(String senhaNova) {
+        String userName = SecurityContextHolder.getContext().getAuthentication().getName();
+        Optional<Ususario> usuarioOptional = userRepository.findByUserName(userName);
+
+        if (usuarioOptional.isPresent()) {
+            Ususario user = usuarioOptional.get();
+            user.setPassword(passwordEncoder.encode(senhaNova));
+            userRepository.save(user);
+        }
     }
 
 }

@@ -1,0 +1,66 @@
+/* profile.scss */
+
+
+.profile-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+/* profile.scss */
+
+.page-container {
+    min-height: 100vh; /* Garante que o contêiner tenha pelo menos a altura da janela de visualização */
+    padding: 20px; /* Adicione preenchimento opcional para espaçamento */
+}
+
+
+
+
+.profile-img {
+    width: 125px; /* Ajuste conforme necessário */
+    height: 125px; /* Ajuste conforme necessário */
+    border-radius: 50%;
+    margin-bottom: 10px;
+}
+
+
+.profile-name {
+    font-size: 25px; 
+    font-weight: bold; 
+    color: #2c384e;
+
+}
+
+.profile-role {
+    font-size: 19px;
+    color: #666;
+}
+
+
+  
+
+.profile-tabs {
+    margin-top: 10px;
+}
+
+.profile-tabs .MuiTabs-root {
+    border-bottom: 1px solid #ccc;
+}
+
+.profile-tabs .MuiTabs-indicator  {
+    background-color: #3fbabf;
+}
+
+
+.profile-tabs .MuiTab-root {
+    font-size: 1rem;
+    text-transform: none;
+}
+
+.profile-tabs-content {
+    margin-top: 20px;
+}
+
+/* profile.scss */
+

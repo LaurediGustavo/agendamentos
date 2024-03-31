@@ -3,6 +3,7 @@ import Doutores from "./scenes/doctors/Doctors";
 import Pacientes from './scenes/patients/Patients';
 import Procedimentos from './scenes/procedures/Procedures';
 import Employees from './scenes/employees/Employees'; // Importando o componente de funcionários
+import Profile from './scenes/account/profile/Profile'; // Importe o componente de perfil
 import { Navbar } from "./scenes/global/navbar/Navbar";
 import { Home } from "./scenes/home/Home"
 import  Sidebar  from './scenes/global/sidebar/Sidebar';
@@ -62,6 +63,10 @@ function App() {
         {
           path: "funcionarios",
           element: <ProtectedRoute element={<Employees />} roles={["ROLE_ATENDENTE", "ROLE_NEGOCIO"]} />,
+        },
+        {
+          path: "perfil",
+          element: <ProtectedRoute element={<Profile />} roles={["ROLE_DOUTOR", "ROLE_ATENDENTE", "ROLE_NEGOCIO"]} />,
         },
       ]
     }

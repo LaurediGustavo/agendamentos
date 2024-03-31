@@ -24,6 +24,11 @@ export const Navbar = () => {
     navigate('/login');
   };
 
+  const handleProfileClick = () => {
+    navigate('/perfil');
+    handleClose(); 
+  };
+
   return (
     <Box className="navbar">
       {/* Logo */}
@@ -42,7 +47,9 @@ export const Navbar = () => {
           anchorEl={anchorEl}
           open={Boolean(anchorEl)}
           onClose={handleClose}
+
         >
+          <MenuItem onClick={handleProfileClick}>Perfil</MenuItem>
           <MenuItem onClick={handleLogout}>Sair</MenuItem>
         </Menu>
       </Box>

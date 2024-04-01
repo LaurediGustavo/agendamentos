@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Typography, TextField, Button, RadioGroup, Radio, FormControlLabel, Dialog, DialogTitle, DialogContent, DialogActions } from '@mui/material';
 import { useTheme } from '@mui/material/styles';
 import useMediaQuery from '@mui/material/useMediaQuery';
@@ -8,6 +8,8 @@ import CloudUploadIcon from '@mui/icons-material/CloudUpload';
 import DeleteIcon from '@mui/icons-material/Delete';
 import { useFormik } from 'formik';
 import * as Yup from 'yup';
+import api from '../../../services/api';
+import { formatarData_yyyy_MM_dd, formatarData_dd_MM_yyyy } from '../../../services/dateFormat';
 
 const ProfileField = ({ label, value, error }) => {
     const theme = useTheme();
@@ -27,16 +29,34 @@ const ProfileField = ({ label, value, error }) => {
 const ProfileEdit = ({ profileData, onSave, onImageChange }) => {
     const [openDialog, setOpenDialog] = useState(false);
     const [image, setImage] = useState(minhaImagem);
-
+    
     const handleSave = () => {
         setOpenDialog(true);
     };
-
+    
     const handleCloseDialog = () => {
         setOpenDialog(false);
     };
+    
+    const imagem = async () => {
+        try {
+            const response = await api.get("/usuario/imagem", { responseType: 'arraybuffer' });
+    
+            if (response.data.byteLength > 0) {
+                const blob = new Blob([response.data], { type: 'image/png' }); // ou 'image/png', dependendo do tipo de imagem
+                const imageUrl = URL.createObjectURL(blob);
+                setImage(imageUrl);
+            }
+        } catch (error) {
+          console.error("Ops! Ocorreu um erro: " + error);
+        }
+    };
 
-    const handleImageUpload = (event) => {
+    useEffect(() => {
+        imagem();
+    }, []);
+    
+    const handleImageUpload = async (event) => {
         const file = event.target.files[0];
         const reader = new FileReader();
         reader.readAsDataURL(file);
@@ -44,9 +64,31 @@ const ProfileEdit = ({ profileData, onSave, onImageChange }) => {
             setImage(reader.result);
             onImageChange(reader.result);
         };
+
+        const formData = new FormData();
+        formData.append('image', file);
+
+        try {
+            await api.put('usuario/alterarimagem', formData, {
+                headers: {
+                    'Content-Type': 'multipart/form-data'
+                }
+            });
+
+            console.log('Imagem enviada com sucesso');
+        } catch (error) {
+            console.error('Erro ao enviar imagem:', error.message);
+        }
     };
 
-    const handleImageRemove = () => {
+    const handleImageRemove = async () => {
+        try {
+            await api.put('usuario/removerimagem');
+            console.log('Imagem removida com sucesso');
+        } catch (error) {
+            console.error('Erro ao enviar imagem:', error.message);
+        }
+
         setImage(nuloImg);
         onImageChange(nuloImg);
     };
@@ -56,15 +98,14 @@ const ProfileEdit = ({ profileData, onSave, onImageChange }) => {
         sobrenome: Yup.string().required('Campo obrigatório'),
         email: Yup.string().email('Formato de e-mail inválido').required('Campo obrigatório'),
         genero: Yup.string().required('Campo obrigatório'),
-        cpf: Yup.string().matches(/^\d{3}\.\d{3}\.\d{3}\-\d{2}$/, 'Formato de CPF inválido').required('Campo obrigatório'),
+        cpf: Yup.string(),
         telefone: Yup.string().required('Campo obrigatório'),
-        endereco: Yup.string().required('Campo obrigatório'),
-        dataNascimento: Yup.date().required('Campo obrigatório'),
+        dataNascimento: Yup.string().required('Campo obrigatório'),
         cep: Yup.string().required('Campo obrigatório'),
         bairro: Yup.string().required('Campo obrigatório'),
         logradouro: Yup.string().required('Campo obrigatório'),
         numero: Yup.number().required('Campo obrigatório'),
-        bloco: Yup.string().required('Campo obrigatório'),
+        bloco: Yup.string(),
     });
 
     const formik = useFormik({
@@ -73,9 +114,31 @@ const ProfileEdit = ({ profileData, onSave, onImageChange }) => {
         onSubmit: (values) => {
             onSave(values);
             handleCloseDialog();
+
+            atualizar(values);
         },
     });
 
+    const atualizar = async (values) => {
+        try {
+          await api.put("/usuario/alterarusuario", {
+            id: values.id,
+            nome: values.nome,
+            sobrenome: values.sobrenome,
+            dataDeNascimento: formatarData_yyyy_MM_dd(values.dataNascimento),
+            genero: values.genero,
+            telefone: values.telefone,
+            cep: values.cep,
+            logradouro: values.logradouro,
+            bairro: values.bairro,
+            numero: values.numero,
+            bloco: values.bloco,
+            email: values.email,
+          });
+        } catch (error) {
+          throw new Error("Erro ao atualizar usuario: " + error);
+        }
+      };
 
     return (
         <div style={{ overflowX: 'auto' }}>
@@ -114,7 +177,6 @@ const ProfileEdit = ({ profileData, onSave, onImageChange }) => {
                 } error={formik.touched.genero && formik.errors.genero} />
                 <ProfileField label="CPF" value={<TextField id="cpf" name="cpf" variant="outlined" value={formik.values.cpf} onChange={formik.handleChange} style={{ width: '100%', textAlign: 'center' }} disabled />} error={formik.touched.cpf && formik.errors.cpf} />
                 <ProfileField label="Telefone" value={<TextField id="phone" name="telefone" variant="outlined" value={formik.values.telefone} onChange={formik.handleChange} style={{ width: '100%', textAlign: 'center' }} />} error={formik.touched.telefone && formik.errors.telefone} />
-                <ProfileField label="Endereço" value={<TextField id="address" name="endereco" variant="outlined" value={formik.values.endereco} onChange={formik.handleChange} style={{ width: '100%', textAlign: 'center' }} />} error={formik.touched.endereco && formik.errors.endereco} />
                 <ProfileField label="Data de Nascimento" value={<TextField id="birthdate" name="dataNascimento" variant="outlined" value={formik.values.dataNascimento} onChange={formik.handleChange} style={{ width: '100%', textAlign: 'center' }} />} error={formik.touched.dataNascimento && formik.errors.dataNascimento} />
                 <ProfileField label="CEP" value={<TextField id="cep" name="cep" variant="outlined" value={formik.values.cep} onChange={formik.handleChange} style={{ width: '100%', textAlign: 'center' }} />} error={formik.touched.cep && formik.errors.cep} />
                 <ProfileField label="Bairro" value={<TextField id="neighborhood" name="bairro" variant="outlined" value={formik.values.bairro} onChange={formik.handleChange} style={{ width: '100%', textAlign: 'center' }} />} error={formik.touched.bairro && formik.errors.bairro} />

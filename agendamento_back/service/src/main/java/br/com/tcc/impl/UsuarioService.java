@@ -1,11 +1,14 @@
 package br.com.tcc.impl;
 
+import br.com.tcc.dto.FuncionarioDto;
+import br.com.tcc.dto.UsuarioProfileDTO;
 import br.com.tcc.email.EmailService;
 import br.com.tcc.entity.Doutor;
 import br.com.tcc.entity.Funcionario;
 import br.com.tcc.entity.Role;
 import br.com.tcc.entity.Ususario;
 import br.com.tcc.enumerador.RoleNameEnum;
+import br.com.tcc.repository.FuncionarioRepository;
 import br.com.tcc.repository.RoleRepository;
 import br.com.tcc.repository.UserRepository;
 import jakarta.transaction.Transactional;
@@ -45,6 +48,9 @@ public class UsuarioService {
 
     @Autowired
     private EmailService emailService;
+
+    @Autowired
+    private FuncionarioRepository funcionarioRepository;
 
     @Transactional(rollbackOn = Exception.class)
     public void cadastrar(Funcionario funcionario) {
@@ -142,6 +148,28 @@ public class UsuarioService {
     private Ususario getUsuarioLogado() {
         String userName = SecurityContextHolder.getContext().getAuthentication().getName();
         return userRepository.findByUserName(userName).get();
+    }
+
+    public void alterar(UsuarioProfileDTO usuarioProfileDTO) {
+        Funcionario funcionario = getFuncionario(usuarioProfileDTO);
+        funcionarioRepository.save(funcionario);
+    }
+
+    private Funcionario getFuncionario(UsuarioProfileDTO usuarioProfileDTO) {
+        Funcionario funcionario = funcionarioRepository.findById(usuarioProfileDTO.getId()).get();
+        funcionario.setNome(usuarioProfileDTO.getNome());
+        funcionario.setSobrenome(usuarioProfileDTO.getSobrenome());
+        funcionario.setDataDeNascimento(usuarioProfileDTO.getDataDeNascimento());
+        funcionario.setGenero(usuarioProfileDTO.getGenero());
+        funcionario.setTelefone(usuarioProfileDTO.getTelefone());
+        funcionario.setLogradouro(usuarioProfileDTO.getLogradouro());
+        funcionario.setBairro(usuarioProfileDTO.getBairro());
+        funcionario.setNumero(usuarioProfileDTO.getNumero());
+        funcionario.setCep(usuarioProfileDTO.getCep());
+        funcionario.setBloco(usuarioProfileDTO.getBloco());
+        funcionario.setEmail(usuarioProfileDTO.getEmail());
+
+        return funcionario;
     }
 
 }

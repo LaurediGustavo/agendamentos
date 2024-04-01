@@ -98,7 +98,7 @@ const ProfileEdit = ({ profileData, onSave, onImageChange }) => {
         sobrenome: Yup.string().required('Campo obrigatório'),
         email: Yup.string().email('Formato de e-mail inválido').required('Campo obrigatório'),
         genero: Yup.string().required('Campo obrigatório'),
-        cpf: Yup.string(),
+        cpf: Yup.string().matches(/^\d{3}\.\d{3}\.\d{3}\-\d{2}$/, 'Formato de CPF inválido').required('Campo obrigatório'),
         telefone: Yup.string().required('Campo obrigatório'),
         dataNascimento: Yup.string().required('Campo obrigatório'),
         cep: Yup.string().required('Campo obrigatório'),

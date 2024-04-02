@@ -7,6 +7,9 @@ import nuloImg from '../../../assets/nulo.jpg'; // Importando a imagem padrão
 import CloudUploadIcon from '@mui/icons-material/CloudUpload';
 import DeleteIcon from '@mui/icons-material/Delete';
 import { useFormik } from 'formik';
+import InputMask from 'react-input-mask';
+import axios from 'axios';
+import { isValid, isBefore, parse } from 'date-fns';
 import * as Yup from 'yup';
 import api from '../../../services/api';
 import { formatarData_yyyy_MM_dd, formatarData_dd_MM_yyyy } from '../../../services/dateFormat';
@@ -29,35 +32,46 @@ const ProfileField = ({ label, value, error }) => {
 const ProfileEdit = ({ profileData, onSave, onImageChange }) => {
     const [openDialog, setOpenDialog] = useState(false);
     const [image, setImage] = useState(minhaImagem);
-    
+    const [cepError, setCepError] = useState('');
+
     const handleSave = () => {
         setOpenDialog(true);
     };
-    
+
     const handleCloseDialog = () => {
         setOpenDialog(false);
     };
-    
+
     const imagem = async () => {
         try {
             const response = await api.get("/usuario/imagem", { responseType: 'arraybuffer' });
-    
+
             if (response.data.byteLength > 0) {
                 const blob = new Blob([response.data], { type: 'image/png' }); // ou 'image/png', dependendo do tipo de imagem
                 const imageUrl = URL.createObjectURL(blob);
                 setImage(imageUrl);
             }
         } catch (error) {
-          console.error("Ops! Ocorreu um erro: " + error);
+            console.error("Ops! Ocorreu um erro: " + error);
         }
     };
 
     useEffect(() => {
         imagem();
     }, []);
-    
+
+    const allowedTypes = ['image/jpeg', 'image/png', 'image/gif'];
+
+
     const handleImageUpload = async (event) => {
         const file = event.target.files[0];
+
+        // Verificar se o tipo de arquivo é permitido
+        if (!allowedTypes.includes(file.type)) {
+            console.error('Tipo de arquivo não suportado');
+            return;
+        }
+
         const reader = new FileReader();
         reader.readAsDataURL(file);
         reader.onloadend = () => {
@@ -93,15 +107,33 @@ const ProfileEdit = ({ profileData, onSave, onImageChange }) => {
         onImageChange(nuloImg);
     };
 
+
     const validationSchema = Yup.object({
-        nome: Yup.string().required('Campo obrigatório'),
-        sobrenome: Yup.string().required('Campo obrigatório'),
+        nome: Yup.string()
+            .matches(/^[a-zA-Z\s]*$/, 'O nome deve conter apenas letras e espaços')
+            .min(2, 'O nome deve ter pelo menos 2 caracteres')
+            .required('Campo obrigatório'),
+        sobrenome: Yup.string()
+            .matches(/^[a-zA-Z\s]*$/, 'O sobrenome deve conter apenas letras e espaços')
+            .min(2, 'O sobrenome deve ter pelo menos 2 caracteres')
+            .required('Campo obrigatório'),
         email: Yup.string().email('Formato de e-mail inválido').required('Campo obrigatório'),
         genero: Yup.string().required('Campo obrigatório'),
         cpf: Yup.string().matches(/^\d{3}\.\d{3}\.\d{3}\-\d{2}$/, 'Formato de CPF inválido').required('Campo obrigatório'),
-        telefone: Yup.string().required('Campo obrigatório'),
-        dataNascimento: Yup.string().required('Campo obrigatório'),
-        cep: Yup.string().required('Campo obrigatório'),
+        telefone: Yup.string()
+            .required('Campo obrigatório')
+            .matches(/^\(\d{2}\) \d{5}-\d{4}$/, 'Formato de telefone inválido. Use (99) 99999-9999'),
+        dataDeNascimento: Yup.string()
+            .required('Campo obrigatório')
+            .test('valid-date', 'Data de nascimento inválida', (value) => {
+                const parsedDate = parse(value, 'dd/MM/yyyy', new Date());
+                const today = new Date();
+                const minDate = new Date(1900, 0, 1);
+                return isValid(parsedDate) && isBefore(parsedDate, today) && isBefore(minDate, parsedDate);
+            }),
+        cep: Yup.string()
+            .matches(/^\d{5}-\d{3}$/, 'Formato de CEP inválido')
+            .required('Campo obrigatório'),
         bairro: Yup.string().required('Campo obrigatório'),
         logradouro: Yup.string().required('Campo obrigatório'),
         numero: Yup.number().required('Campo obrigatório'),
@@ -121,24 +153,60 @@ const ProfileEdit = ({ profileData, onSave, onImageChange }) => {
 
     const atualizar = async (values) => {
         try {
-          await api.put("/usuario/alterarusuario", {
-            id: values.id,
-            nome: values.nome,
-            sobrenome: values.sobrenome,
-            dataDeNascimento: formatarData_yyyy_MM_dd(values.dataNascimento),
-            genero: values.genero,
-            telefone: values.telefone,
-            cep: values.cep,
-            logradouro: values.logradouro,
-            bairro: values.bairro,
-            numero: values.numero,
-            bloco: values.bloco,
-            email: values.email,
-          });
+            await api.put("/usuario/alterarusuario", {
+                id: values.id,
+                nome: values.nome,
+                sobrenome: values.sobrenome,
+                dataDeNascimento: formatarData_yyyy_MM_dd(values.dataDeNascimento),
+                genero: values.genero,
+                telefone: values.telefone,
+                cep: values.cep,
+                logradouro: values.logradouro,
+                bairro: values.bairro,
+                numero: values.numero,
+                bloco: values.bloco,
+                email: values.email,
+            });
         } catch (error) {
-          throw new Error("Erro ao atualizar usuario: " + error);
+            throw new Error("Erro ao atualizar usuario: " + error);
         }
-      };
+    };
+
+    const handleCEPChange = async (event) => {
+        const cep = event.target.value;
+
+        if (!/^\d{5}-\d{3}$/.test(cep)) {
+            // Se o formato do CEP for inválido, limpe o erro
+            setCepError('');
+            formik.setFieldValue('logradouro', '');
+            formik.setFieldValue('bairro', '');
+            return;
+        }
+
+        try {
+            const response = await axios.get(`https://viacep.com.br/ws/${cep}/json/`);
+            const { logradouro, bairro } = response.data;
+
+            if (!logradouro || !bairro) {
+                // Se o CEP não for encontrado, defina o erro
+                setCepError('CEP não encontrado');
+                formik.setFieldValue('logradouro', '');
+                formik.setFieldValue('bairro', '');
+                return;
+            }
+
+            // Se o CEP for válido, limpe o erro e atualize os campos logradouro e bairro
+            setCepError('');
+            formik.setFieldValue('logradouro', logradouro);
+            formik.setFieldValue('bairro', bairro);
+        } catch (error) {
+            // Em caso de erro na requisição, defina uma mensagem genérica
+            setCepError('Erro ao buscar CEP');
+            formik.setFieldValue('logradouro', '');
+            formik.setFieldValue('bairro', '');
+        }
+    };
+
 
     return (
         <div style={{ overflowX: 'auto' }}>
@@ -165,8 +233,10 @@ const ProfileEdit = ({ profileData, onSave, onImageChange }) => {
                         </div>
                     </div>
                 } error={formik.touched.imagemPerfil && formik.errors.imagemPerfil} />
-                <ProfileField label="Nome" value={<TextField id="name" name="nome" variant="outlined" value={formik.values.nome} onChange={formik.handleChange} style={{ width: '100%', textAlign: 'center' }} />} error={formik.touched.nome && formik.errors.nome} />
-                <ProfileField label="Sobrenome" value={<TextField id="surname" name="sobrenome" variant="outlined" value={formik.values.sobrenome} onChange={formik.handleChange} style={{ width: '100%', textAlign: 'center' }} />} error={formik.touched.sobrenome && formik.errors.sobrenome} />
+                <ProfileField label="Nome" value={<TextField id="name" name="nome" variant="outlined" value={formik.values.nome.replace(/\b\w/g, (c) => c.toUpperCase())} onChange={(event) => /^[a-zA-Z\s]*$/.test(event.target.value) && formik.handleChange(event)} style={{ width: '100%', textAlign: 'center' }} />} error={formik.touched.nome && formik.errors.nome} />
+
+                <ProfileField label="Sobrenome" value={<TextField id="surname" name="sobrenome" variant="outlined" value={formik.values.sobrenome.replace(/\b\w/g, (c) => c.toUpperCase())} onChange={formik.handleChange} style={{ width: '100%', textAlign: 'center' }} />} error={formik.touched.sobrenome && formik.errors.sobrenome} />
+
                 <ProfileField label="E-mail" value={<TextField id="email" name="email" variant="outlined" value={formik.values.email} onChange={formik.handleChange} style={{ width: '100%', textAlign: 'center' }} />} error={formik.touched.email && formik.errors.email} />
                 <ProfileField label="Gênero" value={
                     <RadioGroup name="genero" value={formik.values.genero} onChange={formik.handleChange} style={{ display: 'flex', flexDirection: 'row' }}>
@@ -176,12 +246,12 @@ const ProfileEdit = ({ profileData, onSave, onImageChange }) => {
                     </RadioGroup>
                 } error={formik.touched.genero && formik.errors.genero} />
                 <ProfileField label="CPF" value={<TextField id="cpf" name="cpf" variant="outlined" value={formik.values.cpf} onChange={formik.handleChange} style={{ width: '100%', textAlign: 'center' }} disabled />} error={formik.touched.cpf && formik.errors.cpf} />
-                <ProfileField label="Telefone" value={<TextField id="phone" name="telefone" variant="outlined" value={formik.values.telefone} onChange={formik.handleChange} style={{ width: '100%', textAlign: 'center' }} />} error={formik.touched.telefone && formik.errors.telefone} />
-                <ProfileField label="Data de Nascimento" value={<TextField id="birthdate" name="dataNascimento" variant="outlined" value={formik.values.dataNascimento} onChange={formik.handleChange} style={{ width: '100%', textAlign: 'center' }} />} error={formik.touched.dataNascimento && formik.errors.dataNascimento} />
-                <ProfileField label="CEP" value={<TextField id="cep" name="cep" variant="outlined" value={formik.values.cep} onChange={formik.handleChange} style={{ width: '100%', textAlign: 'center' }} />} error={formik.touched.cep && formik.errors.cep} />
+                <ProfileField label="Telefone" value={<InputMask mask="(99) 99999-9999" maskChar={null} value={formik.values.telefone} onChange={formik.handleChange}>{(inputProps) => (<TextField {...inputProps} id="phone" name="telefone" variant="outlined" style={{ width: '100%', textAlign: 'center' }} />)}</InputMask>} error={formik.touched.telefone && formik.errors.telefone} />
+                <ProfileField label="Data de Nascimento" value={<InputMask mask="99/99/9999" maskChar="_" value={formik.values.dataDeNascimento} onChange={formik.handleChange}>{(inputProps) => (<TextField {...inputProps} id="birthdate" name="dataDeNascimento" variant="outlined" style={{ width: '100%', textAlign: 'center' }} />)}</InputMask>} error={formik.touched.dataDeNascimento && formik.errors.dataDeNascimento} />
+                <ProfileField label="CEP" value={<InputMask mask="99999-999" maskChar="_" value={formik.values.cep} onChange={(event) => { formik.handleChange(event); handleCEPChange(event); }}>{(inputProps) => (<TextField {...inputProps} id="cep" name="cep" variant="outlined" style={{ width: '100%', textAlign: 'center' }} error={!!cepError} helperText={cepError} />)}</InputMask>} error={formik.touched.cep && formik.errors.cep} />
                 <ProfileField label="Bairro" value={<TextField id="neighborhood" name="bairro" variant="outlined" value={formik.values.bairro} onChange={formik.handleChange} style={{ width: '100%', textAlign: 'center' }} />} error={formik.touched.bairro && formik.errors.bairro} />
                 <ProfileField label="Logradouro" value={<TextField id="street" name="logradouro" variant="outlined" value={formik.values.logradouro} onChange={formik.handleChange} style={{ width: '100%', textAlign: 'center' }} />} error={formik.touched.logradouro && formik.errors.logradouro} />
-                <ProfileField label="Número" value={<TextField id="number" name="numero" variant="outlined" value={formik.values.numero} onChange={formik.handleChange} style={{ width: '100%', textAlign: 'center' }} />} error={formik.touched.numero && formik.errors.numero} />
+                <ProfileField label="Número" value={<TextField id="number" name="numero" variant="outlined" value={formik.values.numero} onChange={formik.handleChange} style={{ width: '100%', textAlign: 'center' }} type="number" />} error={formik.touched.numero && formik.errors.numero} />
                 <ProfileField label="Bloco" value={<TextField id="block" name="bloco" variant="outlined" value={formik.values.bloco} onChange={formik.handleChange} style={{ width: '100%', textAlign: 'center' }} />} error={formik.touched.bloco && formik.errors.bloco} />
                 <div className="text-center">
                     <Button onClick={handleSave} variant="contained" style={{ height: '50px', backgroundColor: '#3fbabf', borderRadius: '8px', width: '200px' }}>Salvar alterações</Button>

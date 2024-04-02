@@ -25,7 +25,7 @@ const ProfileOverview = ({ profileData }) => {
             <ProfileField label="Gênero" value={profileData.genero} />
             <ProfileField label="CPF" value={profileData.cpf} />
             <ProfileField label="Telefone" value={profileData.telefone} />
-            <ProfileField label="Data de Nascimento" value={profileData.dataNascimento} />
+            <ProfileField label="Data de Nascimento" value={profileData.dataDeNascimento} />
             <ProfileField label="CEP" value={profileData.cep} />
             <ProfileField label="Bairro" value={profileData.bairro} />
             <ProfileField label="Logradouro" value={profileData.logradouro} />

@@ -19,7 +19,7 @@ const Profile = () => {
         genero: '',
         cpf: '',
         telefone: '',
-        dataNascimento: '',
+        dataDeNascimento: '',
         cep: '',
         bairro: '',
         logradouro: '',

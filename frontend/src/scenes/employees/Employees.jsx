@@ -91,6 +91,8 @@ const Employees = () => {
   const [initialProceduresData, setInitialProceduresData] = useState([]);
   const [removedItems, setRemovedItems] = useState([]);
   const [showDeleted, setShowDeleted] = useState(false);
+  const [currentUser, setCurrentUser] = useState(null);
+
 
   const getEmployees = async () => {
     try {
@@ -111,6 +113,7 @@ const Employees = () => {
         bloco: employee.bloco,
         email: employee.email
       }));
+      
       setInitialEmployeesData(employees);
     } catch (error) {
       console.error("Ops! Ocorreu um erro: " + error);
@@ -264,13 +267,27 @@ const Employees = () => {
   };
 
   const returnEmployee = async (employee) => {
-    // Lógica para retornar um funcionario excluído
     try {
       await api.post("/funcionario/revertdelete/" + employee.id);
     } catch (error) {
       console.error("Erro ao retornar funcionario: " + error);
     }
   };
+
+    const getCurrentUser = async () => {
+      try {
+        const response = await api.get("/usuario/usuariologado");
+        setCurrentUser(response.data);
+      } catch (error) {
+        console.error("Erro ao obter usuário atual: " + error);
+      }
+    };
+  
+    useEffect(() => {
+      getCurrentUser();
+      getEmployees();
+    }, []);
+  
 
   return (
     <Box m="20px">
@@ -286,7 +303,8 @@ const Employees = () => {
         onDeleteClick={handleDeleteClick}
         onReturnClick={handleReturnClick}
         onShowRemovedClick={handleRemovedItensClick}
-      />
+        currentUser={currentUser} 
+        />
       {open && (
         <Action
           slug="funcionário"

@@ -5,6 +5,7 @@ import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 import DialogTitle from '@mui/material/DialogTitle';
 import Button from '@mui/material/Button';
+import { Link } from 'react-router-dom';
 import "./dataTable.scss";
 
 export const DataTable = (props) => {
@@ -13,6 +14,7 @@ export const DataTable = (props) => {
   const [showDeleted, setShowDeleted] = useState(false);
   const [returnConfirmationOpen, setReturnConfirmationOpen] = useState(false);
   const [selectedRowToReturn, setSelectedRowToReturn] = useState(null);
+  const { currentUser } = props;
 
   const handleEditClick = (id) => {
     const selectedDoctor = props.rows.find(row => row.id === id);
@@ -85,27 +87,35 @@ export const DataTable = (props) => {
     headerName: "Ação",
     width: 200,
     renderCell: (params) => {
+      const isCurrentUser = currentUser && params.row.id === currentUser.id;
       return (
-        <div className="action">
-          {!showDeleted && (
-            <div className="edit" onClick={() => handleEditClick(params.row.id)}>
-              <img className="img" src="./edit.png" alt="Editar" />
-            </div>
-          )}
-          {showDeleted ? (
-            <div className="return" onClick={() => handleReturnClick(params.row.id)}>
-              <img className="img" src="./retornar.png" alt="Retornar" />
-            </div>
-          ) : (
-            <div className="delete" onClick={() => handleDeleteClick(params.row.id)}>
-              <img className="img" src="./apagar.png" alt="Deletar" />
-            </div>
-          )}
-        </div>
+<div className="action">
+        {!showDeleted && !isCurrentUser && (
+          <div className="edit" onClick={() => handleEditClick(params.row.id)}>
+            <img className="img" src="./edit.png" alt="Editar" />
+          </div>
+        )}
+        {!showDeleted && !isCurrentUser && ( 
+          <div className="delete" onClick={() => handleDeleteClick(params.row.id)}>
+            <img className="img" src="./apagar.png" alt="Deletar" />
+          </div>
+        )}
+        {showDeleted ? (
+          <div className="return" onClick={() => handleReturnClick(params.row.id)}>
+            <img className="img" src="./retornar.png" alt="Retornar" />
+          </div>
+        ) : null}
+        {isCurrentUser && ( 
+          <div className="user" onClick={() => handleUserClick(params.row.id)}>
+            <Link to="/perfil" className="user">
+            <img className="user-icon" src="./user.png" alt="Usuário" />
+            </Link>
+          </div>
+        )}
+      </div>
       );
     },
   };
-
   const colunas = props.columns.filter(coluna => coluna.renderedList !== false);
 
   return (

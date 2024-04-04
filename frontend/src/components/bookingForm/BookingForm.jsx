@@ -133,6 +133,10 @@ export const BookingForm = forwardRef(({ modalOpen, handleCloseModal, selectedEv
         valorTotal: '', tempoAproximado: ''
     });
 
+    const [novaData, setNovaData] = useState(null);
+    const [novoHorarioInicio, setNovoHorarioInicio] = useState(null);
+    const [novoHorarioFim, setNovoHorarioFim] = useState(null);
+
     const atualizarConsulta = (atributo, novoValor) => {
         setConsultaForm({
             ...consultaForm,
@@ -176,6 +180,22 @@ export const BookingForm = forwardRef(({ modalOpen, handleCloseModal, selectedEv
         return tempoFormatado;
     };
 
+    useEffect(() => {
+    if (consultaForm.dataHoraInicio && consultaForm.tempoAproximado) {
+        const horaInicio = consultaForm.dataHoraInicio.getHours();
+        const minutosInicio = consultaForm.dataHoraInicio.getMinutes();
+        const tempoAproximado = consultaForm.tempoAproximado.split(':');
+        const horas = parseInt(tempoAproximado[0]);
+        const minutos = parseInt(tempoAproximado[1]);
+        
+        const novaDataHoraFim = new Date(consultaForm.dataHoraInicio);
+        novaDataHoraFim.setHours(horaInicio + horas);
+        novaDataHoraFim.setMinutes(minutosInicio + minutos);
+        
+        atualizarConsulta('dataHoraFim', novaDataHoraFim);
+    }
+}, [consultaForm.dataHoraInicio, consultaForm.tempoAproximado]);
+
     const calcularValor = () => {
         const procedimentosSelecionados = procedimentos?.filter((proc) =>
             consultaForm.procedimentosIds.includes(proc.id)
@@ -198,33 +218,48 @@ export const BookingForm = forwardRef(({ modalOpen, handleCloseModal, selectedEv
 
     const handleAgendar = async (e) => {
         e.preventDefault();
-
+    
         if (!validarFormulario()) {
             return;
         }
-
-        const [year, month, day] = selectedDate.split('-').map(Number);
-        const dataInicio = new Date(year, month - 1, day);
-        const dataFinal = new Date(year, month - 1, day);
-
-        dataInicio.setHours(consultaForm.dataHoraInicio.getHours());
-        dataInicio.setMinutes(consultaForm.dataHoraInicio.getMinutes());
-
-        dataFinal.setHours(consultaForm.dataHoraFim.getHours());
-        dataFinal.setMinutes(consultaForm.dataHoraFim.getMinutes() - 1);
-
-        if (!selectedEvent) {
-            gravar(dataInicio, dataFinal);
-        }
-        else {
-            atualizar(dataInicio, dataFinal);
-
-            const eventos = calendarRef.current.getApi().getEvents();
-            const eventoExistente = eventos.find((evento) => evento.extendedProps.consulta_id === consultaId);
-
-            if (eventoExistente) {
-                eventoExistente.setStart(dataInicio);
-                eventoExistente.setEnd(dataFinal);
+    
+        if (consultaForm.status === 'REMARCADO') {
+            if (!novaData || !novoHorarioInicio || !novoHorarioFim) {
+                // Validação adicional para garantir que todos os campos necessários para a remarcação sejam preenchidos
+                return;
+            }
+    
+            // Cria uma nova data combinando a nova data selecionada com os novos horários selecionados
+            const novaDataInicio = moment(`${moment(novaData).format('YYYY-MM-DD')}T${moment(novoHorarioInicio).format('HH:mm')}`).toDate();
+            const novaDataFim = moment(`${moment(novaData).format('YYYY-MM-DD')}T${moment(novoHorarioFim).format('HH:mm')}`).toDate();
+    
+            // Chama a função de gravar com a nova data e horários
+            gravar(novaDataInicio, novaDataFim);
+        } else {
+            // Caso contrário, continua com a lógica original para criação ou atualização de consulta
+            const [year, month, day] = selectedDate.split('-').map(Number);
+            const dataInicio = new Date(year, month - 1, day);
+            const dataFinal = new Date(year, month - 1, day);
+    
+            dataInicio.setHours(consultaForm.dataHoraInicio.getHours());
+            dataInicio.setMinutes(consultaForm.dataHoraInicio.getMinutes());
+    
+            dataFinal.setHours(consultaForm.dataHoraFim.getHours());
+            dataFinal.setMinutes(consultaForm.dataHoraFim.getMinutes() - 1);
+    
+            if (!selectedEvent) {
+                gravar(dataInicio, dataFinal);
+            }
+            else {
+                atualizar(dataInicio, dataFinal);
+    
+                const eventos = calendarRef.current.getApi().getEvents();
+                const eventoExistente = eventos.find((evento) => evento.extendedProps.consulta_id === consultaId);
+    
+                if (eventoExistente) {
+                    eventoExistente.setStart(dataInicio);
+                    eventoExistente.setEnd(dataFinal);
+                }
             }
         }
     }
@@ -485,6 +520,72 @@ export const BookingForm = forwardRef(({ modalOpen, handleCloseModal, selectedEv
                                 )}
                             </Select>
                         </div>
+
+                        {consultaForm.status === 'REMARCADO' && (
+    <div>
+        <div className="form-group">
+            <label>Nova Data</label>
+            <TextField
+                type="date"
+                value={novaData ? moment(novaData).format('YYYY-MM-DD') : ''}
+                onChange={(e) => setNovaData(moment(e.target.value).toDate())}
+                fullWidth
+                InputLabelProps={{ shrink: true }}
+            />
+        </div>
+<LocalizationProvider dateAdapter={AdapterDateFns}>
+   <div className="item-container">
+    <div className="item2">
+        <div className="time-picker-container">
+            <LocalizationProvider dateAdapter={AdapterDateFns}>
+                <TimePicker
+                    label="Novo Horário de Início"
+                    value={novoHorarioInicio}
+                    onChange={(time) => setNovoHorarioInicio(time)}
+                    ampm={false}
+                    renderInput={(params) => (
+                        <TextField
+                            {...params}
+                            variant="outlined"
+                            fullWidth
+                            sx={{ my: 2 }}
+                            InputLabelProps={{ shrink: true, color: '#333' }}
+                            label="Horário de Início"
+                        />
+                    )}
+                />
+            </LocalizationProvider>
+        </div>
+    </div>
+    <div className="item2">
+        <div className="time-picker-container">
+            <LocalizationProvider dateAdapter={AdapterDateFns}>
+                <TimePicker
+                    label="Novo Horário de Término"
+                    value={novoHorarioFim}
+                    onChange={(time) => setNovoHorarioFim(time)}
+                    ampm={false}
+                    renderInput={(params) => (
+                        <TextField
+                            {...params}
+                            variant="outlined"
+                            fullWidth
+                            sx={{ my: 2 }}
+                            InputLabelProps={{ shrink: true, color: '#333' }}
+                            label="Horário de Término"
+                        />
+                    )}
+                />
+            </LocalizationProvider>
+        </div>
+    </div>
+</div>
+
+</LocalizationProvider>
+
+    </div>
+)}
+
                         <div className="item">
                             <div className="label">
                                 <label>Paciente:</label>
@@ -517,6 +618,7 @@ export const BookingForm = forwardRef(({ modalOpen, handleCloseModal, selectedEv
                                             value={consultaForm.dataHoraInicio}
                                             onChange={(newTime) => atualizarConsulta('dataHoraInicio', newTime)}
                                             ampm={false}
+                                            disabled={["REMARCADO", "FINALIZADO", "CANCELADO", "CONFIRMADO"].includes(consultaForm.status)} // Modifique essa linha
                                             renderInput={(params) => (
                                                 <TextField
                                                     {...params}
@@ -538,6 +640,7 @@ export const BookingForm = forwardRef(({ modalOpen, handleCloseModal, selectedEv
                                             value={consultaForm.dataHoraFim}
                                             onChange={(newTime) => atualizarConsulta('dataHoraFim', newTime)}
                                             ampm={false}
+                                            disabled={["REMARCADO", "FINALIZADO", "CANCELADO", "CONFIRMADO"].includes(consultaForm.status)} // Modifique essa linha
                                             renderInput={(params) => (
                                                 <TextField
                                                     {...params}

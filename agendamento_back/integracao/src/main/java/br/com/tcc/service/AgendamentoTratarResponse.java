@@ -22,7 +22,19 @@ public class AgendamentoTratarResponse {
         Optional<List<Consulta>> consultaOptional = agendamentoService.consultarPorHorarioDoutorPaciente(doutorId, pacienteId, horario);
 
         return consultaOptional.map(consultas -> consultas.stream()
-                .map(agendamento -> new AgendamentoResponse(
+                .map(this::montarAgendamentoResponse).collect(Collectors.toList())).orElse(null);
+    }
+
+    public AgendamentoResponse consultarPorId(Long id) {
+        Optional<Consulta> consulta = agendamentoService.consultarPorId(id);
+
+        return consulta.map(this::montarAgendamentoResponse
+        ).orElse(null);
+    }
+
+    private AgendamentoResponse montarAgendamentoResponse(Consulta agendamento) {
+        if (agendamento != null)
+            return new AgendamentoResponse(
                     agendamento.getId(),
                     agendamento.getStatus().name(),
                     agendamento.getDataHoraInicio(),
@@ -32,25 +44,10 @@ public class AgendamentoTratarResponse {
                     agendamento.getDoutor().getId(),
                     getProcedimentos(agendamento.getProcedimentos()),
                     agendamento.getValorTotal(),
-                    agendamento.getTempoAproximado()
-                )).collect(Collectors.toList())).orElse(null);
-    }
+                    agendamento.getTempoAproximado(),
+                    montarAgendamentoResponse(agendamento.getConsultaRemarcadaPara()));
 
-    public AgendamentoResponse consultarPorId(Long id) {
-        Optional<Consulta> consulta = agendamentoService.consultarPorId(id);
-
-        return consulta.map(agendamento -> new AgendamentoResponse(
-                agendamento.getId(),
-                agendamento.getStatus().name(),
-                agendamento.getDataHoraInicio(),
-                agendamento.getDataHoraFinal(),
-                agendamento.getPaciente().getId(),
-                agendamento.getPaciente().getNome(),
-                agendamento.getDoutor().getId(),
-                getProcedimentos(agendamento.getProcedimentos()),
-                agendamento.getValorTotal(),
-                agendamento.getTempoAproximado()
-        )).orElse(null);
+        return null;
     }
 
     public List<ProcedimentoResponse> getProcedimentos(List<Procedimento> procedimentos) {

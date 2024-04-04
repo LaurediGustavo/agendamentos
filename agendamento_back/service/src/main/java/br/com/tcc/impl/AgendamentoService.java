@@ -38,22 +38,28 @@ public class AgendamentoService {
 	private ProcedimentoRepository procedimentoRepository;
 
 	public Consulta persistir(AgendamentoDto agendamentoDto) {
+		Consulta consultaRemarcada = null;
 		if(StatusConsultaEnum.REMARCADO.equals(agendamentoDto.getStatus())) {
-			remarcar(agendamentoDto);
+			consultaRemarcada = remarcar(agendamentoDto);
 			agendamentoDto.setId(0L);
 			agendamentoDto.setStatus(StatusConsultaEnum.AGUARDANDO);
 		}
 
 		Consulta consulta = gerarConsulta(agendamentoDto);
+		consultaRepository.save(consulta);
 
-		return consultaRepository.save(consulta);
+		if (consultaRemarcada != null) {
+			consultaRemarcada.setConsultaRemarcadaPara(consulta);
+		}
+
+		return consulta;
 	}
 
-	private void remarcar(AgendamentoDto agendamentoDto) {
+	private Consulta remarcar(AgendamentoDto agendamentoDto) {
 		Consulta consultaOriginal = consultaRepository.findById(agendamentoDto.getId()).get();
 		consultaOriginal.setStatus(agendamentoDto.getStatus());
 
-		consultaRepository.save(consultaOriginal);
+		return consultaRepository.save(consultaOriginal);
 	}
 
 	private Consulta gerarConsulta(AgendamentoDto agendamento) {

@@ -10,6 +10,8 @@ import java.util.List;
 @Setter
 public class LoginResponse {
 
+    private Long usuarioId;
+
     private String tokenJwt;
 
     private List<String> roles;

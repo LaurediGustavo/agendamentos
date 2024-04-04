@@ -7,6 +7,7 @@ import java.util.stream.Collectors;
 
 import br.com.tcc.dto.UsuarioDto;
 import br.com.tcc.model.response.LoginResponse;
+import br.com.tcc.repository.UserRepository;
 import br.com.tcc.security.jwtConfig.JwtTokenUtil;
 import br.com.tcc.security.securityConfig.UserDetailsServiceImpl;
 import org.apache.commons.logging.Log;
@@ -40,6 +41,9 @@ public class AuthenticationController {
     
 	@Autowired
 	private JwtTokenUtil jwtTokenUtil;
+
+    @Autowired
+    private UserRepository userRepository;
 	
 	@PostMapping("/login")
     public ResponseEntity<?> loginUser(@RequestBody UsuarioDto usuarioDto) {
@@ -60,6 +64,7 @@ public class AuthenticationController {
 
             loginResponse.setTokenJwt(token);
             loginResponse.setRoles(roles);
+            loginResponse.setUsuarioId(userRepository.findByUserName(userDetails.getUsername()).get().getFuncionario().getId());
             status = HttpStatus.OK;
         } else {
             loginResponse.setMessage("{credenciais.invalidas}");

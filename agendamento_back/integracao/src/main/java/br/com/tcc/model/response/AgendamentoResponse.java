@@ -36,4 +36,6 @@ public class AgendamentoResponse {
 
     private LocalTime tempoAproximado;
 
+    private AgendamentoResponse remercado;
+
 }

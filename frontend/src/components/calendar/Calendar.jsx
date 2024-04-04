@@ -8,8 +8,11 @@ import ptBrLocale from '@fullcalendar/core/locales/pt-br';
 import "./calendar.scss"
 import { format } from 'date-fns';
 import api from '../../services/api';
+import { getRoles, getUserId } from '../../services/auth_service';
 
 export const Calendar = ({ calendarRef, handleEventClick, handleEventSelect }) => {
+  const roles = getRoles();
+  const userId = getUserId();
 
   const eventClass = (status) => {
     switch (status) {
@@ -33,9 +36,7 @@ export const Calendar = ({ calendarRef, handleEventClick, handleEventSelect }) =
   const getConsultas = async (args) => {
     try {
       calendarRef.current?.getApi().removeAllEvents();
-      const data = new Date(args);
-      const dataFormatada = format(data, 'yyyy-MM-dd HH:mm:ss');
-      const response = await api.get("/agendamento/consultar?horario=" + dataFormatada);
+      const response = await api.get(getUrlConsulta(args));
       response.data.map((consulta) => (
         calendarRef.current.getApi().addEvent({
           title: consulta.pacienteNome,
@@ -49,6 +50,18 @@ export const Calendar = ({ calendarRef, handleEventClick, handleEventSelect }) =
       console.error("Ops! Ocorreu um erro: " + error);
     }
   };
+
+  const getUrlConsulta = (args) => {
+    const data = new Date(args);
+    const dataFormatada = format(data, 'yyyy-MM-dd HH:mm:ss');
+
+    if (roles.includes("ROLE_DOUTOR") && !roles.includes("ROLE_ADMINISTRADOR")) {
+      return "/agendamento/consultar?" + "doutorId=" + userId + "&horario=" + dataFormatada;
+    }
+    else {
+      return "/agendamento/consultar?horario=" + dataFormatada;
+    }
+  }
 
   return (
     <div className="calendar-container">

@@ -71,7 +71,7 @@ const CustomSidebar = () => {
 
             {roles && (!roles.includes("ROLE_DOUTOR") ||
               roles.includes("ROLE_ATENDENTE") ||
-              roles.includes("ROLE_NEGOCIO")) && (
+              roles.includes("ROLE_ADMINISTRADOR")) && (
                 <>
                   <Item
                     title="Doutores"

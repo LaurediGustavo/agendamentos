@@ -12,6 +12,8 @@ public class LoginResponse {
 
     private Long usuarioId;
 
+    private String userName;
+
     private String tokenJwt;
 
     private List<String> roles;

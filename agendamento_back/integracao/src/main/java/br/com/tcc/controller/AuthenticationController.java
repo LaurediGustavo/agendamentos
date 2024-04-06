@@ -6,6 +6,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 import br.com.tcc.dto.UsuarioDto;
+import br.com.tcc.entity.Ususario;
 import br.com.tcc.model.response.LoginResponse;
 import br.com.tcc.repository.UserRepository;
 import br.com.tcc.security.jwtConfig.JwtTokenUtil;
@@ -62,9 +63,11 @@ public class AuthenticationController {
                     .map(GrantedAuthority::getAuthority)
                     .collect(Collectors.toList());
 
+            Ususario ususario = userRepository.findByUserName(userDetails.getUsername()).get();
             loginResponse.setTokenJwt(token);
             loginResponse.setRoles(roles);
-            loginResponse.setUsuarioId(userRepository.findByUserName(userDetails.getUsername()).get().getFuncionario().getId());
+            loginResponse.setUsuarioId(ususario.getFuncionario().getId());
+            loginResponse.setUserName(ususario.getFuncionario().getNome() + " " + ususario.getFuncionario().getSobrenome());
             status = HttpStatus.OK;
         } else {
             loginResponse.setMessage("{credenciais.invalidas}");

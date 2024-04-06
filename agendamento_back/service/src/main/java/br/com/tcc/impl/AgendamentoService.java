@@ -46,10 +46,11 @@ public class AgendamentoService {
 		}
 
 		Consulta consulta = gerarConsulta(agendamentoDto);
-		consultaRepository.save(consulta);
+		consulta = consultaRepository.save(consulta);
 
 		if (consultaRemarcada != null) {
 			consultaRemarcada.setConsultaRemarcadaPara(consulta);
+			consultaRepository.save(consultaRemarcada);
 		}
 
 		return consulta;

@@ -25,7 +25,6 @@ import {
 
 export const BookingForm = forwardRef(({ modalOpen, handleCloseModal, selectedEvent, selectedDate, calendarRef }, ref) => {
 
-
     const [novaData, setNovaData] = useState(null);
     const [novoHorarioInicio, setNovoHorarioInicio] = useState(null);
     const [novoHorarioTermino, setNovoHorarioTermino] = useState(null);

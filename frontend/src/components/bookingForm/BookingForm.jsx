@@ -83,6 +83,15 @@ export const BookingForm = forwardRef(({ modalOpen, handleCloseModal, selectedEv
         formulario.valorTotal = data.valorTotal;
         formulario.tempoAproximado = data.tempoAproximado;
 
+        if (data.remercado) {
+            setNovaData(moment(data.remercado.dataHoraInicio).toDate())
+            setNovoHorarioInicio(moment(data.remercado.dataHoraInicio).toDate())
+        }
+        else {
+            setNovaData()
+            setNovoHorarioInicio()
+        }
+        
         setConsultaForm(formulario);
 
         getDoutores();
@@ -258,8 +267,13 @@ export const BookingForm = forwardRef(({ modalOpen, handleCloseModal, selectedEv
             atualizarConsulta('dataHoraInicio', dataInicio);
             atualizarConsulta('dataHoraFim', dataFinal);
         }
-
-
+        else {
+            dataInicio.setHours(consultaForm.dataHoraInicio.getHours()); 
+            dataInicio.setMinutes(consultaForm.dataHoraInicio.getMinutes()); 
+     
+            dataFinal.setHours(consultaForm.dataHoraFim.getHours()); 
+            dataFinal.setMinutes(consultaForm.dataHoraFim.getMinutes() - 1);
+        }
 
         if (!selectedEvent) {
             gravar(dataInicio, dataFinal);

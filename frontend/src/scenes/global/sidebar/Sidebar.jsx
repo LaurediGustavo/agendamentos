@@ -35,7 +35,7 @@ const CustomSidebar = () => {
   const [isCollapsed, setIsCollapsed] = useState(false);
   const [selected, setSelected] = useState("Dashboard");
   const roles = getRoles();
-
+  
   return (
     <Box className="box-sidebar">
       <Sidebar
@@ -51,7 +51,7 @@ const CustomSidebar = () => {
             {!isCollapsed && (
               <Box className="menu-item-title">
                 <Typography className="menu-item-title-text">
-                  Administrador
+                  { roles.split(',')[0].replace('ROLE_', '') === "DOUTOR"? "DOUTOR(A)" : roles.split(',')[0].replace('ROLE_', '') }
                 </Typography>
                 <IconButton onClick={() => setIsCollapsed(!isCollapsed)}>
                   <MenuOutlinedIcon />

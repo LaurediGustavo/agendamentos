@@ -8,8 +8,10 @@ import minhaImagem from '../../../assets/nulo.jpg';
 import "./profile.scss";
 import api from '../../../services/api';
 import { formatarData_yyyy_MM_dd, formatarData_dd_MM_yyyy } from '../../../services/dateFormat';
+import { getRoles } from '../../../services/auth_service';
 
 const Profile = () => {
+    const roles = getRoles();
     const [activeTab, setActiveTab] = useState(0);
     const [profileData, setProfileData] = useState({
         id: 0,
@@ -103,7 +105,7 @@ const Profile = () => {
                                 <Box display="flex" flexDirection="column" alignItems="center">
                                     <img src={profileImage} alt="Profile" className="profile-img" /> 
                                     <span className="profile-name">{profileData.nome} {profileData.sobrenome}</span>
-                                    <span className="profile-role">Administrador</span>
+                                    <span className="profile-role">{ roles.split(',')[0].replace('ROLE_', '') === "DOUTOR"? "DOUTOR(A)" : roles.split(',')[0].replace('ROLE_', '') }</span>
                                 </Box>
                             </CardContent>
                         </Card>

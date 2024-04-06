@@ -58,7 +58,7 @@ export const Login = () => {
                 userName: username,
                 password: password
             });
-            login(result.data.usuarioId ,result.data.tokenJwt, result.data.roles);
+            login(result.data.userName ,result.data.usuarioId ,result.data.tokenJwt, result.data.roles);
             // Verificar os papéis do usuário e redirecionar para a página apropriada
             const roles = result.data.roles; // Obtém os papéis do usuário do resultado do login
             if (roles.includes("ROLE_DOUTOR")) {

@@ -48,7 +48,7 @@ public class AtivarNotificacoesPassoDois implements AtivarNotificacoesPassosInte
     }
 
     private void adicionarChatIdNoPaciente(Long chatId, String mensagem) {
-        Optional<Paciente> pacienteOptional = pacienteRepository.findByCpf(mensagem);
+        Optional<Paciente> pacienteOptional = pacienteRepository.findByCpf(Uteis.removerCaracteresNaoNumericos(mensagem));
 
         if (pacienteOptional.isPresent()) {
             Paciente paciente = pacienteOptional.get();

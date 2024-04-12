@@ -7,7 +7,8 @@ import { logout } from '../../../services/auth_service';
 import { useNavigate } from 'react-router-dom';
 import { getUserName } from '../../../services/auth_service';
 import api from '../../../services/api';
-import Avatar from '@material-ui/core/Avatar';
+import Avatar from '@mui/material/Avatar';
+
 
 export const Navbar = () => {
   const [anchorEl, setAnchorEl] = useState(null); // Estado para controlar a abertura do menu

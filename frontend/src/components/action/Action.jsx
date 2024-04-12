@@ -8,7 +8,7 @@ import api from '../../services/api';
 const Action = (props) => {
   const [formData, setFormData] = useState({
     ...props.initialData,
-    pacienteId: props.initialData?.pacienteId || '' // Adicione essa linha para o campo paciente
+    pacienteId: props.initialData?.pacienteId || ''
   });
   const [errors, setErrors] = useState({});
   const [showResponsavelCampos, setShowResponsavelCampos] = useState(formData.responsavelLegal || false);
@@ -120,7 +120,20 @@ const Action = (props) => {
           'especialidadeNome': especialidadesNomes,
         });
       }
-      else {
+      else if (name === 'valor') {
+        // Remova todos os caracteres não numéricos
+        const numericValue = value.replace(/[^\d]/g, '');
+      
+        // Adicione vírgula como separador de milhar
+        const formattedValue = new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(numericValue / 100);
+      
+        // Atualize diretamente o estado formData com o valor formatado
+        setFormData({
+          ...formData,
+          [name]: formattedValue
+        });
+      }
+       else {
         // Para outros campos, atualize diretamente o estado formData
         setFormData({
           ...formData,
@@ -142,10 +155,10 @@ const Action = (props) => {
   const validateForm = () => {
     let valid = true;
     const newErrors = {};
-
+  
     props.columns.filter(coluna => coluna.renderedForm !== false).forEach(column => {
       const { field, headerName } = column;
-
+  
       if (!formData[field] && field !== 'bloco' && field !== 'responsavelLegal' && field !== 'informacoesAdicionais' && (showResponsavelCampos || !['relacaoResponsavel', 'telefoneResponsavel', 'responsavel'].includes(field))) {
         newErrors[field] = `O campo ${headerName} é obrigatório`;
         valid = false;
@@ -161,13 +174,16 @@ const Action = (props) => {
       } else if (field === 'dataDeNascimento' && !validateDate(formData[field])) {
         newErrors[field] = 'Data de nascimento inválida';
         valid = false;
+      } else if (field === 'valor' && Number(formData[field].replace(/[^\d]/g, '')) === 0) {
+        newErrors[field] = 'Valor inválido';
+        valid = false;
       }
+      
     });
-
+  
     setErrors(newErrors);
     return valid;
   }
-
   const validateCPF = (cpf) => {
     const cpfClean = cpf.replace(/[^\d]/g, '');
 
@@ -248,6 +264,8 @@ const Action = (props) => {
       document.body.classList.remove('modal-open');
     };
   }, []);
+
+  
 
   return (
     <div className="activated">

@@ -3,7 +3,7 @@ import { Typography, TextField, Button, RadioGroup, Radio, FormControlLabel, Dia
 import { useTheme } from '@mui/material/styles';
 import useMediaQuery from '@mui/material/useMediaQuery';
 import minhaImagem from '../../../assets/nulo.jpg';
-import nuloImg from '../../../assets/nulo.jpg'; // Importando a imagem padrão
+import nuloImg from '../../../assets/nulo.jpg'; 
 import CloudUploadIcon from '@mui/icons-material/CloudUpload';
 import DeleteIcon from '@mui/icons-material/Delete';
 import { useFormik } from 'formik';
@@ -31,6 +31,7 @@ const ProfileField = ({ label, value, error }) => {
 
 const ProfileEdit = ({ profileData, onSave, onImageChange }) => {
     const [openDialog, setOpenDialog] = useState(false);
+    const [successDialogOpen, setSuccessDialogOpen] = useState(false);
     const [image, setImage] = useState(minhaImagem);
     const [cepError, setCepError] = useState('');
 
@@ -40,6 +41,14 @@ const ProfileEdit = ({ profileData, onSave, onImageChange }) => {
 
     const handleCloseDialog = () => {
         setOpenDialog(false);
+    };
+
+    const handleOpenSuccessDialog = () => {
+        setSuccessDialogOpen(true);
+    };
+
+    const handleCloseSuccessDialog = () => {
+        setSuccessDialogOpen(false);
     };
 
     const imagem = async () => {
@@ -143,11 +152,16 @@ const ProfileEdit = ({ profileData, onSave, onImageChange }) => {
     const formik = useFormik({
         initialValues: profileData,
         validationSchema: validationSchema,
-        onSubmit: (values) => {
+        onSubmit: async (values) => {
             onSave(values);
             handleCloseDialog();
 
-            atualizar(values);
+            try {
+                await atualizar(values);
+                handleOpenSuccessDialog();
+            } catch (error) {
+                console.error("Erro ao atualizar usuário: ", error);
+            }
         },
     });
 
@@ -266,6 +280,16 @@ const ProfileEdit = ({ profileData, onSave, onImageChange }) => {
                         <Button onClick={formik.handleSubmit} color="primary">Salvar</Button>
                     </DialogActions>
                 </Dialog>
+                 <Dialog open={successDialogOpen} onClose={handleCloseSuccessDialog}>
+                    <DialogTitle>Sucesso</DialogTitle>
+                    <DialogContent>
+                        <Typography variant="body1">Alterações salvas com sucesso!</Typography>
+                    </DialogContent>
+                    <DialogActions>
+                        <Button onClick={handleCloseSuccessDialog} color="primary">Fechar</Button>
+                    </DialogActions>
+                </Dialog>
+                
             </form>
         </div>
     );

@@ -12,7 +12,7 @@ const ChangePassword = () => {
     const [openDialog, setOpenDialog] = useState(false);
     const [form, setForm] = useState();
     const [serverError, setServerError] = useState(null);
-    const [successDialogOpen, setSuccessDialogOpen] = useState(false); // Adicione esta variável de estado
+    const [successDialogOpen, setSuccessDialogOpen] = useState(false);
 
     const validationSchema = Yup.object().shape({
         currentPassword: Yup.string().required('Senha atual é obrigatória'),
@@ -22,7 +22,7 @@ const ChangePassword = () => {
 
     const handleCloseDialog = () => {
         setOpenDialog(false);
-        setSuccessDialogOpen(false); // Fechar o dialog de sucesso ao fechar o dialog principal
+        setSuccessDialogOpen(false); 
     };
 
     const handleConfirmDialog = async () => {
@@ -34,7 +34,7 @@ const ChangePassword = () => {
             });
             setServerError(null);
             setOpenDialog(false);
-            setSuccessDialogOpen(true); // Abrir o dialog de sucesso ao alterar a senha com sucesso
+            setSuccessDialogOpen(true);
         } catch  (error) {
             if (error.response && error.response.status === 400) {
                 setServerError("A senha atual não é válida");

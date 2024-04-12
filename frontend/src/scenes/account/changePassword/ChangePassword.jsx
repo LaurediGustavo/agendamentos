@@ -11,6 +11,8 @@ const ChangePassword = () => {
     const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
     const [openDialog, setOpenDialog] = useState(false);
     const [form, setForm] = useState();
+    const [serverError, setServerError] = useState(null);
+    const [successDialogOpen, setSuccessDialogOpen] = useState(false); // Adicione esta variável de estado
 
     const validationSchema = Yup.object().shape({
         currentPassword: Yup.string().required('Senha atual é obrigatória'),
@@ -20,6 +22,7 @@ const ChangePassword = () => {
 
     const handleCloseDialog = () => {
         setOpenDialog(false);
+        setSuccessDialogOpen(false); // Fechar o dialog de sucesso ao fechar o dialog principal
     };
 
     const handleConfirmDialog = async () => {
@@ -29,12 +32,13 @@ const ChangePassword = () => {
                 newPassword: form.newPassword,
                 confirmNewPassword: form.confirmNewPassword
             });
-        } catch (error) {
+            setServerError(null);
+            setOpenDialog(false);
+            setSuccessDialogOpen(true); // Abrir o dialog de sucesso ao alterar a senha com sucesso
+        } catch  (error) {
             if (error.response && error.response.status === 400) {
-                console.log(error.response.data.errors)
-                console.log(error.response.data.errors[0].message)
-            }
-            else {
+                setServerError("A senha atual não é válida");
+            } else {
                 throw new Error("Erro ao atualizar paciente: " + error);
             }
         }
@@ -49,16 +53,15 @@ const ChangePassword = () => {
                 initialValues={{ currentPassword: '', newPassword: '', confirmNewPassword: '' }}
                 validationSchema={validationSchema}
                 onSubmit={(values, { setSubmitting }) => {
-                    // lógica de alteração de senha
                     console.log(values);
                     setForm(values)
                     setOpenDialog(true); 
                     setSubmitting(false);
                 }}
             >
-                {({ isSubmitting }) => (
+                {({ isSubmitting, errors }) => (
                     <Form>
-                        <ProfileField name="currentPassword" label="Senha atual" isMobile={isMobile} />
+                        <ProfileField name="currentPassword" label="Senha atual" isMobile={isMobile} serverError={serverError} />
                         <ProfileField name="newPassword" label="Nova Senha" isMobile={isMobile} />
                         <ProfileField name="confirmNewPassword" label="Confirmar Nova Senha" isMobile={isMobile} />
                         <div className="text-center">
@@ -77,25 +80,38 @@ const ChangePassword = () => {
                     <Button onClick={handleConfirmDialog} color="primary">Confirmar</Button>
                 </DialogActions>
             </Dialog>
+            {/* Dialog de sucesso */}
+            <Dialog open={successDialogOpen} onClose={handleCloseDialog}>
+                <DialogTitle>Sucesso</DialogTitle>
+                <DialogContent>
+                    <Typography variant="body1">Senha alterada com sucesso!</Typography>
+                </DialogContent>
+                <DialogActions>
+                    <Button onClick={handleCloseDialog} color="primary">Fechar</Button>
+                </DialogActions>
+            </Dialog>
         </div>
     );
 };
 
-const ProfileField = ({ name, label, isMobile }) => {
+const ProfileField = ({ name, label, isMobile, serverError }) => {
     return (
         <div style={{ display: 'flex', flexDirection: isMobile ? 'column' : 'row', alignItems: 'center', marginBottom: '2em' }}>
             <div style={{ flexBasis: isMobile ? '100%' : '30%', color: 'rgba(1, 41, 112, 0.6)', fontSize: '1.25em' }}>{label}</div>
             <div style={{ flexBasis: '70%' }}>
                 <Field name={name}>
                     {({ field, form }) => (
-                        <TextField
-                            {...field}
-                            type="password"
-                            variant="outlined"
-                            style={{ width: '100%' }}
-                            error={form.touched[name] && Boolean(form.errors[name])}
-                            helperText={form.touched[name] && form.errors[name]}
-                        />
+                        <div>
+                            <TextField
+                                {...field}
+                                type="password"
+                                variant="outlined"
+                                style={{ width: '100%' }}
+                                error={(form.touched[name] && Boolean(form.errors[name])) || (serverError && name === "currentPassword")} // Adicionando condição para erro de senha atual
+                                helperText={(form.touched[name] && form.errors[name]) || (serverError && name === "currentPassword" && serverError)} // Exibindo mensagem de erro de senha atual
+                                FormHelperTextProps={{ style: { marginLeft: 0 } }} 
+                            />
+                        </div>
                     )}
                 </Field>
             </div>

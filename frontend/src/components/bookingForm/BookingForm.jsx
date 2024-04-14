@@ -28,6 +28,7 @@ export const BookingForm = forwardRef(({ modalOpen, handleCloseModal, selectedEv
     const [novaData, setNovaData] = useState(null);
     const [novoHorarioInicio, setNovoHorarioInicio] = useState(null);
     const [novoHorarioTermino, setNovoHorarioTermino] = useState(null);
+    const [situacaoOriginal, setSituacaoOriginal] = useState(null);
 
     // Estado local do componente
     const [consultaId, setConsultaId] = useState()
@@ -67,6 +68,15 @@ export const BookingForm = forwardRef(({ modalOpen, handleCloseModal, selectedEv
         limparDados,
     }));
 
+    const exibirBotaoGravar = (data) => {
+        console.log(situacaoOriginal)
+        return data.status !== 'REMARCADO' || situacaoOriginal !== 'REMARCADO'
+    }
+
+    const disabilitarSituacao = (data) => {
+        return data.status === 'REMARCADO'
+    }
+
     const preencherForm = (data) => {
         const formulario = {};
 
@@ -79,8 +89,9 @@ export const BookingForm = forwardRef(({ modalOpen, handleCloseModal, selectedEv
         formulario.doutorId = data.doutorId;
         formulario.pacienteId = data.pacienteId;
         formulario.procedimentosIds = data.procedimentos.map(item => item.id);
-        formulario.valorTotal = data.valorTotal;
+        formulario.valorTotal = formatarValor(data.valorTotal);
         formulario.tempoAproximado = data.tempoAproximado;
+        setSituacaoOriginal(data.status);
 
         if (data.remercado) {
             setNovaData(moment(data.remercado.dataHoraInicio).toDate())
@@ -225,7 +236,11 @@ export const BookingForm = forwardRef(({ modalOpen, handleCloseModal, selectedEv
             return isNaN(valor) ? total : total + valor;
         }, 0);
 
-        const valorFormatado = somaDosValores?.toLocaleString('pt-BR', {
+        return formatarValor(somaDosValores);
+    };
+
+    const formatarValor = (valor) => {
+        const valorFormatado = valor?.toLocaleString('pt-BR', {
             style: 'currency',
             currency: 'BRL',
             minimumFractionDigits: 2,
@@ -233,7 +248,7 @@ export const BookingForm = forwardRef(({ modalOpen, handleCloseModal, selectedEv
         });
 
         return valorFormatado;
-    };
+    }
 
     const handleAgendar = async (e) => {
         e.preventDefault();
@@ -452,6 +467,7 @@ export const BookingForm = forwardRef(({ modalOpen, handleCloseModal, selectedEv
                                     <label>Situação:</label>
                                 </div>
                                 <Select
+                                    disabled={disabilitarSituacao(consultaForm)}
                                     fullWidth
                                     value={consultaForm.status}
                                     onChange={(e) => atualizarConsulta('status', e.target.value)}
@@ -677,8 +693,10 @@ export const BookingForm = forwardRef(({ modalOpen, handleCloseModal, selectedEv
                                 </div>
                             </div>
                         </div>
-
-                        <Button className="btn" variant="contained" color="primary" type="submit">Salvar</Button>
+                        
+                        {exibirBotaoGravar(consultaForm) && (
+                            <Button className="btn" variant="contained" color="primary" type="submit">Salvar</Button>
+                        )}
                     </form>
                 </>
             </Box>

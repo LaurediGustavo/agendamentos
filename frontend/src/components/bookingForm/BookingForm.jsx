@@ -392,6 +392,20 @@ export const BookingForm = forwardRef(({ modalOpen, handleCloseModal, selectedEv
             novosErros.startTime = 'A data de início deve ser anterior à data de término';
         }
 
+        if (consultaForm.status === "REMARCADO" && exibirNovosCampos) {
+            if (!novaData) {
+                novosErros.novaData = 'A nova data deve ser informada';
+            }
+
+            if (!novoHorarioInicio) {
+                novosErros.novoHorario = 'O novo horário de início deve ser informado';
+            }
+
+            if (!novoHorarioTermino) {
+                novosErros.novoHorario = 'O novo horário de término deve ser informado';
+            }
+        }
+
         setErros(novosErros);
 
         return Object.keys(novosErros).length === 0;
@@ -575,6 +589,7 @@ export const BookingForm = forwardRef(({ modalOpen, handleCloseModal, selectedEv
                             <div>
                                 <div className="label label-data">
                                     <label>Nova Data:</label>
+                                    {erros.novaData && <div className="error-message">{erros.novaData}</div>}
                                 </div>
                                 <div className="item-container-data">
                                     <LocalizationProvider dateAdapter={AdapterDateFns}>
@@ -591,6 +606,7 @@ export const BookingForm = forwardRef(({ modalOpen, handleCloseModal, selectedEv
                                 <div>
                                     <div className="label label-data">
                                         <label>Novos Horários:</label>
+                                        {erros.novoHorario && <div className="error-message">{erros.novoHorario}</div>}
                                     </div>
                                     <div className="item-container">
                                         <div className="item2">

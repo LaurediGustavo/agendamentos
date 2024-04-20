@@ -67,6 +67,9 @@
 .event-remarcado {
   background-color: rgb(255, 136, 0);
 }
+.event-em_andamento {
+  background-color: rgba(255, 182, 193, 0.7); 
+}
 
 /* Remove o ponto que aparece ao lado dos eventos no modo DayGrid e Lista */
 .fc-daygrid-event-dot {
@@ -80,7 +83,7 @@
 .legend {
   display: flex;
   justify-content: space-between;
-  max-width: 650px; /* Ajuste este valor conforme necessário */
+  max-width: 750px; /* Ajuste este valor conforme necessário */
 }
 
 /* Define o estilo dos pontos da legenda */

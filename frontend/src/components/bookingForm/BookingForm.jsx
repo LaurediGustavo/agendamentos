@@ -7,6 +7,10 @@ import './bookingForm.scss'
 import api from '../../services/api';
 import moment from 'moment';
 
+import FormControlLabel from '@mui/material/FormControlLabel';
+import Checkbox from '@mui/material/Checkbox';
+
+
 import {
     Box,
     Modal,
@@ -14,7 +18,6 @@ import {
     Select,
     MenuItem,
     Button,
-    Checkbox,
     ListItemText,
     Input,
     Tooltip,
@@ -29,6 +32,10 @@ export const BookingForm = forwardRef(({ modalOpen, handleCloseModal, selectedEv
     const [novoHorarioInicio, setNovoHorarioInicio] = useState(null);
     const [novoHorarioTermino, setNovoHorarioTermino] = useState(null);
     const [situacaoOriginal, setSituacaoOriginal] = useState(null);
+    const [consultaContinua, setConsultaContinua] = useState(false); //novo
+    const [consultasEmAndamento, setConsultasEmAndamento] = useState([]); //novo
+    const [consultaSelecionada, setConsultaSelecionada] = useState(null); //novo
+
 
     // Estado local do componente
     const [consultaId, setConsultaId] = useState()
@@ -101,7 +108,7 @@ export const BookingForm = forwardRef(({ modalOpen, handleCloseModal, selectedEv
             setNovaData()
             setNovoHorarioInicio()
         }
-        
+
         setConsultaForm(formulario);
 
         getDoutores();
@@ -145,6 +152,7 @@ export const BookingForm = forwardRef(({ modalOpen, handleCloseModal, selectedEv
         { key: 'CANCELADO', label: 'Cancelado' },
         { key: 'REMARCADO', label: 'Remarcado' },
         { key: 'FINALIZADO', label: 'Finalizado' },
+        { key: 'EM_ANDAMENTO', label: 'Em andamento' }
     ];
 
     const [erros, setErros] = useState({
@@ -262,8 +270,7 @@ export const BookingForm = forwardRef(({ modalOpen, handleCloseModal, selectedEv
         const dataFinal = new Date(year, month - 1, day);
 
         if (consultaForm.status === "REMARCADO" && exibirNovosCampos) {
-            if (!novaData || !novoHorarioInicio || !novoHorarioTermino) {
-                // Certifique-se de que os novos campos foram preenchidos
+            if (!novaData || !novoHorarioInicio || !novoHorarioTermino) {W
                 console.error("Por favor, preencha todos os novos campos.");
                 return;
             }
@@ -282,10 +289,10 @@ export const BookingForm = forwardRef(({ modalOpen, handleCloseModal, selectedEv
             atualizarConsulta('dataHoraFim', dataFinal);
         }
         else {
-            dataInicio.setHours(consultaForm.dataHoraInicio.getHours()); 
-            dataInicio.setMinutes(consultaForm.dataHoraInicio.getMinutes()); 
-     
-            dataFinal.setHours(consultaForm.dataHoraFim.getHours()); 
+            dataInicio.setHours(consultaForm.dataHoraInicio.getHours());
+            dataInicio.setMinutes(consultaForm.dataHoraInicio.getMinutes());
+
+            dataFinal.setHours(consultaForm.dataHoraFim.getHours());
             dataFinal.setMinutes(consultaForm.dataHoraFim.getMinutes() - 1);
         }
 
@@ -444,6 +451,8 @@ export const BookingForm = forwardRef(({ modalOpen, handleCloseModal, selectedEv
                 return 'rgba(208, 8, 248, 0.767)'
             case 'AGUARDANDO':
                 return 'rgba(0, 191, 255, 0.637)'
+            case 'EM_ANDAMENTO':
+                return 'rgba(255, 182, 193, 0.7)'
         }
     }
 
@@ -459,7 +468,6 @@ export const BookingForm = forwardRef(({ modalOpen, handleCloseModal, selectedEv
 
     const [exibirNovosCampos, setExibirNovosCampos] = useState(false);
 
-    // Adicione a lógica para exibir os novos campos quando a situação for "Remarcado"
     useEffect(() => {
         if (consultaForm.status === "REMARCADO") {
             setExibirNovosCampos(true);
@@ -467,6 +475,35 @@ export const BookingForm = forwardRef(({ modalOpen, handleCloseModal, selectedEv
             setExibirNovosCampos(false);
         }
     }, [consultaForm.status]);
+
+
+    // Função para alternar o estado da opção "Consulta Contínua"
+    const toggleConsultaContinua = () => {  //novo
+        setConsultaContinua(!consultaContinua);
+    };
+
+
+    const buscarConsultasEmAndamento = async () => { //novo
+        // Lógica para buscar as consultas em andamento 
+        // definir o estado `consultasEmAndamento` com os dados retornados pela API
+
+        try {
+            const response = await api.get("/consultas/em-andamento");
+            setConsultasEmAndamento(response.data); // Atualize o estado com os dados das consultas em andamento
+        } catch (error) {
+            console.error("Erro ao buscar consultas em andamento:", error);
+        }
+    };
+
+    useEffect(() => { //novo
+    buscarConsultasEmAndamento(); // Chame a função para buscar as consultas em andamento quando o componente for montado
+}, []);
+
+    // Função para lidar com a seleção de uma consulta em andamento
+    const handleSelecionarConsulta = (consulta) => {
+        setConsultaSelecionada(consulta);
+        // Aqui eu vou habilitar novamente o campo procedimento e preencher ele com os dados da consulta selecionada
+    };
 
     return (
         <Modal open={modalOpen} onClose={handleCloseModal}>
@@ -506,6 +543,38 @@ export const BookingForm = forwardRef(({ modalOpen, handleCloseModal, selectedEv
                                 </Select>
                             </div>
                         )}
+                        <FormControlLabel //novo
+                            control={
+                                <Checkbox
+                                    checked={consultaContinua}
+                                    onChange={toggleConsultaContinua}
+                                    name="consultaContinua"
+                                    color="primary"
+                                />
+                            }
+                            label="Consulta Contínua"
+                        />
+
+                        {consultaContinua && ( //novo
+                            <div className="item">
+                                <div className="label">
+                                    <label>Consulta Estendida:</label>
+                                </div>
+                                <Select
+                                    fullWidth
+                                    value={consultaSelecionada}
+                                    onChange={(e) => handleSelecionarConsulta(e.target.value)}
+                                    label="Consulta Estendida"
+                                    sx={{ my: 2, color: '#333' }}
+                                >
+                                    {consultasEmAndamento.map((consulta) => (
+                                        <MenuItem key={consulta.id} value={consulta}>
+                                            {consulta.label} 
+                                        </MenuItem>
+                                    ))}
+                                </Select>
+                            </div>
+                        )}
                         <div className="item">
                             <div className="label">
                                 <label>Procedimento:</label>
@@ -517,6 +586,7 @@ export const BookingForm = forwardRef(({ modalOpen, handleCloseModal, selectedEv
                                 onChange={(e) => atualizarConsulta('procedimentosIds', e.target.value)}
                                 label="Procedimento"
                                 multiple
+                                disabled={consultaContinua} //novo, desabilitar quando "Consulta Contínua" estiver marcada
                                 sx={{ my: 2, color: '#333' }}
                                 input={<Input />}
                                 renderValue={(selected) => (
@@ -653,7 +723,7 @@ export const BookingForm = forwardRef(({ modalOpen, handleCloseModal, selectedEv
                                 getOptionLabel={(option) => `${option.nome} - ${formatarCPF(option.cpf)}`}
                                 disabled={Number.isInteger(consultaId) && consultaId > 0}
                                 options={pacientes}
-                                onFocus={(e) => e.stopPropagation()} // Evita que o evento de foco se propague
+                                onFocus={(e) => e.stopPropagation()} 
                                 renderInput={(params) => <TextField {...params} sx={{ my: 2, color: '#333' }} />}
                             />
                         </div>
@@ -671,7 +741,7 @@ export const BookingForm = forwardRef(({ modalOpen, handleCloseModal, selectedEv
                                             value={consultaForm.dataHoraInicio}
                                             onChange={(newTime) => atualizarConsulta('dataHoraInicio', newTime)}
                                             ampm={false}
-                                            disabled={["REMARCADO", "FINALIZADO", "CANCELADO", "CONFIRMADO"].includes(consultaForm.status)} // Modifique essa linha
+                                            disabled={["REMARCADO", "FINALIZADO", "CANCELADO", "CONFIRMADO"].includes(consultaForm.status)} 
                                             renderInput={(params) => (
                                                 <TextField
                                                     {...params}
@@ -693,7 +763,7 @@ export const BookingForm = forwardRef(({ modalOpen, handleCloseModal, selectedEv
                                             value={consultaForm.dataHoraFim}
                                             onChange={(newTime) => atualizarConsulta('dataHoraFim', newTime)}
                                             ampm={false}
-                                            disabled={["REMARCADO", "FINALIZADO", "CANCELADO", "CONFIRMADO"].includes(consultaForm.status)} // Modifique essa linha
+                                            disabled={["REMARCADO", "FINALIZADO", "CANCELADO", "CONFIRMADO"].includes(consultaForm.status)} 
                                             renderInput={(params) => (
                                                 <TextField
                                                     {...params}
@@ -709,7 +779,7 @@ export const BookingForm = forwardRef(({ modalOpen, handleCloseModal, selectedEv
                                 </div>
                             </div>
                         </div>
-                        
+
                         {exibirBotaoGravar(consultaForm) && (
                             <Button className="btn" variant="contained" color="primary" type="submit">Salvar</Button>
                         )}

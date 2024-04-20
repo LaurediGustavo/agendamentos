@@ -98,6 +98,7 @@ export const Calendar = ({ calendarRef, handleEventClick, handleEventSelect }) =
         <div><span className="bullet-point event-cancelado"></span> Cancelado</div>
         <div><span className="bullet-point event-remarcado"></span> Remarcado</div>
         <div><span className="bullet-point event-finalizado"></span> Finalizado</div>
+        <div><span className="bullet-point event-em_andamento"></span> Em andamento</div>
       </div>
     </div>
   );

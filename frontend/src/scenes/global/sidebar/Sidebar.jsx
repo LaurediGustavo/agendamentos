@@ -51,7 +51,7 @@ const CustomSidebar = () => {
             {!isCollapsed && (
               <Box className="menu-item-title">
                 <Typography className="menu-item-title-text">
-                  { roles.split(',')[0].replace('ROLE_', '') === "DOUTOR"? "DOUTOR(A)" : roles.split(',')[0].replace('ROLE_', '') }
+                { roles?.split(',')[0]?.replace('ROLE_', '') === "DOUTOR"? "DOUTOR(A)" : roles?.split(',')[0]?.replace('ROLE_', '') }
                 </Typography>
                 <IconButton onClick={() => setIsCollapsed(!isCollapsed)}>
                   <MenuOutlinedIcon />

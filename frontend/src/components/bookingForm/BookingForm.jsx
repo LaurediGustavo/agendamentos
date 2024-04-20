@@ -494,10 +494,7 @@ export const BookingForm = forwardRef(({ modalOpen, handleCloseModal, selectedEv
             console.error("Erro ao buscar consultas em andamento:", error);
         }
     };
-
-    useEffect(() => { //novo
-    buscarConsultasEmAndamento(); // Chame a função para buscar as consultas em andamento quando o componente for montado
-}, []);
+    
 
     // Função para lidar com a seleção de uma consulta em andamento
     const handleSelecionarConsulta = (consulta) => {
@@ -569,7 +566,7 @@ export const BookingForm = forwardRef(({ modalOpen, handleCloseModal, selectedEv
                                 >
                                     {consultasEmAndamento.map((consulta) => (
                                         <MenuItem key={consulta.id} value={consulta}>
-                                            {consulta.label} 
+                                            {consulta.label}
                                         </MenuItem>
                                     ))}
                                 </Select>
@@ -586,7 +583,7 @@ export const BookingForm = forwardRef(({ modalOpen, handleCloseModal, selectedEv
                                 onChange={(e) => atualizarConsulta('procedimentosIds', e.target.value)}
                                 label="Procedimento"
                                 multiple
-                                disabled={consultaContinua} //novo, desabilitar quando "Consulta Contínua" estiver marcada
+                                disabled={consultaContinua} // novo, desabilitar quando "Consulta Contínua" estiver marcada
                                 sx={{ my: 2, color: '#333' }}
                                 input={<Input />}
                                 renderValue={(selected) => (

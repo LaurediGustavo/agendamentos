@@ -60,13 +60,21 @@ public class AgendamentoController {
 		return ResponseEntity.status(HttpStatus.OK).body(agendamentos);
 	}
 
-
 	@GetMapping(value = "/consultar/{id}")
 	public ResponseEntity<?> consultarPorId(@PathVariable("id") Long id) {
 		AgendamentoResponse agendamento = agendamentoTratarResponse
 				.consultarPorId(id);
 
 		return ResponseEntity.ok(agendamento);
+	}
+
+	@GetMapping(value = "/consultarstatuspaciente")
+	public ResponseEntity<?> consultarTodosStatusPaciente(@Param("pacienteId") Long pacienteId,
+															@Param("status") String status) {
+		List<AgendamentoResponse> agendamentos = agendamentoTratarResponse
+				.consultarPorStausPaciente(pacienteId, StatusConsultaEnum.valueOf(status));
+
+		return ResponseEntity.status(HttpStatus.OK).body(agendamentos);
 	}
 	
 }

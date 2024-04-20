@@ -24,4 +24,6 @@ public class AgendamentoDto {
 
 	private List<Long> procedimentosIds;
 
+	private Long consultaEstendidaDeId;
+
 }

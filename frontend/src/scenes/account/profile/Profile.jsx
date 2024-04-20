@@ -7,7 +7,7 @@ import ChangePassword from "../changePassword/ChangePassword";
 import minhaImagem from '../../../assets/nulo.jpg';
 import "./profile.scss";
 import api from '../../../services/api';
-import { formatarData_yyyy_MM_dd, formatarData_dd_MM_yyyy } from '../../../services/dateFormat';
+import { formatarData_dd_MM_yyyy } from '../../../services/dateFormat';
 import { getRoles } from '../../../services/auth_service';
 
 const Profile = () => {

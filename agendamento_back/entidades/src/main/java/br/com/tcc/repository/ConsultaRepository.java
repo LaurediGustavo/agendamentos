@@ -111,4 +111,10 @@ public interface ConsultaRepository extends JpaRepository<Consulta, Long> {
 										   @Param("paciente_id") Long paciente_id,
 										   @Param("consulta_id") Long consulta_id);
 
+	@Query("SELECT c FROM Consulta c " +
+			" WHERE c.paciente.id = :pacienteId " +
+			" AND status = :status ")
+	Optional<List<Consulta>> consultarStatusPaciente(@Param("pacienteId") Long pacienteId,
+													 @Param("status") StatusConsultaEnum status);
+
 }

@@ -57,4 +57,20 @@ public class Consulta implements Serializable {
 	@JoinColumn(name = "consultaremarcadapara_id")
 	private Consulta consultaRemarcadaPara;
 
+	@ManyToMany
+	@JoinTable(
+			name = "consulta_estendida",
+			joinColumns = @JoinColumn(name = "consultaestendidade_id"),
+			inverseJoinColumns = @JoinColumn(name = "consultaestendidapara_id")
+	)
+	private List<Consulta> consultasEstendidasPara;
+
+	@ManyToMany
+	@JoinTable(
+			name = "consulta_estendida",
+			joinColumns = @JoinColumn(name = "consultaestendidapara_id"),
+			inverseJoinColumns = @JoinColumn(name = "consultaestendidade_id")
+	)
+	private List<Consulta> consultasEstendidasDe;
+
 }

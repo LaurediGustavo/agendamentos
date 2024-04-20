@@ -41,4 +41,8 @@ public class AgendamentoRequest {
     @ValidAgendamentoProcedimento
     private List<Long> procedimentosIds;
 
+    @ValidAgendamentoEstendido
+    @JsonProperty(required = false)
+    private Long consultaEstendidaDeId;
+
 }

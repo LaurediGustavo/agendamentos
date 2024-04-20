@@ -7,6 +7,7 @@ public enum StatusConsultaEnum {
 	CONFIRMADO,
 	CANCELADO,
 	REMARCADO,
-	FINALIZADO;
+	FINALIZADO,
+	EM_ANDAMENTO;
 	
 }

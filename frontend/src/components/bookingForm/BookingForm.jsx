@@ -24,6 +24,7 @@ import {
     TextField,
     Autocomplete
 } from "@mui/material";
+import { formatarData_dd_MM_yyyy } from '../../services/dateFormat';
 
 
 export const BookingForm = forwardRef(({ modalOpen, handleCloseModal, selectedEvent, selectedDate, calendarRef }, ref) => {
@@ -76,7 +77,6 @@ export const BookingForm = forwardRef(({ modalOpen, handleCloseModal, selectedEv
     }));
 
     const exibirBotaoGravar = (data) => {
-        console.log(situacaoOriginal)
         return data.status !== 'REMARCADO' || situacaoOriginal !== 'REMARCADO'
     }
 
@@ -171,6 +171,10 @@ export const BookingForm = forwardRef(({ modalOpen, handleCloseModal, selectedEv
             ...consultaForm,
             [atributo]: novoValor
         });
+
+        if (atributo === 'pacienteId'){
+            buscarConsultasEmAndamento(novoValor)
+        }
     };
 
     useEffect(() => {
@@ -315,14 +319,15 @@ export const BookingForm = forwardRef(({ modalOpen, handleCloseModal, selectedEv
         try {
             const startTimeFormatada = format(args1, 'yyyy-MM-dd HH:mm:ss');
             const endTimeFormatada = format(args2, 'yyyy-MM-dd HH:mm:ss');
-
+            
             await api.post("/agendamento/cadastro", {
                 status: null,
                 dataHoraInicio: startTimeFormatada,
                 dataHoraFim: endTimeFormatada,
                 doutorId: consultaForm.doutorId,
                 pacienteId: consultaForm.pacienteId,
-                procedimentosIds: consultaForm.procedimentosIds
+                procedimentosIds: consultaForm.procedimentosIds,
+                consultaEstendidaDeId: consultaSelecionada?.id
             });
 
             calendarRef.current.getApi().addEvent({
@@ -356,7 +361,8 @@ export const BookingForm = forwardRef(({ modalOpen, handleCloseModal, selectedEv
                 dataHoraFim: endTimeFormatada,
                 doutorId: consultaForm.doutorId,
                 pacienteId: consultaForm.pacienteId,
-                procedimentosIds: consultaForm.procedimentosIds
+                procedimentosIds: consultaForm.procedimentosIds,
+                consultaEstendidaDeId: consultaSelecionada?.id
             });
 
             limparDados();
@@ -480,16 +486,18 @@ export const BookingForm = forwardRef(({ modalOpen, handleCloseModal, selectedEv
     // Função para alternar o estado da opção "Consulta Contínua"
     const toggleConsultaContinua = () => {  //novo
         setConsultaContinua(!consultaContinua);
+        buscarConsultasEmAndamento(consultaForm.pacienteId);
     };
 
 
-    const buscarConsultasEmAndamento = async () => { //novo
+    const buscarConsultasEmAndamento = async (id) => { //novo
         // Lógica para buscar as consultas em andamento 
         // definir o estado `consultasEmAndamento` com os dados retornados pela API
-
+        
         try {
-            const response = await api.get("/consultas/em-andamento");
+            const response = await api.get("/agendamento/consultarstatuspaciente?pacienteId=" + id + "&status=EM_ANDAMENTO");
             setConsultasEmAndamento(response.data); // Atualize o estado com os dados das consultas em andamento
+            console.log(response.data)
         } catch (error) {
             console.error("Erro ao buscar consultas em andamento:", error);
         }
@@ -499,6 +507,8 @@ export const BookingForm = forwardRef(({ modalOpen, handleCloseModal, selectedEv
     // Função para lidar com a seleção de uma consulta em andamento
     const handleSelecionarConsulta = (consulta) => {
         setConsultaSelecionada(consulta);
+        
+        atualizarConsulta('procedimentosIds', consulta.procedimentos.map(p => p.id))
         // Aqui eu vou habilitar novamente o campo procedimento e preencher ele com os dados da consulta selecionada
     };
 
@@ -566,7 +576,7 @@ export const BookingForm = forwardRef(({ modalOpen, handleCloseModal, selectedEv
                                 >
                                     {consultasEmAndamento.map((consulta) => (
                                         <MenuItem key={consulta.id} value={consulta}>
-                                            {consulta.label}
+                                            {formatarData_dd_MM_yyyy(consulta.dataHoraInicio)} - {consulta.procedimentos[0].tratamento}
                                         </MenuItem>
                                     ))}
                                 </Select>

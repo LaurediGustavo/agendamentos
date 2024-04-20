@@ -2,12 +2,14 @@ package br.com.tcc.service;
 
 import br.com.tcc.entity.Consulta;
 import br.com.tcc.entity.Procedimento;
+import br.com.tcc.enumerador.StatusConsultaEnum;
 import br.com.tcc.impl.AgendamentoService;
 import br.com.tcc.model.response.AgendamentoResponse;
 import br.com.tcc.model.response.ProcedimentoResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -20,6 +22,13 @@ public class AgendamentoTratarResponse {
 
     public List<AgendamentoResponse> consultarPorHorarioDoutorPaciente(Long doutorId, Long pacienteId, String horario) {
         Optional<List<Consulta>> consultaOptional = agendamentoService.consultarPorHorarioDoutorPaciente(doutorId, pacienteId, horario);
+
+        return consultaOptional.map(consultas -> consultas.stream()
+                .map(this::montarAgendamentoResponse).collect(Collectors.toList())).orElse(null);
+    }
+
+    public List<AgendamentoResponse> consultarPorStausPaciente(Long pacienteId, StatusConsultaEnum status) {
+        Optional<List<Consulta>> consultaOptional = agendamentoService.consultarPorStatusPaciente(pacienteId, status);
 
         return consultaOptional.map(consultas -> consultas.stream()
                 .map(this::montarAgendamentoResponse).collect(Collectors.toList())).orElse(null);
@@ -42,7 +51,7 @@ public class AgendamentoTratarResponse {
                     agendamento.getPaciente().getId(),
                     agendamento.getPaciente().getNome(),
                     agendamento.getDoutor().getId(),
-                    getProcedimentos(agendamento.getProcedimentos()),
+                    getProcedimentos(agendamento),
                     agendamento.getValorTotal(),
                     agendamento.getTempoAproximado(),
                     montarAgendamentoResponse(agendamento.getConsultaRemarcadaPara()));
@@ -50,7 +59,15 @@ public class AgendamentoTratarResponse {
         return null;
     }
 
-    public List<ProcedimentoResponse> getProcedimentos(List<Procedimento> procedimentos) {
+    public List<ProcedimentoResponse> getProcedimentos(Consulta consulta) {
+        List<Procedimento> procedimentos = consulta.getProcedimentos();
+
+        if (consulta.getConsultasEstendidasDe() != null) {
+            consulta.getConsultasEstendidasDe().stream()
+                    .flatMap(x -> x.getProcedimentos().stream())
+                    .forEach(procedimentos::add);
+        }
+
         return procedimentos.stream().map(procedimento -> new ProcedimentoResponse(
                 procedimento.getId(),
                 procedimento.getTratamento(),

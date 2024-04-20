@@ -1,15 +1,10 @@
 package br.com.tcc.impl;
 
 import br.com.tcc.dto.AgendamentoDto;
-import br.com.tcc.entity.Consulta;
-import br.com.tcc.entity.Doutor;
-import br.com.tcc.entity.Paciente;
-import br.com.tcc.entity.Procedimento;
+import br.com.tcc.entity.*;
 import br.com.tcc.enumerador.StatusConsultaEnum;
-import br.com.tcc.repository.ConsultaRepository;
-import br.com.tcc.repository.DoutorRepository;
-import br.com.tcc.repository.PacienteRepository;
-import br.com.tcc.repository.ProcedimentoRepository;
+import br.com.tcc.repository.*;
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import uteis.DataUteis;
@@ -37,6 +32,10 @@ public class AgendamentoService {
 	@Autowired
 	private ProcedimentoRepository procedimentoRepository;
 
+	@Autowired
+	private ConsultaEstendidaRepository consultaEstendidaRepository;
+
+	@Transactional(rollbackOn = Exception.class, value = Transactional.TxType.REQUIRED)
 	public Consulta persistir(AgendamentoDto agendamentoDto) {
 		Consulta consultaRemarcada = null;
 		if(StatusConsultaEnum.REMARCADO.equals(agendamentoDto.getStatus())) {
@@ -53,6 +52,8 @@ public class AgendamentoService {
 			consultaRepository.save(consultaRemarcada);
 		}
 
+		adicionarConsultaEstendida(consulta, agendamentoDto);
+
 		return consulta;
 	}
 
@@ -68,7 +69,7 @@ public class AgendamentoService {
 		consulta.setId(agendamento.getId());
 		consulta.setDoutor(getDoutor(agendamento.getDoutorId()));
 		consulta.setPaciente(getPaciente(agendamento.getPacienteId()));
-		consulta.setProcedimentos(getProcedimentos(agendamento.getProcedimentosIds()));
+		consulta.setProcedimentos(getProcedimentos(agendamento.getProcedimentosIds(), agendamento.getConsultaEstendidaDeId()));
 		consulta.setDataHoraInicio(agendamento.getDataHoraInicio());
 		consulta.setDataHoraFinal(agendamento.getDataHoraFim());
 		consulta.setStatus(agendamento.getStatus() == null? StatusConsultaEnum.AGUARDANDO : agendamento.getStatus());
@@ -77,6 +78,17 @@ public class AgendamentoService {
 		calcularTempoAproximado(consulta);
 
 		return consulta;
+	}
+
+	@Transactional(rollbackOn = Exception.class, value = Transactional.TxType.REQUIRED)
+	private void adicionarConsultaEstendida(Consulta consulta, AgendamentoDto agendamento) {
+		if (agendamento.getConsultaEstendidaDeId() != null) {
+			ConsultaEstendida consultaEstendida = new ConsultaEstendida();
+			consultaEstendida.setConsultaEstendidaDe(consultarPorId(agendamento.getConsultaEstendidaDeId()).get());
+			consultaEstendida.setConsultaEstendidaPara(consulta);
+
+			this.consultaEstendidaRepository.save(consultaEstendida);
+		}
 	}
 
 	private void calcularTempoAproximado(Consulta consulta) {
@@ -110,14 +122,33 @@ public class AgendamentoService {
 		}
 	}
 
+	public Optional<List<Consulta>> consultarPorStatusPaciente(Long pacienteId, StatusConsultaEnum status) {
+		return consultaRepository.consultarStatusPaciente(pacienteId, status);
+	}
+
 	public Optional<Consulta> consultarPorId(Long id) {
 		return consultaRepository.findById(id);
 	}
 
-	private List<Procedimento> getProcedimentos(List<Long> procedimentosIds) {
+	private List<Procedimento> getProcedimentos(List<Long> procedimentosIds, Long consultaEstendidaId) {
+		removerProcedimentosCadastradosNoPai(procedimentosIds, consultaEstendidaId);
+
 		return procedimentosIds.stream().map(
 						id -> procedimentoRepository.findById(id).get()
 				).collect(Collectors.toList());
+	}
+
+	private void removerProcedimentosCadastradosNoPai(List<Long> procedimentosIds, Long consultaEstendidaId) {
+		if (consultaEstendidaId != null) {
+			Optional<Consulta> consultaOptional = consultarPorId(consultaEstendidaId);
+
+			if (consultaOptional.isPresent()) {
+				List<Procedimento> procedimentos = consultaOptional.get().getProcedimentos();
+
+				List<Long> ids = procedimentos.stream().map(Procedimento::getId).toList();
+				procedimentosIds.removeAll(ids);
+			}
+		}
 	}
 
 	private Paciente getPaciente(Long pacienteId) {

@@ -13,7 +13,7 @@ export function formatarData_yyyy_MM_dd(dataString) {
 
 export function formatarData_dd_MM_yyyy(dataString) {
     if (dataString) {
-        const [ano, mes, dia] = dataString.split('-');
+        const [ano, mes, dia] = dataString.substring(0, 10).split('-');
         
         const data = new Date(ano, mes - 1, dia);
         

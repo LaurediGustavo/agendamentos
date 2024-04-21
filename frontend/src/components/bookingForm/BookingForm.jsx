@@ -38,6 +38,8 @@ export const BookingForm = forwardRef(({ modalOpen, handleCloseModal, selectedEv
     const [consultaSelecionada, setConsultaSelecionada] = useState(null); //novo
 
 
+
+
     // Estado local do componente
     const [consultaId, setConsultaId] = useState()
     // Função para carregar dados de uma consulta específica
@@ -172,7 +174,7 @@ export const BookingForm = forwardRef(({ modalOpen, handleCloseModal, selectedEv
             [atributo]: novoValor
         });
 
-        if (atributo === 'pacienteId'){
+        if (atributo === 'pacienteId') {
             buscarConsultasEmAndamento(novoValor)
         }
     };
@@ -274,7 +276,8 @@ export const BookingForm = forwardRef(({ modalOpen, handleCloseModal, selectedEv
         const dataFinal = new Date(year, month - 1, day);
 
         if (consultaForm.status === "REMARCADO" && exibirNovosCampos) {
-            if (!novaData || !novoHorarioInicio || !novoHorarioTermino) {W
+            if (!novaData || !novoHorarioInicio || !novoHorarioTermino) {
+                W
                 console.error("Por favor, preencha todos os novos campos.");
                 return;
             }
@@ -319,7 +322,7 @@ export const BookingForm = forwardRef(({ modalOpen, handleCloseModal, selectedEv
         try {
             const startTimeFormatada = format(args1, 'yyyy-MM-dd HH:mm:ss');
             const endTimeFormatada = format(args2, 'yyyy-MM-dd HH:mm:ss');
-            
+
             await api.post("/agendamento/cadastro", {
                 status: null,
                 dataHoraInicio: startTimeFormatada,
@@ -493,7 +496,7 @@ export const BookingForm = forwardRef(({ modalOpen, handleCloseModal, selectedEv
     const buscarConsultasEmAndamento = async (id) => { //novo
         // Lógica para buscar as consultas em andamento 
         // definir o estado `consultasEmAndamento` com os dados retornados pela API
-        
+
         try {
             const response = await api.get("/agendamento/consultarstatuspaciente?pacienteId=" + id + "&status=EM_ANDAMENTO");
             setConsultasEmAndamento(response.data); // Atualize o estado com os dados das consultas em andamento
@@ -502,15 +505,17 @@ export const BookingForm = forwardRef(({ modalOpen, handleCloseModal, selectedEv
             console.error("Erro ao buscar consultas em andamento:", error);
         }
     };
-    
+
 
     // Função para lidar com a seleção de uma consulta em andamento
     const handleSelecionarConsulta = (consulta) => {
         setConsultaSelecionada(consulta);
-        
+
         atualizarConsulta('procedimentosIds', consulta.procedimentos.map(p => p.id))
         // Aqui eu vou habilitar novamente o campo procedimento e preencher ele com os dados da consulta selecionada
     };
+
+
 
     return (
         <Modal open={modalOpen} onClose={handleCloseModal}>
@@ -550,38 +555,74 @@ export const BookingForm = forwardRef(({ modalOpen, handleCloseModal, selectedEv
                                 </Select>
                             </div>
                         )}
-                        <FormControlLabel //novo
-                            control={
-                                <Checkbox
-                                    checked={consultaContinua}
-                                    onChange={toggleConsultaContinua}
-                                    name="consultaContinua"
-                                    color="primary"
-                                />
-                            }
-                            label="Consulta Contínua"
-                        />
 
-                        {consultaContinua && ( //novo
-                            <div className="item">
-                                <div className="label">
-                                    <label>Consulta Estendida:</label>
-                                </div>
-                                <Select
-                                    fullWidth
-                                    value={consultaSelecionada}
-                                    onChange={(e) => handleSelecionarConsulta(e.target.value)}
-                                    label="Consulta Estendida"
-                                    sx={{ my: 2, color: '#333' }}
-                                >
-                                    {consultasEmAndamento.map((consulta) => (
-                                        <MenuItem key={consulta.id} value={consulta}>
-                                            {formatarData_dd_MM_yyyy(consulta.dataHoraInicio)} - {consulta.procedimentos[0].tratamento}
-                                        </MenuItem>
-                                    ))}
-                                </Select>
+                        <div className="item">
+                            <div className="label">
+                                <label>Paciente:</label>
+                                {erros.paciente && <div className="error-message">{erros.paciente}</div>}
                             </div>
+                            <Autocomplete
+                                fullWidth
+                                value={pacientes.find(paciente => paciente.id === consultaForm.pacienteId) || null}
+                                onChange={(event, newValue) => {
+                                    atualizarConsulta('pacienteId', newValue ? newValue.id : null);
+                                }}
+                                getOptionLabel={(option) => `${option.nome} - ${formatarCPF(option.cpf)}`}
+                                disabled={Number.isInteger(consultaId) && consultaId > 0}
+                                options={pacientes}
+                                onFocus={(e) => e.stopPropagation()}
+                                renderInput={(params) => <TextField {...params} sx={{ my: 2, color: '#333' }} />}
+                            />
+                        </div>
+
+                        {!selectedEvent && (
+                            <>
+                                <div className="item">
+                                    <div className="label">
+                                        <FormControlLabel
+                                            control={
+                                                <Checkbox
+                                                    checked={consultaContinua}
+                                                    onChange={toggleConsultaContinua}
+                                                    name="consultaContinua"
+                                                    color="primary"
+                                                />
+                                            }
+                                            label="Consulta Contínua"
+                                            style={{ marginBottom: '20px' }}
+                                        />
+                                    </div>
+
+                                    {consultaContinua && (
+                                        <div className="item">
+                                            <div className="label">
+                                                <label>Consulta Estendida:</label>
+                                            </div>
+                                            <Select
+                                                fullWidth
+                                                value={consultaSelecionada}
+                                                onChange={(e) => handleSelecionarConsulta(e.target.value)}
+                                                label="Consulta Estendida"
+                                                sx={{ my: 2, color: '#333' }}
+                                            >{consultasEmAndamento.length === 0 ? (
+                                                <MenuItem disabled >
+                                                    Não há consultas estendidas disponíveis para este paciente
+                                                </MenuItem>
+                                            ) : (
+                                                consultasEmAndamento.map((consulta) => (
+                                                    <MenuItem key={consulta.id} value={consulta}>
+                                                        {formatarData_dd_MM_yyyy(consulta.dataHoraInicio)} - {consulta.procedimentos[0].tratamento}
+                                                    </MenuItem>
+                                                ))
+                                            )}
+                                            </Select>
+                                        </div>
+                                    )}
+                                </div>
+                            </>
                         )}
+
+
                         <div className="item">
                             <div className="label">
                                 <label>Procedimento:</label>
@@ -593,41 +634,57 @@ export const BookingForm = forwardRef(({ modalOpen, handleCloseModal, selectedEv
                                 onChange={(e) => atualizarConsulta('procedimentosIds', e.target.value)}
                                 label="Procedimento"
                                 multiple
-                                disabled={consultaContinua} // novo, desabilitar quando "Consulta Contínua" estiver marcada
                                 sx={{ my: 2, color: '#333' }}
                                 input={<Input />}
                                 renderValue={(selected) => (
                                     <div>
-                                        {selected.map((value) => (
-                                            <Tooltip
-                                                key={value}
-                                                title={`Valor: R$${procedimentos.find(proc => proc.id === value).valor} - Tempo Estimado: ${formatTime(procedimentos.find(proc => proc.id === value).tempo)}`}
-                                                placement="top"
-                                            >
-                                                <Chip
-                                                    label={procedimentos.find(proc => proc.id === value).tratamento}
-                                                    onDelete={(event) => {
-                                                        event.stopPropagation();
-                                                        handleDelete(value);
-                                                    }}
-                                                    onMouseDown={(event) => {
-                                                        event.stopPropagation();
-                                                    }}
-                                                    style={{ backgroundColor: '#2ab7bd80', marginRight: '2px' }}
-                                                />
-                                            </Tooltip>
-                                        ))}
+                                        {/* Mapeia e renderiza os procedimentos selecionados como chips */}
+                                        {selected.map((value) => {
+                                            const procedimento = procedimentos.find(proc => proc.id === value);
+                                            // Verifica se o procedimento deve exibir o botão de remoção (x)
+                                            const shouldShowDelete = !consultaContinua || !consultasEmAndamento.some(consulta => consulta.procedimentos.some(p => p.id === procedimento.id));
+
+                                            return (
+                                                <Tooltip
+                                                    key={value}
+                                                    title={`Valor: R$${procedimento.valor} - Tempo Estimado: ${formatTime(procedimento.tempo)}`}
+                                                    placement="top"
+                                                >
+                                                    <Chip
+                                                        label={procedimento.tratamento}
+                                                        // Adiciona a função de exclusão se o botão deve ser exibido
+                                                        onDelete={shouldShowDelete ? (event) => {
+                                                            event.stopPropagation();
+                                                            handleDelete(value);
+                                                        } : undefined}
+                                                        // Impede o clique se o procedimento estiver em consultasEmAndamento
+                                                        onClick={consultasEmAndamento.some(consulta => consulta.procedimentos.some(p => p.id === procedimento.id)) ? undefined : () => handleProcedureClick(value)}
+                                                        onMouseDown={(event) => {
+                                                            event.stopPropagation();
+                                                        }}
+                                                        // Altera o cursor apenas se o procedimento for clicável
+                                                        style={{
+                                                            backgroundColor: '#2ab7bd80',
+                                                            marginRight: '2px',
+                                                            cursor: consultasEmAndamento.some(consulta => consulta.procedimentos.some(p => p.id === procedimento.id)) ? 'not-allowed' : (shouldShowDelete ? 'pointer' : 'default')
+                                                        }}
+                                                    />
+                                                </Tooltip>
+                                            );
+                                        })}
                                     </div>
                                 )}
                             >
+                                {/* Mapeia e renderiza os procedimentos disponíveis como itens de menu */}
                                 {procedimentos?.map((proc) => (
-                                    <MenuItem key={proc.id} value={proc.id}>
+                                    <MenuItem key={proc.id} value={proc.id} disabled={consultasEmAndamento.some(consulta => consulta.procedimentos.some(p => p.id === proc.id))}>
                                         <Checkbox checked={consultaForm.procedimentosIds.indexOf(proc.id) > -1} />
                                         <ListItemText primary={proc.tratamento} />
                                     </MenuItem>
                                 ))}
                             </Select>
                         </div>
+
                         {consultaForm.procedimentosIds && consultaForm.procedimentosIds.length > 0 && (
                             <div className="item itemContainer">
                                 <div className="label">
@@ -662,6 +719,7 @@ export const BookingForm = forwardRef(({ modalOpen, handleCloseModal, selectedEv
                                 )}
                             </Select>
                         </div>
+
                         {consultaForm.status === "REMARCADO" && (
                             <div>
                                 <div className="label label-data">
@@ -716,25 +774,6 @@ export const BookingForm = forwardRef(({ modalOpen, handleCloseModal, selectedEv
                                 </div>
                             </div>
                         )}
-                        <div className="item">
-                            <div className="label">
-                                <label>Paciente:</label>
-                                {erros.paciente && <div className="error-message">{erros.paciente}</div>}
-                            </div>
-                            <Autocomplete
-                                fullWidth
-                                value={pacientes.find(paciente => paciente.id === consultaForm.pacienteId) || null}
-                                onChange={(event, newValue) => {
-                                    atualizarConsulta('pacienteId', newValue ? newValue.id : null);
-                                }}
-                                getOptionLabel={(option) => `${option.nome} - ${formatarCPF(option.cpf)}`}
-                                disabled={Number.isInteger(consultaId) && consultaId > 0}
-                                options={pacientes}
-                                onFocus={(e) => e.stopPropagation()} 
-                                renderInput={(params) => <TextField {...params} sx={{ my: 2, color: '#333' }} />}
-                            />
-                        </div>
-
                         <div>
                             <div className="label label-data">
                                 <label>Horários:</label>
@@ -748,7 +787,7 @@ export const BookingForm = forwardRef(({ modalOpen, handleCloseModal, selectedEv
                                             value={consultaForm.dataHoraInicio}
                                             onChange={(newTime) => atualizarConsulta('dataHoraInicio', newTime)}
                                             ampm={false}
-                                            disabled={["REMARCADO", "FINALIZADO", "CANCELADO", "CONFIRMADO"].includes(consultaForm.status)} 
+                                            disabled={["REMARCADO", "FINALIZADO", "CANCELADO", "CONFIRMADO", "EM_ANDAMENTO"].includes(consultaForm.status)}
                                             renderInput={(params) => (
                                                 <TextField
                                                     {...params}
@@ -770,7 +809,7 @@ export const BookingForm = forwardRef(({ modalOpen, handleCloseModal, selectedEv
                                             value={consultaForm.dataHoraFim}
                                             onChange={(newTime) => atualizarConsulta('dataHoraFim', newTime)}
                                             ampm={false}
-                                            disabled={["REMARCADO", "FINALIZADO", "CANCELADO", "CONFIRMADO"].includes(consultaForm.status)} 
+                                            disabled={["REMARCADO", "FINALIZADO", "CANCELADO", "CONFIRMADO", "EM_ANDAMENTO"].includes(consultaForm.status)}
                                             renderInput={(params) => (
                                                 <TextField
                                                     {...params}

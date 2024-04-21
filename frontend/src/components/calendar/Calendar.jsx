@@ -28,6 +28,8 @@ export const Calendar = ({ calendarRef, handleEventClick, handleEventSelect }) =
         return 'event-enviado';
       case 'CONFIRMADO':
         return 'event-confirmado';
+      case 'EM_ANDAMENTO': 
+        return 'event-em_andamento';
       default:
         return 'event-default';
     }

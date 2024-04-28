@@ -85,6 +85,14 @@ public class DoutorController {
         return ResponseEntity.status(HttpStatus.OK).body(doutorResponseList);
     }
 
+    @GetMapping(value = "/consultar/agendamento/{id}")
+    public ResponseEntity<?> consultarDoutorPorIdParaAgendamento(@PathVariable("id") Long id) {
+        DoutorAgendamentoResponse doutorResponse = doutorTratarResponse
+                .consultarDoutorPorId(id);
+
+        return ResponseEntity.status(HttpStatus.OK).body(doutorResponse);
+    }
+
     @GetMapping(value = "/consultar/{id}/{data}")
     public ResponseEntity<?> consultarHorariosEmUso(@PathVariable("id") Long id, @PathVariable("data") String data) {
         List<HorariosDoutorResponse> horarios = doutorTratarResponse

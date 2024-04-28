@@ -123,6 +123,13 @@ public class DoutorTratarResponse {
                 .orElse(null);
     }
 
+    public DoutorAgendamentoResponse consultarDoutorPorId(Long id) {
+        Optional<Doutor> optionalDoutor = doutorRepository
+                .findById(id);
+
+        return montarDoutorAgendamentoResponse(optionalDoutor.get());
+    }
+
     private DoutorAgendamentoResponse montarDoutorAgendamentoResponse(Doutor doutor) {
         if(doutor != null) {
             return new DoutorAgendamentoResponse(

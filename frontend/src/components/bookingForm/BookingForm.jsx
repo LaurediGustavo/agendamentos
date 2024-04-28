@@ -64,6 +64,9 @@ export const BookingForm = forwardRef(({ modalOpen, handleCloseModal, selectedEv
         setConsultaForm(formulario);
         setConsultaId('')
         setErros({});
+
+        buscarProcedimentos();
+        buscarPacientes();
     }
 
     useImperativeHandle(ref, () => ({
@@ -79,7 +82,7 @@ export const BookingForm = forwardRef(({ modalOpen, handleCloseModal, selectedEv
         return data.status === 'REMARCADO'
     }
 
-    const preencherForm = (data) => {
+    const preencherForm = async (data) => {
         const formulario = {};
 
         formulario.status = data.status;
@@ -89,11 +92,17 @@ export const BookingForm = forwardRef(({ modalOpen, handleCloseModal, selectedEv
         novaDataHoraFim.setMinutes(novaDataHoraFim.getMinutes() + 1);
         formulario.dataHoraFim = novaDataHoraFim;
         formulario.doutorId = data.doutorId;
+
         formulario.pacienteId = data.pacienteId;
+        await buscarPacientesSelecionado(formulario.pacienteId);
+
         formulario.procedimentosIds = data.procedimentos.map(item => item.id);
+        await buscarProcedimentoSelecionado(formulario.procedimentosIds);
+
         formulario.valorTotal = formatarValor(data.valorTotal);
         formulario.tempoAproximado = data.tempoAproximado;
         setSituacaoOriginal(data.status);
+        setConsultaContinua(data.consultaEstendidaDe? true : false)
         setConsultaSelecionada(data.consultaEstendidaDe);
 
         if (data.remercado) {
@@ -106,27 +115,38 @@ export const BookingForm = forwardRef(({ modalOpen, handleCloseModal, selectedEv
         }
 
         setConsultaForm(formulario);
-
-        getDoutores();
     }
 
     const [procedimentos, setProcedimentos] = useState();
     const [pacientes, setPacientes] = useState([]);
     useEffect(() => {
-        api
-            .get("procedimento/consultar?tratamento")
-            .then((response) => setProcedimentos(response.data))
-            .catch((err) => {
-                console.error("ops! ocorreu um erro" + err);
-            });
-
-        api
-            .get("/paciente/consultar/agendamento?nome")
-            .then((response) => setPacientes(response.data))
-            .catch((err) => {
-                console.error("ops! ocorreu um erro" + err);
-            });
+        buscarProcedimentos();
+        buscarPacientes();
     }, []);
+
+    const buscarProcedimentos = async () => {
+        try {
+            const response = await api.get("/procedimento/consultar?tratamento");
+            setProcedimentos(response.data);
+
+            return response.data;
+        } catch (err) {
+            console.error("ops! ocorreu um erro" + err);
+            return null;
+        }
+    }
+
+    const buscarPacientes = async () => {
+        try {
+            const response = await api.get("/paciente/consultar/agendamento?nome");
+            setPacientes(response.data);
+
+            return response.data;
+        } catch (err) {
+            console.error("ops! ocorreu um erro" + err);
+            return null;
+        }
+    };
 
     const [doutores, setDoutores] = useState([]);
     const getDoutores = async () => {
@@ -136,6 +156,8 @@ export const BookingForm = forwardRef(({ modalOpen, handleCloseModal, selectedEv
                 procedimentos: consultaForm.procedimentosIds
             });
             setDoutores(response.data);
+
+            buscarDoutoresSelecionado(response.data);
         } catch (error) {
             console.error("Ops! Ocorreu um erro: " + error);
         }
@@ -508,7 +530,6 @@ export const BookingForm = forwardRef(({ modalOpen, handleCloseModal, selectedEv
         buscarConsultasEmAndamento(consultaForm.pacienteId);
     };
 
-
     const buscarConsultasEmAndamento = async (id) => { //novo
         // Lógica para buscar as consultas em andamento 
         // definir o estado `consultasEmAndamento` com os dados retornados pela API
@@ -525,12 +546,66 @@ export const BookingForm = forwardRef(({ modalOpen, handleCloseModal, selectedEv
     // Função para lidar com a seleção de uma consulta em andamento
     const handleSelecionarConsulta = (consulta) => {
         setConsultaSelecionada(consulta);
+        console.log(consultaSelecionada)
 
         atualizarConsulta('procedimentosIds', consulta.procedimentos.map(p => p.id))
         // Aqui eu vou habilitar novamente o campo procedimento e preencher ele com os dados da consulta selecionada
     };
 
+    const buscarProcedimentoSelecionado = async (ids) => {
+        const procedimentosBusca = await buscarProcedimentos();
 
+        const promessas = [];
+    
+        for (const id of ids) {
+            const procedimento = procedimentosBusca?.find(proc => proc.id === id);
+            
+            if (!procedimento) {
+                const fetchPromise = api.get("procedimento/consultar/" + id)
+                    .then((response) => {
+                        setProcedimentos(prevProcedimentos => [...prevProcedimentos, response.data]);
+                    })
+                    .catch((err) => {
+                        console.error("Ops! Ocorreu um erro: " + err);
+                    });
+                promessas.push(fetchPromise);
+            }
+        }
+    
+        await Promise.all(promessas);
+    }
+    
+    const buscarPacientesSelecionado = async (id) => {
+        const pacientesBusca = await buscarPacientes();
+        const paciente = pacientesBusca?.find(proc => proc.id === id);
+
+        if (!paciente) {
+            await api.get("paciente/consultar/" + id)
+                .then((response) => {
+                    setPacientes(pacientes => [...pacientes, response.data]);
+                })
+                .catch((err) => {
+                    console.error("Ops! Ocorreu um erro: " + err);
+                });
+        }
+    }
+
+    const buscarDoutoresSelecionado = async (doutoresBusca) => {
+        if (consultaForm.doutorId) {
+
+            const doutor = doutoresBusca?.find(proc => proc.id === consultaForm.doutorId);
+    
+            if (!doutor) {
+                await api.get("doutor/consultar/agendamento/" + consultaForm.doutorId)
+                    .then((response) => {
+                        setDoutores(doutores => [...doutores, response.data]);
+                    })
+                    .catch((err) => {
+                        console.error("Ops! Ocorreu um erro: " + err);
+                    });
+            }
+        }
+    }
 
     return (
         <Modal open={modalOpen} onClose={handleCloseModal}>

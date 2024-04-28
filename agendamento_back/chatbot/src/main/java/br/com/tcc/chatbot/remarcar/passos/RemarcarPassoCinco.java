@@ -16,6 +16,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 
 @Component
 public class RemarcarPassoCinco implements RemarcarPassosInterface {
@@ -38,6 +39,9 @@ public class RemarcarPassoCinco implements RemarcarPassosInterface {
     @Autowired
     private RemarcarAgendamentoChatBotRepository remarcarAgendamentoChatBotRepository;
 
+    @Autowired
+    private ConsultaEstendidaRepository consultaEstendidaRepository;
+
     @Override
     public List<SendMessage> processarPassosDeRemarcar(MonitorDeChatBot monitorDeChatBot, Message message) {
         String mensagem = message.getText();
@@ -47,7 +51,7 @@ public class RemarcarPassoCinco implements RemarcarPassosInterface {
             RemarcarAgendamentoChatBot remarcarAgendamentoChatBot = getRemarcarAgendamento(message.getChatId());
             Consulta consulta = getConsulta(remarcarAgendamentoChatBot);
 
-            List<LocalTime> horarios = horariosDisponiveis(data, consulta.getProcedimentos(), remarcarAgendamentoChatBot.getCpf());
+            List<LocalTime> horarios = horariosDisponiveis(data, getProcedimentos(consulta), remarcarAgendamentoChatBot.getCpf());
 
             if(!horarios.isEmpty()) {
                 atualizarMonitor(monitorDeChatBot);
@@ -194,6 +198,17 @@ public class RemarcarPassoCinco implements RemarcarPassosInterface {
         sendMessage.setText(mensagem);
 
         return new ArrayList<>(List.of(sendMessage));
+    }
+
+    private List<Procedimento> getProcedimentos(Consulta consulta) {
+        List<Procedimento> procedimentos = consulta.getProcedimentos();
+
+        Optional<Consulta> consultaOptional = consultaEstendidaRepository.consultarConsultaDePorPara(consulta.getId());
+        if (consultaOptional.isPresent()) {
+            procedimentos.addAll(consultaOptional.get().getProcedimentos());
+        }
+
+        return procedimentos;
     }
 
     @Override

@@ -6,6 +6,7 @@ import br.com.tcc.entity.Consulta;
 import br.com.tcc.entity.MonitorDeChatBot;
 import br.com.tcc.entity.Procedimento;
 import br.com.tcc.enumerador.StatusDaMensagemChatBotEnum;
+import br.com.tcc.repository.ConsultaEstendidaRepository;
 import br.com.tcc.repository.ConsultaRepository;
 import br.com.tcc.repository.MonitorDeChatBotRepository;
 import br.com.tcc.repository.PacienteRepository;
@@ -19,6 +20,7 @@ import uteis.Uteis;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Component
 public class ConsultaPassoDois implements ConsultaPassosInterface {
@@ -31,6 +33,9 @@ public class ConsultaPassoDois implements ConsultaPassosInterface {
 
     @Autowired
     private ConsultaRepository consultaRepository;
+
+    @Autowired
+    private ConsultaEstendidaRepository consultaEstendidaRepository;
 
     @Override
     public List<SendMessage> processarPassosDeCadastro(MonitorDeChatBot monitorDeChatBot, Message message) {
@@ -59,7 +64,7 @@ public class ConsultaPassoDois implements ConsultaPassosInterface {
                                         .append("\nHorário: " + DataUteis.getLocalTimeHHmm(con.getDataHoraInicio()))
                                         .append("\nValor: " + Uteis.formatarMoedaParaReal(con.getValorTotal()))
                                         .append("\nProcedimento: \n")
-                                        .append(getProcedimentos(con.getProcedimentos()))
+                                        .append(getProcedimentos(con))
                                         .append("\n"))
                                 .collect(
                                         StringBuilder::new,
@@ -75,7 +80,14 @@ public class ConsultaPassoDois implements ConsultaPassosInterface {
         return consultas.toString();
     }
 
-    private String getProcedimentos(List<Procedimento> procedimentos) {
+    private String getProcedimentos(Consulta consulta) {
+        List<Procedimento> procedimentos = consulta.getProcedimentos();
+
+        Optional<Consulta> consultaOptional = consultaEstendidaRepository.consultarConsultaDePorPara(consulta.getId());
+        if (consultaOptional.isPresent()) {
+            procedimentos.addAll(consultaOptional.get().getProcedimentos());
+        }
+
         return procedimentos.stream()
                 .map(procedimento -> new StringBuilder()
                         .append("\t\t\t- " + procedimento.getTratamento() + "\n"))

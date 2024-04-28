@@ -31,6 +31,9 @@ public class RemarcarPassoTres implements RemarcarPassosInterface {
     @Autowired
     private RemarcarAgendamentoChatBotRepository remarcarAgendamentoChatBotRepository;
 
+    @Autowired
+    private ConsultaEstendidaRepository consultaEstendidaRepository;
+
     @Override
     public List<SendMessage> processarPassosDeRemarcar(MonitorDeChatBot monitorDeChatBot, Message message) {
         Optional<RemarcarAgendamentoChatBot> remarcarAgendamentoChatBot = remarcarAgendamentoChatBotRepository
@@ -123,7 +126,7 @@ public class RemarcarPassoTres implements RemarcarPassosInterface {
                 DataUteis.getLocalDateTime_ddMMaaaaHHMM(consulta.getDataHoraInicio()) +
                 "\n" +
                 "Procedimento: \n" +
-                getProcedimentos(consulta.getProcedimentos()) +
+                getProcedimentos(consulta) +
                 "\n" +
                 "Valor: " +
                 Uteis.formatarMoedaParaReal(consulta.getValorTotal()) +
@@ -132,9 +135,17 @@ public class RemarcarPassoTres implements RemarcarPassosInterface {
                 "2. Não";
     }
 
-    private String getProcedimentos(List<Procedimento> procedimentos) {
+    private String getProcedimentos(Consulta consulta) {
+        List<Procedimento> procedimentos = consulta.getProcedimentos();
+
+        Optional<Consulta> consultaOptional = consultaEstendidaRepository.consultarConsultaDePorPara(consulta.getId());
+        if (consultaOptional.isPresent()) {
+            procedimentos.addAll(consultaOptional.get().getProcedimentos());
+        }
+
         return procedimentos.stream()
-                .map(procedimento -> new StringBuilder().append("\t\t\t").append(procedimento.getTratamento()).append("\n"))
+                .map(procedimento -> new StringBuilder()
+                        .append("\t\t\t\t\t\t- " + procedimento.getTratamento() + "\n"))
                 .collect(
                         StringBuilder::new,
                         StringBuilder::append,

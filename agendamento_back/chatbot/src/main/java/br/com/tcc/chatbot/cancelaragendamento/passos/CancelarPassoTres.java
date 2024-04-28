@@ -6,10 +6,7 @@ import br.com.tcc.entity.CancelarAgendamentoChatBot;
 import br.com.tcc.entity.Consulta;
 import br.com.tcc.entity.MonitorDeChatBot;
 import br.com.tcc.entity.Procedimento;
-import br.com.tcc.repository.CancelarAgendamentoChatBotRepository;
-import br.com.tcc.repository.ConsultaRepository;
-import br.com.tcc.repository.MonitorDeChatBotRepository;
-import br.com.tcc.repository.PacienteRepository;
+import br.com.tcc.repository.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
@@ -33,6 +30,9 @@ public class CancelarPassoTres implements CancelarPassosInterface {
 
     @Autowired
     private CancelarAgendamentoChatBotRepository cancelarAgendamentoChatBotRepository;
+
+    @Autowired
+    private ConsultaEstendidaRepository consultaEstendidaRepository;
 
     @Override
     public List<SendMessage> processarPassosDeCadastro(MonitorDeChatBot monitorDeChatBot, Message message) {
@@ -126,7 +126,7 @@ public class CancelarPassoTres implements CancelarPassosInterface {
                 DataUteis.getLocalDateTime_ddMMaaaaHHMM(consulta.getDataHoraInicio()) +
                 "\n" +
                 "Procedimento: \n" +
-                getProcedimentos(consulta.getProcedimentos()) +
+                getProcedimentos(consulta) +
                 "\n" +
                 "Valor: " +
                 Uteis.formatarMoedaParaReal(consulta.getValorTotal()) +
@@ -135,9 +135,17 @@ public class CancelarPassoTres implements CancelarPassosInterface {
                 "2. Não";
     }
 
-    private String getProcedimentos(List<Procedimento> procedimentos) {
+    private String getProcedimentos(Consulta consulta) {
+        List<Procedimento> procedimentos = consulta.getProcedimentos();
+
+        Optional<Consulta> consultaOptional = consultaEstendidaRepository.consultarConsultaDePorPara(consulta.getId());
+        if (consultaOptional.isPresent()) {
+            procedimentos.addAll(consultaOptional.get().getProcedimentos());
+        }
+
         return procedimentos.stream()
-                .map(procedimento -> new StringBuilder().append("\t\t\t").append(procedimento.getTratamento()).append("\n"))
+                .map(procedimento -> new StringBuilder()
+                        .append("\t\t\t\t\t\t\t-" + procedimento.getTratamento() + "\n"))
                 .collect(
                         StringBuilder::new,
                         StringBuilder::append,

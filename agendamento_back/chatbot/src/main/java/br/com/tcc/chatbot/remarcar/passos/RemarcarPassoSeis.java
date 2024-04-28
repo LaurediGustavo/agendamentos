@@ -19,6 +19,7 @@ import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 
 @Component
 public class RemarcarPassoSeis implements RemarcarPassosInterface {
@@ -40,6 +41,9 @@ public class RemarcarPassoSeis implements RemarcarPassosInterface {
 
     @Autowired
     private RemarcarAgendamentoChatBotRepository remarcarAgendamentoChatBotRepository;
+
+    @Autowired
+    private ConsultaEstendidaRepository consultaEstendidaRepository;
 
     @Override
     public List<SendMessage> processarPassosDeRemarcar(MonitorDeChatBot monitorDeChatBot, Message message) {
@@ -65,7 +69,7 @@ public class RemarcarPassoSeis implements RemarcarPassosInterface {
 
     private String resumoDoAgendamento(RemarcarAgendamentoChatBot remarcarAgendamentoChatBot) {
         return "Por favor confirme os dados do agendamento\n\n" +
-                "Procedimento: " + getProcedimentos(remarcarAgendamentoChatBot.getConsulta().getProcedimentos()) +
+                "Procedimento: \n" + getProcedimentos(remarcarAgendamentoChatBot.getConsulta().getProcedimentos()) +
                 "\nValor: " + Uteis.formatarMoedaParaReal(remarcarAgendamentoChatBot.getConsulta().getValorTotal()) +
                 "\nDia: " + DataUteis.getLocalDateTime_ddMMaaaa(remarcarAgendamentoChatBot.getHorario()) +
                 "\nHorário: " + DataUteis.getLocalTimeHHmm(remarcarAgendamentoChatBot.getHorario()) +
@@ -76,7 +80,7 @@ public class RemarcarPassoSeis implements RemarcarPassosInterface {
 
     private String getProcedimentos(List<Procedimento> procedimentos) {
         return procedimentos.stream()
-                .map(procedimento -> new StringBuilder().append("\t\t\t").append(procedimento.getTratamento()).append("\n"))
+                .map(procedimento -> new StringBuilder().append("\t\t\t\t-").append(procedimento.getTratamento()).append("\n"))
                 .collect(
                         StringBuilder::new,
                         StringBuilder::append,
@@ -94,7 +98,7 @@ public class RemarcarPassoSeis implements RemarcarPassosInterface {
 
     private LocalTime horarioAtendimento(RemarcarAgendamentoChatBot remarcarAgendamentoChatBot, String opcao) {
         List<LocalTime> horarios = horariosDisponiveis(remarcarAgendamentoChatBot.getHorario().toLocalDate(),
-                getConsulta(remarcarAgendamentoChatBot).getProcedimentos(), remarcarAgendamentoChatBot.getCpf());
+                getProcedimentos(getConsulta(remarcarAgendamentoChatBot)), remarcarAgendamentoChatBot.getCpf());
 
         int opcaoInt;
         try {
@@ -129,8 +133,6 @@ public class RemarcarPassoSeis implements RemarcarPassosInterface {
                 remarcarAgendamentoChatBot.getConsulta().getProcedimentos(), remarcarAgendamentoChatBot.getCpf());
 
         return """
-                O horário ficou indisponível.
-                
                 Horários disponíveis:
                 """ +
                 formatarHorarios(horarios) +
@@ -229,6 +231,17 @@ public class RemarcarPassoSeis implements RemarcarPassosInterface {
         sendMessage.setText(mensagem);
 
         return new ArrayList<>(List.of(sendMessage));
+    }
+
+    private List<Procedimento> getProcedimentos(Consulta consulta) {
+        List<Procedimento> procedimentos = consulta.getProcedimentos();
+
+        Optional<Consulta> consultaOptional = consultaEstendidaRepository.consultarConsultaDePorPara(consulta.getId());
+        if (consultaOptional.isPresent()) {
+            procedimentos.addAll(consultaOptional.get().getProcedimentos());
+        }
+
+        return procedimentos;
     }
 
     @Override

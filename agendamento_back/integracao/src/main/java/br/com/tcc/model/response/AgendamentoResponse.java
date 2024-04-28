@@ -38,4 +38,6 @@ public class AgendamentoResponse {
 
     private AgendamentoResponse remercado;
 
+    private AgendamentoResponse consultaEstendidaDe;
+
 }

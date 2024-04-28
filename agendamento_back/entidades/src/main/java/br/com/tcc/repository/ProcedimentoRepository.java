@@ -31,6 +31,11 @@ public interface ProcedimentoRepository extends JpaRepository<Procedimento, Long
     List<Procedimento> findAllHabilitados();
 
     @Query("SELECT p FROM Procedimento p " +
+            "WHERE p.desabilitado IS NULL OR p.desabilitado = false " +
+            "ORDER BY p.id")
+    List<Procedimento> findAllHabilitadosOrderById();
+
+    @Query("SELECT p FROM Procedimento p " +
             "WHERE p.id = :id " +
             "AND (p.desabilitado IS NULL OR p.desabilitado = false)")
     Optional<Procedimento> findByIdHabilitado(@Param("id") Long id);

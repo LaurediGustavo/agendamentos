@@ -5,16 +5,19 @@ import br.com.tcc.chatbot.agendamento.interfaces.AgendamentoPassosInterface;
 import br.com.tcc.chatbot.menu.MenuChatBot;
 import br.com.tcc.chatbot.remarcar.enumerador.RemarcarPassosEnum;
 import br.com.tcc.chatbot.remarcar.interfaces.RemarcarPassosInterface;
+import br.com.tcc.dto.AgendamentoDto;
 import br.com.tcc.entity.*;
 import br.com.tcc.enumerador.StatusConsultaEnum;
 import br.com.tcc.enumerador.StatusDaMensagemChatBotEnum;
 import br.com.tcc.repository.*;
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.Message;
 import uteis.Uteis;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.ArrayList;
@@ -46,6 +49,8 @@ public class RemarcarPassoSete implements RemarcarPassosInterface {
     @Autowired
     private MenuChatBot menuChatBot;
 
+    @Autowired
+    private ConsultaEstendidaRepository consultaEstendidaRepository;
 
     @Override
     public List<SendMessage> processarPassosDeRemarcar(MonitorDeChatBot monitorDeChatBot, Message message) {
@@ -65,7 +70,7 @@ public class RemarcarPassoSete implements RemarcarPassosInterface {
                 }
                 case 2 -> {
                     atualizarMonitor(monitorDeChatBot, 6, StatusDaMensagemChatBotEnum.AGUARDANDO);
-                    return montarMensagem(message.getChatId(), getTextoMensagem());
+                    return montarMensagem(message.getChatId(), getTextoMensagem(message.getChatId()));
                 }
                 default ->
                 {
@@ -80,27 +85,96 @@ public class RemarcarPassoSete implements RemarcarPassosInterface {
 
     }
 
-    private String getTextoMensagem() {
-        StringBuilder procedimentos = procedimentoRepository
-                .findAllHabilitados()
-                .stream()
-                .map(procedimento ->
-                        new StringBuilder()
-                                .append(procedimento.getId())
-                                .append(". ")
-                                .append(procedimento.getTratamento())
-                                .append("\n - Valor: " + Uteis.formatarMoedaParaReal(procedimento.getValor()))
-                                .append("\n"))
-                .collect(
-                        StringBuilder::new,
-                        StringBuilder::append,
-                        StringBuilder::append
-                );
+    private String getTextoMensagem(Long chatId) {
+        Optional<RemarcarAgendamentoChatBot> remarcarAgendamentoChatBot = remarcarAgendamentoChatBotRepository.findTopByChatIdOrderByIdDesc(chatId);
+
+        List<LocalTime> horarios = horariosDisponiveis(remarcarAgendamentoChatBot.get().getHorario().toLocalDate(),
+                getProcedimentos(getConsulta(remarcarAgendamentoChatBot.get())), remarcarAgendamentoChatBot.get().getCpf());
 
         return """
-                Por favor informe o código do procedimento:
-                """
-                + procedimentos.toString();
+            Horários disponíveis:
+            """ +
+            formatarHorarios(horarios) +
+            """
+            Digite apenas o número da opção desejada
+            """;
+    }
+
+    private List<LocalTime> horariosDisponiveis(LocalDate data, List<Procedimento> procedimentos, String cpf) {
+        List<Doutor> doutorList = doutorRepository
+                .findAllToProcedureHabilitados(procedimentos.stream().map(Procedimento::getId).toArray(Long[]::new));
+
+        Paciente paciente = getPaciente(cpf);
+
+        int intevalo = getIntervalo(procedimentos);
+
+        List<LocalTime> horarios = gerarHorarios(intevalo);
+        List<LocalTime> listaFinal = new ArrayList<LocalTime>();
+
+        for (Doutor doutor : doutorList) {
+            for (int i = 0; i < horarios.size() - 1; i++) {
+                LocalDateTime dataInicio = data.atTime(horarios.get(i));
+                LocalDateTime dataFinal = data.atTime(horarios.get(i + 1));
+                dataFinal = dataFinal.minusSeconds(1);
+
+                boolean horarioLivre = false;
+                long possuiAgendamento = consultaRepository.consultarPorDataEDoutor(dataInicio, dataFinal, doutor.getId(), 0L).get();
+                horarioLivre = possuiAgendamento == 0;
+
+                possuiAgendamento = consultaRepository.consultarPorDataEPaciente(dataInicio, dataFinal, paciente.getId(), 0L).get();
+                horarioLivre = possuiAgendamento == 0;
+
+                if(horarioLivre) {
+                    boolean jaAdicionado = false;
+                    for (LocalTime tempo : listaFinal) {
+                        if (tempo == horarios.get(i)) {
+                            jaAdicionado = true;
+                            break;
+                        }
+                    }
+
+                    if(!jaAdicionado) {
+                        listaFinal.add(horarios.get(i));
+                    }
+                }
+            }
+        }
+
+        return listaFinal;
+    }
+
+    private List<LocalTime> gerarHorarios(int intervalo) {
+        LocalTime startTime = LocalTime.of(8, 0);
+        LocalTime endTime = LocalTime.of(18, 0);
+
+        List<LocalTime> horarios = new ArrayList<>();
+
+        LocalTime currentTime = startTime;
+        while (currentTime.isBefore(endTime) || currentTime.equals(endTime)) {
+            horarios.add(currentTime);
+            currentTime = currentTime.plusMinutes(intervalo);
+        }
+
+        return horarios;
+    }
+
+    private Paciente getPaciente(String cpf) {
+        return pacienteRepository.findByCpf(cpf).get();
+    }
+
+    private String formatarHorarios(List<LocalTime> horarios) {
+        Collections.sort(horarios);
+
+        StringBuilder string = new StringBuilder();
+
+        for (int i = 0; i < horarios.size(); i++) {
+            string.append(i + 1)
+                    .append(". ")
+                    .append(horarios.get(i))
+                    .append("\n");
+        }
+
+        return string.toString();
     }
 
     private void cadastrarAgendamento(Long chatId) {
@@ -111,9 +185,12 @@ public class RemarcarPassoSete implements RemarcarPassosInterface {
             Optional<Paciente> paciente = pacienteRepository.findByCpf(remarcar.getCpf());
             Consulta consultaAnterior = getConsulta(remarcar);
 
-            int minutos = getIntervalo(consultaAnterior.getProcedimentos());
+            int minutos = getIntervalo(getProcedimentos(consultaAnterior));
             int horas = minutos / 60;
             minutos = minutos % 60;
+
+            List<Procedimento> procedimentosAnterior = new ArrayList<>();
+            procedimentosAnterior.addAll(consultaAnterior.getProcedimentos());
 
             Consulta consulta = new Consulta();
             consulta.setTempoAproximado(LocalTime.of(horas, minutos));
@@ -123,16 +200,42 @@ public class RemarcarPassoSete implements RemarcarPassosInterface {
             consulta.setDataHoraFinal(remarcar.getHorario().plusHours(horas).plusMinutes(minutos).minusMinutes(1));
             consulta.setPaciente(paciente.get());
             consulta.setDoutor(getDoutorDisponivel(remarcar, minutos));
-            consulta.setProcedimentos(consultaAnterior.getProcedimentos());
+            consulta.setProcedimentos(procedimentosAnterior);
 
             consultaRepository.save(consulta);
+            remarcarAgendamentoChatBotRepository.delete(remarcar);
 
             consultaAnterior.setConsultaRemarcadaPara(consulta);
             consultaAnterior.setStatus(StatusConsultaEnum.REMARCADO);
+            consultaAnterior.setProcedimentos(procedimentosAnterior);
             consultaRepository.save(consultaAnterior);
 
-            remarcarAgendamentoChatBotRepository.delete(remarcar);
+            adicionarConsultaEstendida(consulta, consultaAnterior);
         }
+    }
+
+    private void adicionarConsultaEstendida(Consulta consulta, Consulta consultaAnterior) {
+        Optional<Consulta> consultaOptional = consultaEstendidaRepository.consultarConsultaDePorPara(consultaAnterior.getId());
+
+        if (consultaOptional.isPresent()) {
+            ConsultaEstendida consultaEstendida = new ConsultaEstendida();
+            consultaEstendida.setConsultaEstendidaDe(consultaOptional.get());
+            consultaEstendida.setConsultaEstendidaPara(consulta);
+
+            this.consultaEstendidaRepository.save(consultaEstendida);
+        }
+    }
+
+    private List<Procedimento> getProcedimentos(Consulta consulta) {
+        List<Procedimento> procedimentos = new ArrayList<>();
+        procedimentos.addAll(consulta.getProcedimentos());
+
+        Optional<Consulta> consultaOptional = consultaEstendidaRepository.consultarConsultaDePorPara(consulta.getId());
+        if (consultaOptional.isPresent()) {
+            procedimentos.addAll(consultaOptional.get().getProcedimentos());
+        }
+
+        return procedimentos;
     }
 
     private int getIntervalo(List<Procedimento> procedimentos) {
@@ -151,8 +254,7 @@ public class RemarcarPassoSete implements RemarcarPassosInterface {
         LocalDateTime horarioFinal = remarcarAgendamentoChatBot.getHorario()
                 .plusMinutes(minutos);
 
-        Long[] procedimentoIds = remarcarAgendamentoChatBot.getConsulta().getProcedimentos()
-                .stream()
+        Long[] procedimentoIds = getProcedimentos(remarcarAgendamentoChatBot.getConsulta()).stream()
                 .map(Procedimento::getId)
                 .toArray(Long[]::new);
 

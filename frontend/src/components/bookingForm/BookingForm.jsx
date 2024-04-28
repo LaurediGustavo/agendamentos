@@ -6,11 +6,8 @@ import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
 import './bookingForm.scss'
 import api from '../../services/api';
 import moment from 'moment';
-
 import FormControlLabel from '@mui/material/FormControlLabel';
 import Checkbox from '@mui/material/Checkbox';
-
-
 import {
     Box,
     Modal,
@@ -26,7 +23,6 @@ import {
 } from "@mui/material";
 import { formatarData_dd_MM_yyyy } from '../../services/dateFormat';
 
-
 export const BookingForm = forwardRef(({ modalOpen, handleCloseModal, selectedEvent, selectedDate, calendarRef }, ref) => {
 
     const [novaData, setNovaData] = useState(null);
@@ -36,9 +32,6 @@ export const BookingForm = forwardRef(({ modalOpen, handleCloseModal, selectedEv
     const [consultaContinua, setConsultaContinua] = useState(false); //novo
     const [consultasEmAndamento, setConsultasEmAndamento] = useState([]); //novo
     const [consultaSelecionada, setConsultaSelecionada] = useState(null); //novo
-
-
-
 
     // Estado local do componente
     const [consultaId, setConsultaId] = useState()
@@ -101,6 +94,7 @@ export const BookingForm = forwardRef(({ modalOpen, handleCloseModal, selectedEv
         formulario.valorTotal = formatarValor(data.valorTotal);
         formulario.tempoAproximado = data.tempoAproximado;
         setSituacaoOriginal(data.status);
+        setConsultaSelecionada(data.consultaEstendidaDe);
 
         if (data.remercado) {
             setNovaData(moment(data.remercado.dataHoraInicio).toDate())
@@ -323,7 +317,7 @@ export const BookingForm = forwardRef(({ modalOpen, handleCloseModal, selectedEv
             const startTimeFormatada = format(args1, 'yyyy-MM-dd HH:mm:ss');
             const endTimeFormatada = format(args2, 'yyyy-MM-dd HH:mm:ss');
 
-            await api.post("/agendamento/cadastro", {
+            const data = await api.post("/agendamento/cadastro", {
                 status: null,
                 dataHoraInicio: startTimeFormatada,
                 dataHoraFim: endTimeFormatada,
@@ -336,13 +330,14 @@ export const BookingForm = forwardRef(({ modalOpen, handleCloseModal, selectedEv
             calendarRef.current.getApi().addEvent({
                 title: pacientes.find((paciente) => paciente.id === consultaForm.pacienteId)?.nome,
                 start: args1,
-                end: args2
+                end: args2,
+                consulta_id: data.data.id,
+                classNames: eventClass(data.data.status),
             });
 
             limparDados();
             setErros({});
             handleCloseModal();
-            window.location.reload();
         } catch (error) {
             if (error.response && error.response.data) {
                 tratarErrosDeIntegracao(error.response.data.errors);
@@ -378,6 +373,27 @@ export const BookingForm = forwardRef(({ modalOpen, handleCloseModal, selectedEv
             } else {
                 console.log(error);
             }
+        }
+    }
+
+    const eventClass = (status) => {
+        switch (status) {
+          case 'CANCELADO':
+            return 'event-cancelado';
+          case 'REMARCADO':
+            return 'event-remarcado';
+          case 'FINALIZADO':
+            return 'event-finalizado';
+          case 'AGUARDANDO':
+            return 'event-aguardando';
+          case 'ENVIADO':
+            return 'event-enviado';
+          case 'CONFIRMADO':
+            return 'event-confirmado';
+          case 'EM_ANDAMENTO': 
+            return 'event-em_andamento';
+          default:
+            return 'event-default';
         }
     }
 
@@ -500,7 +516,6 @@ export const BookingForm = forwardRef(({ modalOpen, handleCloseModal, selectedEv
         try {
             const response = await api.get("/agendamento/consultarstatuspaciente?pacienteId=" + id + "&status=EM_ANDAMENTO");
             setConsultasEmAndamento(response.data); // Atualize o estado com os dados das consultas em andamento
-            console.log(response.data)
         } catch (error) {
             console.error("Erro ao buscar consultas em andamento:", error);
         }

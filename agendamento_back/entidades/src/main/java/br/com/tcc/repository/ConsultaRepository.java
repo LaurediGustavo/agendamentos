@@ -79,7 +79,8 @@ public interface ConsultaRepository extends JpaRepository<Consulta, Long> {
 			"INNER JOIN c.paciente p " +
 			"WHERE c.status IN ('CONFIRMADO', 'AGUARDANDO') " +
 			"AND p.cpf = :cpf " +
-			"AND c.dataHoraInicio >= CURRENT_TIMESTAMP")
+			"AND c.dataHoraInicio >= CURRENT_TIMESTAMP " +
+			"ORDER BY c.dataHoraInicio ASC")
 	List<Consulta> findConsultasByStatusAndCpfAndDataHoraInicio(@Param("cpf") String cpf);
 
 	@Query("SELECT COUNT(c) FROM Consulta c " +

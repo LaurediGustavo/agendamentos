@@ -13,6 +13,7 @@ import java.math.BigDecimal;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -74,15 +75,26 @@ public class AgendamentoService {
 		consulta.setDataHoraFinal(agendamento.getDataHoraFim());
 		consulta.setStatus(agendamento.getStatus() == null? StatusConsultaEnum.AGUARDANDO : agendamento.getStatus());
 
+		preencherConsultaEstendida(consulta, agendamento.getConsultaEstendidaDeId());
+
 		calcularValorTotal(consulta);
 		calcularTempoAproximado(consulta);
 
 		return consulta;
 	}
 
+	private void preencherConsultaEstendida(Consulta consulta, Long consultaEstendidaDeId) {
+		if (consultaEstendidaDeId != null) {
+			List<Consulta> consultas = new ArrayList<>();
+			consultas.add(consultarPorId(consultaEstendidaDeId).get());
+
+			consulta.setConsultasEstendidasDe(consultas);
+		}
+	}
+
 	@Transactional(rollbackOn = Exception.class, value = Transactional.TxType.REQUIRED)
 	private void adicionarConsultaEstendida(Consulta consulta, AgendamentoDto agendamento) {
-		if (agendamento.getConsultaEstendidaDeId() != null) {
+		if (agendamento.getConsultaEstendidaDeId() != null && consulta.getConsultasEstendidasDe() == null) {
 			ConsultaEstendida consultaEstendida = new ConsultaEstendida();
 			consultaEstendida.setConsultaEstendidaDe(consultarPorId(agendamento.getConsultaEstendidaDeId()).get());
 			consultaEstendida.setConsultaEstendidaPara(consulta);

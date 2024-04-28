@@ -2,6 +2,7 @@ package br.com.tcc.chatbot;
 
 import br.com.tcc.entity.Consulta;
 import br.com.tcc.entity.Procedimento;
+import br.com.tcc.repository.ConsultaEstendidaRepository;
 import br.com.tcc.repository.ConsultaRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -9,6 +10,7 @@ import uteis.DataUteis;
 import uteis.Uteis;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.IntStream;
 
 @Service
@@ -16,6 +18,9 @@ public class CancelarOperacaoChatBotService {
 
     @Autowired
     private ConsultaRepository consultaRepository;
+
+    @Autowired
+    private ConsultaEstendidaRepository consultaEstendidaRepository;
 
     public String consultasDisponiveis(String cpf) {
         StringBuilder consultas = new StringBuilder();
@@ -35,7 +40,7 @@ public class CancelarOperacaoChatBotService {
                                 .append("\n")
                                 .append("\t\t\t\t\t\t")
                                 .append("Procedimento: \n")
-                                .append(getProcedimentos(con.getProcedimentos()))
+                                .append(getProcedimentos(con))
                                 .append("\n")
                                 .append("\t\t\t\t\t\t")
                                 .append("Valor: ")
@@ -58,10 +63,17 @@ public class CancelarOperacaoChatBotService {
         return consultas.toString();
     }
 
-    private String getProcedimentos(List<Procedimento> procedimentos) {
+    private String getProcedimentos(Consulta consulta) {
+        List<Procedimento> procedimentos = consulta.getProcedimentos();
+
+        Optional<Consulta> consultaOptional = consultaEstendidaRepository.consultarConsultaDePorPara(consulta.getId());
+        if (consultaOptional.isPresent()) {
+            procedimentos.addAll(consultaOptional.get().getProcedimentos());
+        }
+
         return procedimentos.stream()
                 .map(procedimento -> new StringBuilder()
-                        .append("\t\t\t\t\t\t\t\t\t" + procedimento.getTratamento() + "\n"))
+                        .append("\t\t\t\t\t\t\t-" + procedimento.getTratamento() + "\n"))
                 .collect(
                         StringBuilder::new,
                         StringBuilder::append,

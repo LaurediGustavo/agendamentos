@@ -54,9 +54,14 @@ public class AgendamentoTratarResponse {
                     getProcedimentos(agendamento),
                     agendamento.getValorTotal(),
                     agendamento.getTempoAproximado(),
-                    montarAgendamentoResponse(agendamento.getConsultaRemarcadaPara()));
+                    montarAgendamentoResponse(agendamento.getConsultaRemarcadaPara()),
+                    getConsultaEstendida(agendamento.getConsultasEstendidasDe()));
 
         return null;
+    }
+
+    private AgendamentoResponse getConsultaEstendida(List<Consulta> agendamento) {
+        return agendamento != null? agendamento.size() > 0? montarAgendamentoResponse(agendamento.get(0)) : null : null;
     }
 
     public List<ProcedimentoResponse> getProcedimentos(Consulta consulta) {

@@ -142,6 +142,16 @@ export const DataTable = (props) => {
         disableColumnFilter
         disableDensitySelector
         disableColumnSelector
+        autoHeight  
+        localeText={{
+          noRowsLabel: 'Nenhum item encontrado.',
+          toolbarExport: 'Exportar',
+          toolbarExportLabel: 'Exportar',
+          toolbarExportCSV: 'Baixar como CSV',
+          columnMenuSortAsc: 'Ordenar crescente',
+          columnMenuSortDesc: 'Ordenar decrescente',
+          columnMenuUnsort: 'Remover ordenação',
+        }}
       />
 
 

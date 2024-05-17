@@ -4,6 +4,8 @@ import { Button, TextField, Select, MenuItem, FormControlLabel, Checkbox, Autoco
 import CloseIcon from '@mui/icons-material/Close';
 import InputMask from 'react-input-mask';
 import api from '../../services/api';
+import axios from 'axios';
+
 
 const Action = (props) => {
   const [formData, setFormData] = useState({
@@ -22,6 +24,36 @@ const Action = (props) => {
   const atualizarConsulta = (atributo, novoValor) => {
     setConsultaForm({ ...consultaForm, [atributo]: novoValor });
   };
+
+  const [cepValido, setCepValido] = useState(true);
+
+  // Função para buscar os dados do CEP
+  const buscarCEP = async (cep) => {
+    try {
+      const response = await axios.get(`https://viacep.com.br/ws/${cep}/json/`);
+      return response.data;
+    } catch (error) {
+      console.error("Erro ao buscar CEP: ", error);
+    }
+  };
+
+  useEffect(() => {
+    if (formData.cep && formData.cep.length === 9) {
+      buscarCEP(formData.cep).then((data) => {
+        if (!data.erro) {
+          setFormData({
+            ...formData,
+            logradouro: data.logradouro,
+            bairro: data.bairro,
+          });
+          setCepValido(true); // Atualiza o estado cepValido
+        } else {
+          setCepValido(false); // Atualiza o estado cepValido
+        }
+      });
+    }
+  }, [formData.cep]);
+  
 
   const handleAutocompleteChange = (event, newValue) => {
     // Atualiza o estado formData com o paciente selecionado
@@ -177,13 +209,21 @@ const Action = (props) => {
       } else if (field === 'valor' && Number(formData[field].replace(/[^\d]/g, '')) === 0) {
         newErrors[field] = 'Valor inválido';
         valid = false;
+      } else if (field === 'cep') {
+        if (formData[field].replace(/\D/g, '').length !== 8) { // Verifica se o CEP tem 8 dígitos numéricos
+          newErrors[field] = 'CEP deve ter 8 dígitos';
+          valid = false;
+        } else if (!cepValido) {
+          newErrors[field] = 'CEP inválido';
+          valid = false;
+        }
       }
-      
     });
-  
+
     setErrors(newErrors);
     return valid;
   }
+  
   const validateCPF = (cpf) => {
     const cpfClean = cpf.replace(/[^\d]/g, '');
 
@@ -334,12 +374,13 @@ const Action = (props) => {
                           defaultValue={formData[column.field] || ''}
                           onChange={handleInputChange}
                           disabled={props.isEditing}
-                          style={props.isEditing ? { pointerEvents: 'none', backgroundColor: '#eeeeee', width: '100%' } : { width: '100%' }}
+                          style={{ width: '100%' }}
                         >
                           {(inputProps) => (
                             <TextField
                               {...inputProps}
                               className={errors[column.field] ? 'error' : ''}
+                              disabled={props.isEditing}
                             />
                           )}
                         </InputMask>
@@ -384,11 +425,13 @@ const Action = (props) => {
                           value={formData[column.field] || ''}
                           onChange={handleInputChange}
                           className={errors[column.field] ? 'error' : ''}
-                          style={{ pointerEvents: 'none', backgroundColor: '#eeeeee', width: '100%' }}
+                          style={{ width: '100%' }}
+                          disabled={true}
                         >
                           {(inputProps) => (
                             <TextField
                               {...inputProps}
+                              disabled={true}
                             />
                           )}
                         </InputMask>

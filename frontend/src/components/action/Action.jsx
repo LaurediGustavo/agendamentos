@@ -53,7 +53,7 @@ const Action = (props) => {
       });
     }
   }, [formData.cep]);
-  
+
 
   const handleAutocompleteChange = (event, newValue) => {
     // Atualiza o estado formData com o paciente selecionado
@@ -145,7 +145,7 @@ const Action = (props) => {
         const arrayFiltrado = props.procedures.filter(item => value.includes(item.id));
 
         const especialidadesNomes = arrayFiltrado.map(p => p.tratamento);
-      
+
         setFormData({
           ...formData,
           [name]: value,
@@ -155,17 +155,17 @@ const Action = (props) => {
       else if (name === 'valor') {
         // Remova todos os caracteres não numéricos
         const numericValue = value.replace(/[^\d]/g, '');
-      
+
         // Adicione vírgula como separador de milhar
         const formattedValue = new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(numericValue / 100);
-      
+
         // Atualize diretamente o estado formData com o valor formatado
         setFormData({
           ...formData,
           [name]: formattedValue
         });
       }
-       else {
+      else {
         // Para outros campos, atualize diretamente o estado formData
         setFormData({
           ...formData,
@@ -187,10 +187,10 @@ const Action = (props) => {
   const validateForm = () => {
     let valid = true;
     const newErrors = {};
-  
+
     props.columns.filter(coluna => coluna.renderedForm !== false).forEach(column => {
       const { field, headerName } = column;
-  
+
       if (!formData[field] && field !== 'bloco' && field !== 'responsavelLegal' && field !== 'informacoesAdicionais' && (showResponsavelCampos || !['relacaoResponsavel', 'telefoneResponsavel', 'responsavel'].includes(field))) {
         newErrors[field] = `O campo ${headerName} é obrigatório`;
         valid = false;
@@ -200,11 +200,17 @@ const Action = (props) => {
       } else if (field === 'especialidade' && formData[field].length < 2) {
         newErrors[field] = `A ${headerName} deve ter pelo menos 2 caracteres`;
         valid = false;
+      } else if (field === 'telefone' && formData[field].replace(/\D/g, '').length !== 11) {
+        newErrors[field] = 'Telefone inválido'; // ou outra mensagem de erro apropriada
+        valid = false;
       } else if (field === 'cpf' && !validateCPF(formData[field])) {
         newErrors[field] = 'CPF inválido';
         valid = false;
       } else if (field === 'dataDeNascimento' && !validateDate(formData[field])) {
         newErrors[field] = 'Data de nascimento inválida';
+        valid = false;
+      } else if (field === 'email' && !validateEmail(formData[field])) {
+        newErrors[field] = 'E-mail inválido'; // ou outra mensagem de erro apropriada
         valid = false;
       } else if (field === 'valor' && Number(formData[field].replace(/[^\d]/g, '')) === 0) {
         newErrors[field] = 'Valor inválido';
@@ -217,13 +223,20 @@ const Action = (props) => {
           newErrors[field] = 'CEP inválido';
           valid = false;
         }
+      } else if (field === 'tempo') {
+        const cleanedTime = formData[field].replace(/[^\d]/g, '');
+        if (cleanedTime.length === 4 && cleanedTime !== '0000') {
+        } else {
+          newErrors[field] = 'Tempo inválido';
+          valid = false;
+        }
       }
     });
 
     setErrors(newErrors);
     return valid;
   }
-  
+
   const validateCPF = (cpf) => {
     const cpfClean = cpf.replace(/[^\d]/g, '');
 
@@ -266,6 +279,12 @@ const Action = (props) => {
     return true;
   }
 
+  const validateEmail = (email) => {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return emailRegex.test(email);
+  }
+  
+
   const validateDate = (date) => {
     const parts = date.split('/');
     if (parts.length !== 3) {
@@ -305,7 +324,7 @@ const Action = (props) => {
     };
   }, []);
 
-  
+
 
   return (
     <div className="activated">
@@ -344,6 +363,7 @@ const Action = (props) => {
                             variant="outlined"
                             className={`${errors['responsavel'] ? 'error' : ''} meuCampo`}
                             error={!!errors['responsavel']}
+                            style={{ width: '100%', marginTop: '10px' }}
                           />
                         )}
                       />
@@ -357,7 +377,7 @@ const Action = (props) => {
                           value={formData[column.field] || ''}
                           onChange={handleInputChange}
                           className={errors[column.field] ? 'error' : ''}
-                          style={{ width: '100%' }}
+                          style={{ width: '100%', marginTop: '10px' }}
                         >
                           <MenuItem value="Pai/Mãe">Pai/Mãe</MenuItem>
                           <MenuItem value="Cônjuge">Cônjuge</MenuItem>
@@ -374,7 +394,7 @@ const Action = (props) => {
                           defaultValue={formData[column.field] || ''}
                           onChange={handleInputChange}
                           disabled={props.isEditing}
-                          style={{ width: '100%' }}
+                          style={{ width: '100%', marginTop: '10px' }}
                         >
                           {(inputProps) => (
                             <TextField
@@ -384,7 +404,7 @@ const Action = (props) => {
                             />
                           )}
                         </InputMask>
-                      ): column.field === 'tempo' ? (
+                      ) : column.field === 'tempo' ? (
                         <InputMask
                           className="time-input"
                           mask="99:99"
@@ -392,7 +412,7 @@ const Action = (props) => {
                           name={column.field}
                           defaultValue={formData[column.field] || ''}
                           onChange={handleInputChange}
-                          style={{ width: '100%' }}
+                          style={{ width: '100%', marginTop: '10px' }}
                         >
                           {(inputProps) => (
                             <TextField
@@ -401,14 +421,14 @@ const Action = (props) => {
                             />
                           )}
                         </InputMask>
-                      ):column.field === 'telefone' ? (
+                      ) : column.field === 'telefone' ? (
                         <InputMask
                           mask="(99) 99999-9999"
                           placeholder={column.headerName}
                           name={column.field}
                           value={formData[column.field] || ''}
                           onChange={handleInputChange}
-                          style={{ width: '100%' }}
+                          style={{ width: '100%', marginTop: '10px' }}
                           className={errors[column.field] ? 'error' : ''}
                         >
                           {(inputProps) => (
@@ -417,7 +437,7 @@ const Action = (props) => {
                             />
                           )}
                         </InputMask>
-                      ):column.field === 'telefoneResponsavel' ? (
+                      ) : column.field === 'telefoneResponsavel' ? (
                         <InputMask
                           mask="(99) 99999-9999"
                           placeholder={column.headerName}
@@ -425,7 +445,7 @@ const Action = (props) => {
                           value={formData[column.field] || ''}
                           onChange={handleInputChange}
                           className={errors[column.field] ? 'error' : ''}
-                          style={{ width: '100%' }}
+                          style={{ width: '100%', marginTop: '10px' }}
                           disabled={true}
                         >
                           {(inputProps) => (
@@ -442,7 +462,7 @@ const Action = (props) => {
                           name={column.field}
                           value={formData[column.field] || ''}
                           onChange={handleInputChange}
-                          style={{ width: '100%' }}
+                          style={{ width: '100%', marginTop: '10px' }}
                           className={errors[column.field] ? 'error' : ''}
                         >
                           {(inputProps) => (
@@ -458,7 +478,7 @@ const Action = (props) => {
                           name={column.field}
                           value={formData[column.field] || ''}
                           onChange={handleInputChange}
-                          style={{ width: '100%' }}
+                          style={{ width: '100%', marginTop: '10px' }}
                           className={errors[column.field] ? 'error' : ''}
                         >
                           {(inputProps) => (
@@ -473,7 +493,7 @@ const Action = (props) => {
                           value={formData[column.field] || ''}
                           onChange={handleInputChange}
                           className={errors[column.field] ? 'error' : ''}
-                          style={{ width: '100%' }}
+                          style={{ width: '100%', marginTop: '10px' }}
                         >
                           <MenuItem value="Masculino">Masculino</MenuItem>
                           <MenuItem value="Feminino">Feminino</MenuItem>
@@ -486,7 +506,7 @@ const Action = (props) => {
                           value={formData[column.field] || []}
                           onChange={handleInputChange}
                           className={errors[column.field] ? 'error' : ''}
-                          style={{ width: '100%' }}
+                          style={{ width: '100%', marginTop: '10px' }}
                         >
                           {props.procedures && props.procedures.map((procedure) => (
                             <MenuItem key={procedure.id} value={procedure.id}>
@@ -498,7 +518,7 @@ const Action = (props) => {
                         <TextField
                           type="text"
                           placeholder={column.headerName}
-                          style={{ width: '100%' }}
+                          style={{ width: '100%', marginTop: '10px' }}
                           name={column.field}
                           value={formData[column.field] || ''}
                           onChange={handleInputChange}
@@ -508,7 +528,7 @@ const Action = (props) => {
                         <TextField
                           type={column.type}
                           placeholder={column.headerName}
-                          style={{ width: '100%' }}
+                          style={{ width: '100%', marginTop: '10px' }}
                           name={column.field}
                           value={formData[column.field] || ''}
                           onChange={handleInputChange}

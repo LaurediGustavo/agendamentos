@@ -3,7 +3,7 @@ import { Typography, TextField, Button, RadioGroup, Radio, FormControlLabel, Dia
 import { useTheme } from '@mui/material/styles';
 import useMediaQuery from '@mui/material/useMediaQuery';
 import minhaImagem from '../../../assets/nulo.jpg';
-import nuloImg from '../../../assets/nulo.jpg'; 
+import nuloImg from '../../../assets/nulo.jpg';
 import CloudUploadIcon from '@mui/icons-material/CloudUpload';
 import DeleteIcon from '@mui/icons-material/Delete';
 import { useFormik } from 'formik';
@@ -247,10 +247,8 @@ const ProfileEdit = ({ profileData, onSave, onImageChange }) => {
                         </div>
                     </div>
                 } error={formik.touched.imagemPerfil && formik.errors.imagemPerfil} />
-                <ProfileField label="Nome" value={<TextField id="name" name="nome" variant="outlined" value={formik.values.nome.replace(/\b\w/g, (c) => c.toUpperCase())} onChange={(event) => /^[a-zA-Z\s]*$/.test(event.target.value) && formik.handleChange(event)} style={{ width: '100%', textAlign: 'center' }} />} error={formik.touched.nome && formik.errors.nome} />
-
-                <ProfileField label="Sobrenome" value={<TextField id="surname" name="sobrenome" variant="outlined" value={formik.values.sobrenome.replace(/\b\w/g, (c) => c.toUpperCase())} onChange={formik.handleChange} style={{ width: '100%', textAlign: 'center' }} />} error={formik.touched.sobrenome && formik.errors.sobrenome} />
-
+                <ProfileField label="Nome" value={<TextField id="name" name="nome" variant="outlined" value={formik.values.nome} onChange={(event) => /^[a-zA-ZÀ-ú\s-]*$/.test(event.target.value) && formik.handleChange(event)} style={{ width: '100%', textAlign: 'center' }} />} error={formik.touched.nome && formik.errors.nome} />
+                <ProfileField label="Sobrenome" value={<TextField id="surname" name="sobrenome" variant="outlined" value={formik.values.sobrenome} onChange={(event) => /^[a-zA-ZÀ-ú\s-]*$/.test(event.target.value) && formik.handleChange(event)} style={{ width: '100%', textAlign: 'center' }} />} error={formik.touched.sobrenome && formik.errors.sobrenome} />
                 <ProfileField label="E-mail" value={<TextField id="email" name="email" variant="outlined" value={formik.values.email} onChange={formik.handleChange} style={{ width: '100%', textAlign: 'center' }} />} error={formik.touched.email && formik.errors.email} />
                 <ProfileField label="Gênero" value={
                     <RadioGroup name="genero" value={formik.values.genero} onChange={formik.handleChange} style={{ display: 'flex', flexDirection: 'row' }}>
@@ -280,7 +278,7 @@ const ProfileEdit = ({ profileData, onSave, onImageChange }) => {
                         <Button onClick={formik.handleSubmit} color="primary">Salvar</Button>
                     </DialogActions>
                 </Dialog>
-                 <Dialog open={successDialogOpen} onClose={handleCloseSuccessDialog}>
+                <Dialog open={successDialogOpen} onClose={handleCloseSuccessDialog}>
                     <DialogTitle>Sucesso</DialogTitle>
                     <DialogContent>
                         <Typography variant="body1">Alterações salvas com sucesso!</Typography>
@@ -289,7 +287,7 @@ const ProfileEdit = ({ profileData, onSave, onImageChange }) => {
                         <Button onClick={handleCloseSuccessDialog} color="primary">Fechar</Button>
                     </DialogActions>
                 </Dialog>
-                
+
             </form>
         </div>
     );

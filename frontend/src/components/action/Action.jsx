@@ -38,7 +38,7 @@ const Action = (props) => {
   };
 
   useEffect(() => {
-    if (formData.cep && formData.cep.length === 9) {
+    if (formData.cep && formData.cep.replace(/\D/g, '').length === 8) {
       buscarCEP(formData.cep).then((data) => {
         if (!data.erro) {
           setFormData({
@@ -46,9 +46,9 @@ const Action = (props) => {
             logradouro: data.logradouro,
             bairro: data.bairro,
           });
-          setCepValido(true); // Atualiza o estado cepValido
+          setCepValido(true);
         } else {
-          setCepValido(false); // Atualiza o estado cepValido
+          setCepValido(false);
         }
       });
     }
@@ -94,7 +94,8 @@ const Action = (props) => {
           [name]: checked,
           relacaoResponsavel: checked ? prevData.relacaoResponsavel : '',
           responsavel: checked ? prevData.responsavel : null,
-          telefoneResponsavel: checked ? prevData.telefoneResponsavel : ''
+          telefoneResponsavel: checked ? prevData.telefoneResponsavel : '',
+          responsavelNome: checked ? prevData.responsavelNome : ''
         }));
       } else {
         // Se não for um checkbox, atualiza o estado diretamente
@@ -104,8 +105,15 @@ const Action = (props) => {
         });
       }
     } else {
-      // Verifica se o nome do campo é 'cpf' ou 'cpfResponsavel'
-      if (name === 'cpf') {
+      if (name === 'nome' || name === 'sobrenome') {
+
+        if (/^[a-zA-ZÀ-ú\s-]*$/.test(value)) {
+          setFormData({
+            ...formData,
+            [name]: value
+          });
+        }
+      } else if (name === 'cpf') {
         // Limpa o valor do CPF e aplica a máscara
         const cleanedCPF = value.replace(/[^\d]/g, '');
         const maskedCPF = cleanedCPF.replace(/(\d{3})(\d{3})(\d{3})(\d{2})/, '$1.$2.$3-$4');
@@ -131,8 +139,7 @@ const Action = (props) => {
           ...formData,
           [name]: numericValue
         });
-      }
-      else if (name === 'tempo') {
+      } else if (name === 'tempo') {
         const cleanedTime = value.replace(/[^\d]/g, '');
         const maskedTime = cleanedTime.replace(/(\d{2})(\d{2})/, '$1:$2');
 
@@ -140,8 +147,7 @@ const Action = (props) => {
           ...formData,
           [name]: maskedTime
         });
-      }
-      else if (name === 'especialidade') {
+      } else if (name === 'especialidade') {
         const arrayFiltrado = props.procedures.filter(item => value.includes(item.id));
 
         const especialidadesNomes = arrayFiltrado.map(p => p.tratamento);
@@ -151,8 +157,7 @@ const Action = (props) => {
           [name]: value,
           'especialidadeNome': especialidadesNomes,
         });
-      }
-      else if (name === 'valor') {
+      } else if (name === 'valor') {
         // Remova todos os caracteres não numéricos
         const numericValue = value.replace(/[^\d]/g, '');
 
@@ -164,8 +169,7 @@ const Action = (props) => {
           ...formData,
           [name]: formattedValue
         });
-      }
-      else {
+      } else {
         // Para outros campos, atualize diretamente o estado formData
         setFormData({
           ...formData,
@@ -174,6 +178,7 @@ const Action = (props) => {
       }
     }
   }
+
 
 
 
@@ -196,9 +201,6 @@ const Action = (props) => {
         valid = false;
       } else if (field === 'nome' && formData[field].length < 2) {
         newErrors[field] = `O ${headerName} deve ter pelo menos 2 caracteres`;
-        valid = false;
-      } else if (field === 'especialidade' && formData[field].length < 2) {
-        newErrors[field] = `A ${headerName} deve ter pelo menos 2 caracteres`;
         valid = false;
       } else if (field === 'telefone' && formData[field].replace(/\D/g, '').length !== 11) {
         newErrors[field] = 'Telefone inválido'; // ou outra mensagem de erro apropriada
@@ -283,7 +285,7 @@ const Action = (props) => {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     return emailRegex.test(email);
   }
-  
+
 
   const validateDate = (date) => {
     const parts = date.split('/');
@@ -291,9 +293,9 @@ const Action = (props) => {
       return false;
     }
 
-    const day = parseInt(parts[0]);
-    const month = parseInt(parts[1]);
-    const year = parseInt(parts[2]);
+    const day = parseInt(parts[0], 10);
+    const month = parseInt(parts[1], 10);
+    const year = parseInt(parts[2], 10);
 
     if (isNaN(day) || isNaN(month) || isNaN(year)) {
       return false;
@@ -308,8 +310,14 @@ const Action = (props) => {
       return false;
     }
 
+    const currentYear = new Date().getFullYear();
+    if (year < 1900 || year > currentYear) {
+      return false;
+    }
+
     return true;
-  }
+  };
+
 
   const mascaraCpf = (value) => {
     const cleanedCPF = value.replace(/[^\d]/g, '');

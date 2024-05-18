@@ -145,6 +145,7 @@ export const DataTable = (props) => {
         autoHeight  
         localeText={{
           noRowsLabel: 'Nenhum item encontrado.',
+          noResultsOverlayLabel: 'Nenhum resultado encontrado.',
           toolbarExport: 'Exportar',
           toolbarExportLabel: 'Exportar',
           toolbarExportCSV: 'Baixar como CSV',

@@ -92,6 +92,7 @@ export const Calendar = ({ calendarRef, handleEventClick, handleEventSelect }) =
           meridiem: false,
           hour12: false,
         }}
+        
       />
       <div className="legend">
         <div><span className="bullet-point event-aguardando"></span> Aguardando</div>

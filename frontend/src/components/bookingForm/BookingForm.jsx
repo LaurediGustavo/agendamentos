@@ -4,6 +4,7 @@ import { LocalizationProvider, TimePicker, DatePicker } from '@mui/x-date-picker
 import CloseIcon from '@mui/icons-material/Close';
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
 import './bookingForm.scss'
+import ptBR from 'date-fns/locale/pt-BR'
 import api from '../../services/api';
 import moment from 'moment';
 import FormControlLabel from '@mui/material/FormControlLabel';
@@ -282,57 +283,58 @@ export const BookingForm = forwardRef(({ modalOpen, handleCloseModal, selectedEv
 
     const handleAgendar = async (e) => {
         e.preventDefault();
-
+    
         if (!validarFormulario()) {
             return;
         }
-
-        const [year, month, day] = selectedDate.split('-').map(Number);
-        const dataInicio = new Date(year, month - 1, day);
-        const dataFinal = new Date(year, month - 1, day);
-
+    
+        let dataInicio;
+        let dataFinal;
+    
         if (consultaForm.status === "REMARCADO" && exibirNovosCampos) {
             if (!novaData || !novoHorarioInicio || !novoHorarioTermino) {
-                W
                 console.error("Por favor, preencha todos os novos campos.");
                 return;
             }
-
+    
             // Usar os novos horários de início e término se estiver remarcando
-            dataInicio.setDate(novaData.getDate());
+            dataInicio = new Date(novaData);
             dataInicio.setHours(novoHorarioInicio.getHours());
             dataInicio.setMinutes(novoHorarioInicio.getMinutes());
-
-            dataFinal.setDate(novaData.getDate());
+    
+            dataFinal = new Date(novaData);
             dataFinal.setHours(novoHorarioTermino.getHours());
             dataFinal.setMinutes(novoHorarioTermino.getMinutes() - 1);
-
+    
             // Atualizar os valores no estado do formulário para refletir os novos horários
             atualizarConsulta('dataHoraInicio', dataInicio);
             atualizarConsulta('dataHoraFim', dataFinal);
-        }
-        else {
+        } else {
+            dataInicio = new Date(consultaForm.dataHoraInicio);
+            dataFinal = new Date(consultaForm.dataHoraFim);
+    
             dataInicio.setHours(consultaForm.dataHoraInicio.getHours());
             dataInicio.setMinutes(consultaForm.dataHoraInicio.getMinutes());
-
+    
             dataFinal.setHours(consultaForm.dataHoraFim.getHours());
             dataFinal.setMinutes(consultaForm.dataHoraFim.getMinutes() - 1);
         }
-
+    
         if (!selectedEvent) {
             gravar(dataInicio, dataFinal);
         } else {
             atualizar(dataInicio, dataFinal);
-
+    
             const eventos = calendarRef.current.getApi().getEvents();
             const eventoExistente = eventos.find((evento) => evento.extendedProps.consulta_id === consultaId);
-
+    
             if (eventoExistente) {
                 eventoExistente.setStart(dataInicio);
                 eventoExistente.setEnd(dataFinal);
             }
         }
     };
+    
 
     const gravar = async (args1, args2) => {
         try {
@@ -819,14 +821,14 @@ export const BookingForm = forwardRef(({ modalOpen, handleCloseModal, selectedEv
                                     {erros.novaData && <div className="error-message">{erros.novaData}</div>}
                                 </div>
                                 <div className="item-container-data">
-                                    <LocalizationProvider dateAdapter={AdapterDateFns}>
+                                <LocalizationProvider dateAdapter={AdapterDateFns} adapterLocale={ptBR}>
                                         <DatePicker
                                             disabled={disabilitarSituacao(consultaForm)}
+                                            className={"dp-full-width"}
+                                            minDate={new Date()}
                                             value={novaData}
                                             onChange={(newDate) => setNovaData(newDate)}
-                                            renderInput={(params) => (
-                                                <TextField {...params} variant="outlined"  sx={{ my: 2}} />
-                                            )}
+                                            slotProps={{ textField: { placeholder: 'Selecione uma nova data' } }} 
                                         />
                                     </LocalizationProvider>
                                 </div>
@@ -840,28 +842,22 @@ export const BookingForm = forwardRef(({ modalOpen, handleCloseModal, selectedEv
                                         <div className="item2">
                                             <LocalizationProvider dateAdapter={AdapterDateFns}>
                                                 <TimePicker
-                                                    label="Novo Horário de Início"
                                                     disabled={disabilitarSituacao(consultaForm)}
                                                     value={novoHorarioInicio}
                                                     onChange={(newTime) => setNovoHorarioInicio(newTime)}
                                                     ampm={false}
-                                                    renderInput={(params) => (
-                                                        <TextField {...params} variant="outlined" fullWidth sx={{ my: 2 }} />
-                                                    )}
+                                                    slotProps={{ textField: { placeholder: 'Novo horário de início' } }} 
                                                 />
                                             </LocalizationProvider>
                                         </div>
                                         <div>
                                             <LocalizationProvider dateAdapter={AdapterDateFns}>
                                                 <TimePicker
-                                                    label="Novo Horário de Término"
                                                     disabled={disabilitarSituacao(consultaForm)}
                                                     value={novoHorarioTermino}
                                                     onChange={(newTime) => setNovoHorarioTermino(newTime)}
                                                     ampm={false}
-                                                    renderInput={(params) => (
-                                                        <TextField {...params} variant="outlined" fullWidth sx={{ my: 2 }} />
-                                                    )}
+                                                    slotProps={{ textField: { placeholder: 'Novo horário de término' } }} 
                                                 />
                                             </LocalizationProvider>
                                         </div>
@@ -878,21 +874,11 @@ export const BookingForm = forwardRef(({ modalOpen, handleCloseModal, selectedEv
                                 <div className="item2">
                                     <LocalizationProvider dateAdapter={AdapterDateFns}>
                                         <TimePicker
-                                            label="Horário de Início"
                                             value={consultaForm.dataHoraInicio}
                                             onChange={(newTime) => atualizarConsulta('dataHoraInicio', newTime)}
                                             ampm={false}
                                             disabled={["REMARCADO", "FINALIZADO", "CANCELADO", "CONFIRMADO", "EM_ANDAMENTO", "AGUARDANDO", "ENVIADO"].includes(consultaForm.status)}
-                                            renderInput={(params) => (
-                                                <TextField
-                                                    {...params}
-                                                    variant="outlined"
-                                                    fullWidth
-                                                    sx={{ my: 2 }}
-                                                    InputLabelProps={{ shrink: true, color: '#333' }}
-                                                    label="Horário de Início"
-                                                />
-                                            )}
+                                            slotProps={{ textField: { placeholder: 'Horário de início' } }} 
                                         />
                                     </LocalizationProvider>
                                 </div>
@@ -900,21 +886,11 @@ export const BookingForm = forwardRef(({ modalOpen, handleCloseModal, selectedEv
                                 <div>
                                     <LocalizationProvider dateAdapter={AdapterDateFns}>
                                         <TimePicker
-                                            label="Horário de Término"
                                             value={consultaForm.dataHoraFim}
                                             onChange={(newTime) => atualizarConsulta('dataHoraFim', newTime)}
                                             ampm={false}
                                             disabled={["REMARCADO", "FINALIZADO", "CANCELADO", "CONFIRMADO", "EM_ANDAMENTO", "AGUARDANDO", "ENVIADO"].includes(consultaForm.status)}
-                                            renderInput={(params) => (
-                                                <TextField
-                                                    {...params}
-                                                    variant="outlined"
-                                                    fullWidth
-                                                    sx={{ my: 2 }}
-                                                    InputLabelProps={{ shrink: false }}
-                                                    label="Horário de Término"
-                                                />
-                                            )}
+                                            slotProps={{ textField: { placeholder: 'Horário de término' } }} 
                                         />
                                     </LocalizationProvider>
                                 </div>

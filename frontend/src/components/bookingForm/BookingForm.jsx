@@ -288,8 +288,9 @@ export const BookingForm = forwardRef(({ modalOpen, handleCloseModal, selectedEv
             return;
         }
     
-        let dataInicio;
-        let dataFinal;
+        const [year, month, day] = selectedDate.split('-').map(Number);
+        const dataInicio = new Date(year, month - 1, day);
+        const dataFinal = new Date(year, month - 1, day);
     
         if (consultaForm.status === "REMARCADO" && exibirNovosCampos) {
             if (!novaData || !novoHorarioInicio || !novoHorarioTermino) {
@@ -297,22 +298,24 @@ export const BookingForm = forwardRef(({ modalOpen, handleCloseModal, selectedEv
                 return;
             }
     
-            // Usar os novos horários de início e término se estiver remarcando
-            dataInicio = new Date(novaData);
+            // Usar a nova data corretamente
+            dataInicio.setDate(novaData.getDate());
+            dataInicio.setMonth(novaData.getMonth());
+            dataInicio.setFullYear(novaData.getFullYear());
             dataInicio.setHours(novoHorarioInicio.getHours());
             dataInicio.setMinutes(novoHorarioInicio.getMinutes());
     
-            dataFinal = new Date(novaData);
+            dataFinal.setDate(novaData.getDate());
+            dataFinal.setMonth(novaData.getMonth());
+            dataFinal.setFullYear(novaData.getFullYear());
             dataFinal.setHours(novoHorarioTermino.getHours());
             dataFinal.setMinutes(novoHorarioTermino.getMinutes() - 1);
     
             // Atualizar os valores no estado do formulário para refletir os novos horários
             atualizarConsulta('dataHoraInicio', dataInicio);
             atualizarConsulta('dataHoraFim', dataFinal);
-        } else {
-            dataInicio = new Date(consultaForm.dataHoraInicio);
-            dataFinal = new Date(consultaForm.dataHoraFim);
-    
+        }
+        else {
             dataInicio.setHours(consultaForm.dataHoraInicio.getHours());
             dataInicio.setMinutes(consultaForm.dataHoraInicio.getMinutes());
     
@@ -334,6 +337,7 @@ export const BookingForm = forwardRef(({ modalOpen, handleCloseModal, selectedEv
             }
         }
     };
+    
     
 
     const gravar = async (args1, args2) => {
@@ -828,7 +832,18 @@ export const BookingForm = forwardRef(({ modalOpen, handleCloseModal, selectedEv
                                             minDate={new Date()}
                                             value={novaData}
                                             onChange={(newDate) => setNovaData(newDate)}
-                                            slotProps={{ textField: { placeholder: 'Selecione uma nova data' } }} 
+                                            slotProps={{ 
+                                                textField: { 
+                                                    placeholder: 'Selecione uma nova data',
+                                                    inputProps: {
+                                                        sx: {
+                                                            '&::placeholder': {
+                                                                opacity: 1,
+                                                            },
+                                                        },
+                                                    },
+                                                },
+                                            }} 
                                         />
                                     </LocalizationProvider>
                                 </div>
@@ -846,7 +861,18 @@ export const BookingForm = forwardRef(({ modalOpen, handleCloseModal, selectedEv
                                                     value={novoHorarioInicio}
                                                     onChange={(newTime) => setNovoHorarioInicio(newTime)}
                                                     ampm={false}
-                                                    slotProps={{ textField: { placeholder: 'Novo horário de início' } }} 
+                                                    slotProps={{ 
+                                                        textField: { 
+                                                            placeholder: 'Novo horário de início',
+                                                            inputProps: {
+                                                                sx: {
+                                                                    '&::placeholder': {
+                                                                        opacity: 1,
+                                                                    },
+                                                                },
+                                                            },
+                                                        },
+                                                    }}  
                                                 />
                                             </LocalizationProvider>
                                         </div>
@@ -857,7 +883,18 @@ export const BookingForm = forwardRef(({ modalOpen, handleCloseModal, selectedEv
                                                     value={novoHorarioTermino}
                                                     onChange={(newTime) => setNovoHorarioTermino(newTime)}
                                                     ampm={false}
-                                                    slotProps={{ textField: { placeholder: 'Novo horário de término' } }} 
+                                                    slotProps={{ 
+                                                        textField: { 
+                                                            placeholder: 'Novo horário de término',
+                                                            inputProps: {
+                                                                sx: {
+                                                                    '&::placeholder': {
+                                                                        opacity: 1,
+                                                                    },
+                                                                },
+                                                            },
+                                                        },
+                                                    }}   
                                                 />
                                             </LocalizationProvider>
                                         </div>
@@ -878,7 +915,18 @@ export const BookingForm = forwardRef(({ modalOpen, handleCloseModal, selectedEv
                                             onChange={(newTime) => atualizarConsulta('dataHoraInicio', newTime)}
                                             ampm={false}
                                             disabled={["REMARCADO", "FINALIZADO", "CANCELADO", "CONFIRMADO", "EM_ANDAMENTO", "AGUARDANDO", "ENVIADO"].includes(consultaForm.status)}
-                                            slotProps={{ textField: { placeholder: 'Horário de início' } }} 
+                                            slotProps={{ 
+                                                textField: { 
+                                                    placeholder: 'Horário de início',
+                                                    inputProps: {
+                                                        sx: {
+                                                            '&::placeholder': {
+                                                                opacity: 1,
+                                                            },
+                                                        },
+                                                    },
+                                                },
+                                            }}    
                                         />
                                     </LocalizationProvider>
                                 </div>
@@ -890,7 +938,18 @@ export const BookingForm = forwardRef(({ modalOpen, handleCloseModal, selectedEv
                                             onChange={(newTime) => atualizarConsulta('dataHoraFim', newTime)}
                                             ampm={false}
                                             disabled={["REMARCADO", "FINALIZADO", "CANCELADO", "CONFIRMADO", "EM_ANDAMENTO", "AGUARDANDO", "ENVIADO"].includes(consultaForm.status)}
-                                            slotProps={{ textField: { placeholder: 'Horário de término' } }} 
+                                            slotProps={{ 
+                                                textField: { 
+                                                    placeholder: 'Horário de término',
+                                                    inputProps: {
+                                                        sx: {
+                                                            '&::placeholder': {
+                                                                opacity: 1,
+                                                            },
+                                                        },
+                                                    },
+                                                },
+                                            }}    
                                         />
                                     </LocalizationProvider>
                                 </div>

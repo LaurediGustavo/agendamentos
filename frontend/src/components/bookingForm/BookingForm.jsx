@@ -79,7 +79,7 @@ export const BookingForm = forwardRef(({ modalOpen, handleCloseModal, selectedEv
     }
 
     const disabilitarSituacao = (data) => {
-        return data.status === 'REMARCADO'
+        return situacaoOriginal === 'REMARCADO' && data.status === 'REMARCADO';
     }
 
     const preencherForm = async (data) => {
@@ -102,7 +102,7 @@ export const BookingForm = forwardRef(({ modalOpen, handleCloseModal, selectedEv
         formulario.valorTotal = formatarValor(data.valorTotal);
         formulario.tempoAproximado = data.tempoAproximado;
         setSituacaoOriginal(data.status);
-        setConsultaContinua(data.consultaEstendidaDe? true : false)
+        setConsultaContinua(data.consultaEstendidaDe ? true : false)
         setConsultaSelecionada(data.consultaEstendidaDe);
 
         if (data.remercado) {
@@ -400,22 +400,22 @@ export const BookingForm = forwardRef(({ modalOpen, handleCloseModal, selectedEv
 
     const eventClass = (status) => {
         switch (status) {
-          case 'CANCELADO':
-            return 'event-cancelado';
-          case 'REMARCADO':
-            return 'event-remarcado';
-          case 'FINALIZADO':
-            return 'event-finalizado';
-          case 'AGUARDANDO':
-            return 'event-aguardando';
-          case 'ENVIADO':
-            return 'event-enviado';
-          case 'CONFIRMADO':
-            return 'event-confirmado';
-          case 'EM_ANDAMENTO': 
-            return 'event-em_andamento';
-          default:
-            return 'event-default';
+            case 'CANCELADO':
+                return 'event-cancelado';
+            case 'REMARCADO':
+                return 'event-remarcado';
+            case 'FINALIZADO':
+                return 'event-finalizado';
+            case 'AGUARDANDO':
+                return 'event-aguardando';
+            case 'ENVIADO':
+                return 'event-enviado';
+            case 'CONFIRMADO':
+                return 'event-confirmado';
+            case 'EM_ANDAMENTO':
+                return 'event-em_andamento';
+            default:
+                return 'event-default';
         }
     }
 
@@ -556,10 +556,10 @@ export const BookingForm = forwardRef(({ modalOpen, handleCloseModal, selectedEv
         const procedimentosBusca = await buscarProcedimentos();
 
         const promessas = [];
-    
+
         for (const id of ids) {
             const procedimento = procedimentosBusca?.find(proc => proc.id === id);
-            
+
             if (!procedimento) {
                 const fetchPromise = api.get("procedimento/consultar/" + id)
                     .then((response) => {
@@ -571,10 +571,10 @@ export const BookingForm = forwardRef(({ modalOpen, handleCloseModal, selectedEv
                 promessas.push(fetchPromise);
             }
         }
-    
+
         await Promise.all(promessas);
     }
-    
+
     const buscarPacientesSelecionado = async (id) => {
         const pacientesBusca = await buscarPacientes();
         const paciente = pacientesBusca?.find(proc => proc.id === id);
@@ -594,7 +594,7 @@ export const BookingForm = forwardRef(({ modalOpen, handleCloseModal, selectedEv
         if (consultaForm.doutorId) {
 
             const doutor = doutoresBusca?.find(proc => proc.id === consultaForm.doutorId);
-    
+
             if (!doutor) {
                 await api.get("doutor/consultar/agendamento/" + consultaForm.doutorId)
                     .then((response) => {
@@ -722,6 +722,7 @@ export const BookingForm = forwardRef(({ modalOpen, handleCloseModal, selectedEv
                                 fullWidth
                                 value={consultaForm.procedimentosIds}
                                 onChange={(e) => atualizarConsulta('procedimentosIds', e.target.value)}
+                                disabled={disabilitarSituacao(consultaForm)}
                                 label="Procedimento"
                                 multiple
                                 sx={{ my: 2, color: '#333' }}
@@ -732,7 +733,7 @@ export const BookingForm = forwardRef(({ modalOpen, handleCloseModal, selectedEv
                                         {selected.map((value) => {
                                             const procedimento = procedimentos.find(proc => proc.id === value);
                                             // Verifica se o procedimento deve exibir o botão de remoção (x)
-                                            const shouldShowDelete = !consultaContinua || !consultasEmAndamento.some(consulta => consulta.procedimentos.some(p => p.id === procedimento.id));
+                                            const shouldShowDelete = (!consultaContinua || !consultasEmAndamento.some(consulta => consulta.procedimentos.some(p => p.id === procedimento.id))) && !disabilitarSituacao(consultaForm);
 
                                             return (
                                                 <Tooltip
@@ -793,6 +794,7 @@ export const BookingForm = forwardRef(({ modalOpen, handleCloseModal, selectedEv
                             </div>
                             <Select
                                 fullWidth
+                                disabled={disabilitarSituacao(consultaForm)}
                                 value={consultaForm.doutorId}
                                 onChange={(e) => atualizarConsulta('doutorId', e.target.value)}
                                 label="Doutor"
@@ -819,10 +821,11 @@ export const BookingForm = forwardRef(({ modalOpen, handleCloseModal, selectedEv
                                 <div className="item-container-data">
                                     <LocalizationProvider dateAdapter={AdapterDateFns}>
                                         <DatePicker
+                                            disabled={disabilitarSituacao(consultaForm)}
                                             value={novaData}
                                             onChange={(newDate) => setNovaData(newDate)}
                                             renderInput={(params) => (
-                                                <TextField {...params} variant="outlined" fullWidth sx={{ my: 2 }} />
+                                                <TextField {...params} variant="outlined"  sx={{ my: 2}} />
                                             )}
                                         />
                                     </LocalizationProvider>
@@ -838,6 +841,7 @@ export const BookingForm = forwardRef(({ modalOpen, handleCloseModal, selectedEv
                                             <LocalizationProvider dateAdapter={AdapterDateFns}>
                                                 <TimePicker
                                                     label="Novo Horário de Início"
+                                                    disabled={disabilitarSituacao(consultaForm)}
                                                     value={novoHorarioInicio}
                                                     onChange={(newTime) => setNovoHorarioInicio(newTime)}
                                                     ampm={false}
@@ -851,6 +855,7 @@ export const BookingForm = forwardRef(({ modalOpen, handleCloseModal, selectedEv
                                             <LocalizationProvider dateAdapter={AdapterDateFns}>
                                                 <TimePicker
                                                     label="Novo Horário de Término"
+                                                    disabled={disabilitarSituacao(consultaForm)}
                                                     value={novoHorarioTermino}
                                                     onChange={(newTime) => setNovoHorarioTermino(newTime)}
                                                     ampm={false}
@@ -877,7 +882,7 @@ export const BookingForm = forwardRef(({ modalOpen, handleCloseModal, selectedEv
                                             value={consultaForm.dataHoraInicio}
                                             onChange={(newTime) => atualizarConsulta('dataHoraInicio', newTime)}
                                             ampm={false}
-                                            disabled={["REMARCADO", "FINALIZADO", "CANCELADO", "CONFIRMADO", "EM_ANDAMENTO"].includes(consultaForm.status)}
+                                            disabled={["REMARCADO", "FINALIZADO", "CANCELADO", "CONFIRMADO", "EM_ANDAMENTO", "AGUARDANDO", "ENVIADO"].includes(consultaForm.status)}
                                             renderInput={(params) => (
                                                 <TextField
                                                     {...params}
@@ -899,7 +904,7 @@ export const BookingForm = forwardRef(({ modalOpen, handleCloseModal, selectedEv
                                             value={consultaForm.dataHoraFim}
                                             onChange={(newTime) => atualizarConsulta('dataHoraFim', newTime)}
                                             ampm={false}
-                                            disabled={["REMARCADO", "FINALIZADO", "CANCELADO", "CONFIRMADO", "EM_ANDAMENTO"].includes(consultaForm.status)}
+                                            disabled={["REMARCADO", "FINALIZADO", "CANCELADO", "CONFIRMADO", "EM_ANDAMENTO", "AGUARDANDO", "ENVIADO"].includes(consultaForm.status)}
                                             renderInput={(params) => (
                                                 <TextField
                                                     {...params}

@@ -32,7 +32,8 @@ export const BookingForm = forwardRef(({ modalOpen, handleCloseModal, selectedEv
     const [situacaoOriginal, setSituacaoOriginal] = useState(null);
     const [consultaContinua, setConsultaContinua] = useState(false); //novo
     const [consultasEmAndamento, setConsultasEmAndamento] = useState([]); //novo
-    const [consultaSelecionada, setConsultaSelecionada] = useState(null); //novo
+    const [consultaSelecionada, setConsultaSelecionada] = useState({});
+
 
     // Estado local do componente
     const [consultaId, setConsultaId] = useState()
@@ -535,6 +536,13 @@ export const BookingForm = forwardRef(({ modalOpen, handleCloseModal, selectedEv
         setConsultaContinua(!consultaContinua);
         buscarConsultasEmAndamento(consultaForm.pacienteId);
     };
+
+    useEffect(() => {
+        if (!modalOpen) {
+            // Reinicie o estado do checkbox para false quando o modal for fechado
+            setConsultaContinua(false);
+        }
+    }, [modalOpen]);
 
     const buscarConsultasEmAndamento = async (id) => { //novo
         // Lógica para buscar as consultas em andamento 

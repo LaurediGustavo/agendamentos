@@ -56,15 +56,28 @@ const Action = (props) => {
 
 
   const handleAutocompleteChange = (event, newValue) => {
-    // Atualiza o estado formData com o paciente selecionado
-    setFormData({
-      ...formData,
-      pacienteId: newValue ? newValue.id : '', // Define pacienteId como '' se não houver nenhum paciente selecionado
-      responsavel: newValue ? newValue.id : '', // Define o responsavel como o nome do paciente selecionado, ou '' se nenhum paciente for selecionado
-      telefoneResponsavel: newValue ? newValue.telefone : '',
-      responsavelNome: newValue.nome + " - " + newValue.cpf,
-    });
+    // Adicione uma verificação de nulo para newValue
+    if (newValue) {
+      // Atualiza o estado formData com o paciente selecionado
+      setFormData({
+        ...formData,
+        pacienteId: newValue.id || '', 
+        responsavel: newValue.id || '',
+        telefoneResponsavel: newValue.telefone || '',
+        responsavelNome: `${newValue.nome} - ${newValue.cpf}` || '',
+      });
+    } else {
+
+      setFormData({
+        ...formData,
+        pacienteId: '',
+        responsavel: '',
+        telefoneResponsavel: '',
+        responsavelNome: '',
+      });
+    }
   };
+  
 
   useEffect(() => {
     setFormData(props.initialData || {});

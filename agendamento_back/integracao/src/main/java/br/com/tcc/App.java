@@ -7,6 +7,7 @@ import org.springframework.context.annotation.ComponentScan;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.scheduling.annotation.EnableScheduling;
+import org.springframework.web.socket.config.annotation.EnableWebSocket;
 
 @SpringBootApplication
 @ComponentScan({"br.com.tcc.entidades",
@@ -22,7 +23,8 @@ import org.springframework.scheduling.annotation.EnableScheduling;
                 "br.com.tcc.impl",
                 "br.com.tcc.validation.agendamento.impl",
                 "br.com.tcc.validation.agendamento.interfaces",
-                "br.com.tcc.exceptions"})
+                "br.com.tcc.exceptions",
+                "br.com.tcc.websocket"})
 @EntityScan(basePackages = {"br.com.tcc.entity"})
 @EnableJpaRepositories(basePackages = {"br.com.tcc.repository"})
 @EnableScheduling

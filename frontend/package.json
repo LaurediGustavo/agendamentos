@@ -35,6 +35,8 @@
     "react-input-mask": "^2.0.4",
     "react-pro-sidebar": "^1.1.0-alpha.1",
     "react-router-dom": "^6.15.0",
+    "sockjs-client": "^1.6.1",
+    "stompjs": "^2.3.3",
     "yup": "^1.3.2"
   },
   "devDependencies": {

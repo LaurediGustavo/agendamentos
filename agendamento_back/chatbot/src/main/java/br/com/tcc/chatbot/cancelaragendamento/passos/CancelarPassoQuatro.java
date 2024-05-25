@@ -12,6 +12,8 @@ import br.com.tcc.enumerador.StatusDaMensagemChatBotEnum;
 import br.com.tcc.repository.CancelarAgendamentoChatBotRepository;
 import br.com.tcc.repository.ConsultaRepository;
 import br.com.tcc.repository.MonitorDeChatBotRepository;
+import br.com.tcc.websocket.NotificationWebSocketHandler;
+import br.com.tcc.websocket.NotificationWebSocketService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
@@ -39,6 +41,12 @@ public class CancelarPassoQuatro implements CancelarPassosInterface {
 
     @Autowired
     private MenuChatBot menuChatBot;
+
+    @Autowired
+    private NotificationWebSocketHandler notificationWebSocketHandler;
+
+    @Autowired
+    private NotificationWebSocketService notificationWebSocketService;
 
     @Override
     public List<SendMessage> processarPassosDeCadastro(MonitorDeChatBot monitorDeChatBot, Message message) {
@@ -86,6 +94,7 @@ public class CancelarPassoQuatro implements CancelarPassosInterface {
 
             Consulta consulta = consultaRepository.findById(cancelamento.getAgendamentoId()).get();
             cancelarConsulta(consulta);
+            notificationWebSocketHandler.notificar(notificationWebSocketService.tratarConsultaParaWebSocket(consulta));
         }
     }
 

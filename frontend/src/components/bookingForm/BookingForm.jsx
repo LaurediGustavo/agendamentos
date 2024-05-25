@@ -4,7 +4,6 @@ import { LocalizationProvider, TimePicker, DatePicker } from '@mui/x-date-picker
 import CloseIcon from '@mui/icons-material/Close';
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
 import './bookingForm.scss'
-import ptBR from 'date-fns/locale/pt-BR'
 import api from '../../services/api';
 import moment from 'moment';
 import FormControlLabel from '@mui/material/FormControlLabel';
@@ -23,6 +22,7 @@ import {
     Autocomplete
 } from "@mui/material";
 import { formatarData_dd_MM_yyyy } from '../../services/dateFormat';
+import { ptBR } from 'date-fns/locale';
 
 export const BookingForm = forwardRef(({ modalOpen, handleCloseModal, selectedEvent, selectedDate, calendarRef }, ref) => {
 
@@ -110,12 +110,16 @@ export const BookingForm = forwardRef(({ modalOpen, handleCloseModal, selectedEv
         if (data.remercado) {
             setNovaData(moment(data.remercado.dataHoraInicio).toDate())
             setNovoHorarioInicio(moment(data.remercado.dataHoraInicio).toDate())
+            
+            const novoHorarioFinal = new Date(data.remercado.dataHoraFim);
+            novoHorarioFinal.setMinutes(novoHorarioFinal.getMinutes() + 1);
+            setNovoHorarioTermino(novoHorarioFinal);
         }
         else {
             setNovaData()
             setNovoHorarioInicio()
         }
-
+        
         setConsultaForm(formulario);
     }
 
@@ -201,7 +205,7 @@ export const BookingForm = forwardRef(({ modalOpen, handleCloseModal, selectedEv
         const calcular = async () => {
             const tempoAproximado = calcularTempo();
             const valorTotal = calcularValor();
-
+            
             setConsultaForm((prevConsultaForm) => ({
                 ...prevConsultaForm,
                 tempoAproximado,

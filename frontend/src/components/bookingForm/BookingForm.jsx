@@ -22,6 +22,7 @@ import {
     Autocomplete
 } from "@mui/material";
 import { formatarData_dd_MM_yyyy } from '../../services/dateFormat';
+import { ptBR } from 'date-fns/locale';
 
 export const BookingForm = forwardRef(({ modalOpen, handleCloseModal, selectedEvent, selectedDate, calendarRef }, ref) => {
 
@@ -108,12 +109,16 @@ export const BookingForm = forwardRef(({ modalOpen, handleCloseModal, selectedEv
         if (data.remercado) {
             setNovaData(moment(data.remercado.dataHoraInicio).toDate())
             setNovoHorarioInicio(moment(data.remercado.dataHoraInicio).toDate())
+            
+            const novoHorarioFinal = new Date(data.remercado.dataHoraFim);
+            novoHorarioFinal.setMinutes(novoHorarioFinal.getMinutes() + 1);
+            setNovoHorarioTermino(novoHorarioFinal);
         }
         else {
             setNovaData()
             setNovoHorarioInicio()
         }
-
+        
         setConsultaForm(formulario);
     }
 
@@ -199,7 +204,7 @@ export const BookingForm = forwardRef(({ modalOpen, handleCloseModal, selectedEv
         const calcular = async () => {
             const tempoAproximado = calcularTempo();
             const valorTotal = calcularValor();
-
+            
             setConsultaForm((prevConsultaForm) => ({
                 ...prevConsultaForm,
                 tempoAproximado,
@@ -817,7 +822,7 @@ export const BookingForm = forwardRef(({ modalOpen, handleCloseModal, selectedEv
                                     {erros.novaData && <div className="error-message">{erros.novaData}</div>}
                                 </div>
                                 <div className="item-container-data">
-                                    <LocalizationProvider dateAdapter={AdapterDateFns}>
+                                    <LocalizationProvider dateAdapter={AdapterDateFns} adapterLocale={ptBR}>
                                         <DatePicker
                                             value={novaData}
                                             onChange={(newDate) => setNovaData(newDate)}

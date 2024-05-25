@@ -7,6 +7,8 @@ import br.com.tcc.entity.*;
 import br.com.tcc.enumerador.StatusConsultaEnum;
 import br.com.tcc.enumerador.StatusDaMensagemChatBotEnum;
 import br.com.tcc.repository.*;
+import br.com.tcc.websocket.NotificationWebSocketHandler;
+import br.com.tcc.websocket.NotificationWebSocketService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
@@ -44,6 +46,11 @@ public class AgendamentoPassoSeis implements AgendamentoPassosInterface {
     @Autowired
     private MenuChatBot menuChatBot;
 
+    @Autowired
+    private NotificationWebSocketHandler notificationWebSocketHandler;
+
+    @Autowired
+    private NotificationWebSocketService notificationWebSocketService;
 
     @Override
     public List<SendMessage> processarPassosDeAgendamento(MonitorDeChatBot monitorDeChatBot, Message message) {
@@ -124,6 +131,8 @@ public class AgendamentoPassoSeis implements AgendamentoPassosInterface {
 
             consultaRepository.save(consulta);
             agendamentoChatBotRepository.delete(agendamentoChatBot);
+
+            notificationWebSocketHandler.notificar(notificationWebSocketService.tratarConsultaParaWebSocket(consulta));
         }
     }
 

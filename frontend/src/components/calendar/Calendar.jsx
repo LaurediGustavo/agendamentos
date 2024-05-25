@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import FullCalendar from '@fullcalendar/react';
 import dayGridPlugin from '@fullcalendar/daygrid';
 import timeGridPlugin from '@fullcalendar/timegrid';
@@ -13,6 +13,55 @@ import { getRoles, getUserId } from '../../services/auth_service';
 export const Calendar = ({ calendarRef, handleEventClick, handleEventSelect }) => {
   const roles = getRoles();
   const userId = getUserId();
+
+  useEffect(() => {
+    let socket;
+    try {
+      socket = new WebSocket('ws://localhost:8080/ws/consulta');
+
+      socket.onopen = () => {
+        console.log('WebSocket connection established');
+      };
+
+      socket.onmessage = (event) => {
+        const data = JSON.parse(event.data);
+
+        const eventos = calendarRef.current.getApi().getEvents();
+        const eventoExistente = eventos.find((evento) => evento.extendedProps.consulta_id === data.consultaId);
+
+        console.log(data)
+
+        if (eventoExistente) {
+          eventoExistente.setProp('classNames', eventClass(data.status));
+        } else {
+          calendarRef.current.getApi().addEvent({
+            title: data.pacienteNome,
+            start: data.dataHoraInicio,
+            end: data.dataHoraFim,
+            consulta_id: data.consultaId,
+            classNames: eventClass(data.status),
+          });
+        }
+      };
+      
+
+      socket.onclose = (event) => {
+        console.log('WebSocket connection closed:', event);
+      };
+
+      socket.onerror = (error) => {
+        console.error('WebSocket error:', error);
+      };
+    } catch (error) {
+      console.error('WebSocket connection error:', error);
+    }
+
+    return () => {
+      if (socket) {
+        socket.close();
+      }
+    };
+  }, []);
 
   const eventClass = (status) => {
     switch (status) {

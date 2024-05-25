@@ -10,6 +10,8 @@ import br.com.tcc.entity.*;
 import br.com.tcc.enumerador.StatusConsultaEnum;
 import br.com.tcc.enumerador.StatusDaMensagemChatBotEnum;
 import br.com.tcc.repository.*;
+import br.com.tcc.websocket.NotificationWebSocketHandler;
+import br.com.tcc.websocket.NotificationWebSocketService;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -51,6 +53,12 @@ public class RemarcarPassoSete implements RemarcarPassosInterface {
 
     @Autowired
     private ConsultaEstendidaRepository consultaEstendidaRepository;
+
+    @Autowired
+    private NotificationWebSocketHandler notificationWebSocketHandler;
+
+    @Autowired
+    private NotificationWebSocketService notificationWebSocketService;
 
     @Override
     public List<SendMessage> processarPassosDeRemarcar(MonitorDeChatBot monitorDeChatBot, Message message) {
@@ -204,11 +212,13 @@ public class RemarcarPassoSete implements RemarcarPassosInterface {
 
             consultaRepository.save(consulta);
             remarcarAgendamentoChatBotRepository.delete(remarcar);
+            notificationWebSocketHandler.notificar(notificationWebSocketService.tratarConsultaParaWebSocket(consulta));
 
             consultaAnterior.setConsultaRemarcadaPara(consulta);
             consultaAnterior.setStatus(StatusConsultaEnum.REMARCADO);
             consultaAnterior.setProcedimentos(procedimentosAnterior);
             consultaRepository.save(consultaAnterior);
+            notificationWebSocketHandler.notificar(notificationWebSocketService.tratarConsultaParaWebSocket(consultaAnterior));
 
             adicionarConsultaEstendida(consulta, consultaAnterior);
         }

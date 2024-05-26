@@ -133,4 +133,8 @@ public class PacienteService {
 		return pacienteRepository.existsById(id);
 	}
 
+	public boolean existsByCpf(String cpf) {
+		return pacienteRepository.existsByCpf(cpf);
+	}
+
 }

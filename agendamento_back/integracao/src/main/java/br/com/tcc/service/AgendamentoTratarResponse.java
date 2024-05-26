@@ -9,6 +9,8 @@ import br.com.tcc.model.response.ProcedimentoResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.Duration;
+import java.time.LocalTime;
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
@@ -53,11 +55,25 @@ public class AgendamentoTratarResponse {
                     agendamento.getDoutor().getId(),
                     getProcedimentos(agendamento),
                     agendamento.getValorTotal(),
-                    agendamento.getTempoAproximado(),
+                    tempoTotalAproximado(agendamento),
                     montarAgendamentoResponse(agendamento.getConsultaRemarcadaPara()),
                     getConsultaEstendida(agendamento.getConsultasEstendidasDe()));
 
         return null;
+    }
+
+    private LocalTime tempoTotalAproximado(Consulta consulta) {
+        Duration duration1 = Duration.between(LocalTime.MIDNIGHT, LocalTime.of(0, 0));
+
+        if (consulta.getConsultasEstendidasDe() != null &&
+                !consulta.getConsultasEstendidasDe().isEmpty()) {
+            duration1 = Duration.between(LocalTime.MIDNIGHT, consulta.getConsultasEstendidasDe().get(0).getTempoAproximado());
+        }
+        Duration duration2 = Duration.between(LocalTime.MIDNIGHT, consulta.getTempoAproximado());
+
+        Duration totalDuration = duration1.plus(duration2);
+
+        return LocalTime.MIDNIGHT.plus(totalDuration);
     }
 
     private AgendamentoResponse getConsultaEstendida(List<Consulta> agendamento) {

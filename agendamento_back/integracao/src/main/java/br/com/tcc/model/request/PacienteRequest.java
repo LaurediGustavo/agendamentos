@@ -2,6 +2,7 @@ package br.com.tcc.model.request;
 
 import br.com.tcc.validation.generic.interfaces.ValidCpf;
 import br.com.tcc.validation.generic.interfaces.ValidObrigatorio;
+import br.com.tcc.validation.paciente.interfaces.ValidCpfPaciente;
 import br.com.tcc.validation.paciente.interfaces.ValidPacienteId;
 import br.com.tcc.validation.paciente.interfaces.ValidResponsavel;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -10,6 +11,7 @@ import lombok.Data;
 import java.time.LocalDate;
 
 @Data
+@ValidCpfPaciente
 public class PacienteRequest {
 
     @ValidPacienteId

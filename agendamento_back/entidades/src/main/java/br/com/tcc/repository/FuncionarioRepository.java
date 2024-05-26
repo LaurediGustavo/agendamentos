@@ -27,4 +27,6 @@ public interface FuncionarioRepository extends JpaRepository<Funcionario, Long> 
             "ORDER BY f.nome ")
     Optional<List<Funcionario>> findByNomeContainingAndDesabilitado(String nome);
 
+    boolean existsByCpf(String cpf);
+
 }

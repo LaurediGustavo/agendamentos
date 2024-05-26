@@ -1,5 +1,6 @@
 package br.com.tcc.model.request;
 
+import br.com.tcc.validation.funcionario.interfaces.ValidCpfFuncionario;
 import br.com.tcc.validation.funcionario.interfaces.ValidFuncionarioId;
 import br.com.tcc.validation.generic.interfaces.ValidCpf;
 import br.com.tcc.validation.generic.interfaces.ValidObrigatorio;
@@ -9,6 +10,7 @@ import lombok.Data;
 import java.time.LocalDate;
 
 @Data
+@ValidCpfFuncionario
 public class FuncionarioRequest {
 
     @JsonProperty(required = false)

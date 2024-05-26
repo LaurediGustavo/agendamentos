@@ -66,7 +66,7 @@ public class AgendamentoService {
 	}
 
 	private Consulta gerarConsulta(AgendamentoDto agendamento) {
-		Consulta consulta = new Consulta();
+		Consulta consulta = this.consultarPorId(agendamento.getId()).orElse(new Consulta());
 		consulta.setId(agendamento.getId());
 		consulta.setDoutor(getDoutor(agendamento.getDoutorId()));
 		consulta.setPaciente(getPaciente(agendamento.getPacienteId()));
@@ -139,6 +139,8 @@ public class AgendamentoService {
 	}
 
 	public Optional<Consulta> consultarPorId(Long id) {
+		id = id == null? 0L : id;
+
 		return consultaRepository.findById(id);
 	}
 

@@ -545,6 +545,7 @@ export const BookingForm = forwardRef(({ modalOpen, handleCloseModal, selectedEv
         if (!modalOpen) {
             // Reinicie o estado do checkbox para false quando o modal for fechado
             setConsultaContinua(false);
+            setConsultaSelecionada(null);
         }
     }, [modalOpen]);
 
@@ -926,7 +927,7 @@ export const BookingForm = forwardRef(({ modalOpen, handleCloseModal, selectedEv
                                             value={consultaForm.dataHoraInicio}
                                             onChange={(newTime) => atualizarConsulta('dataHoraInicio', newTime)}
                                             ampm={false}
-                                            disabled={["REMARCADO", "FINALIZADO", "CANCELADO", "CONFIRMADO", "EM_ANDAMENTO", "AGUARDANDO", "ENVIADO"].includes(consultaForm.status)}
+                                            disabled={["REMARCADO", "FINALIZADO", "CANCELADO", "CONFIRMADO", "EM_ANDAMENTO", "ENVIADO"].includes(consultaForm.status)}
                                             slotProps={{ 
                                                 textField: { 
                                                     placeholder: 'Horário de início',
@@ -949,7 +950,7 @@ export const BookingForm = forwardRef(({ modalOpen, handleCloseModal, selectedEv
                                             value={consultaForm.dataHoraFim}
                                             onChange={(newTime) => atualizarConsulta('dataHoraFim', newTime)}
                                             ampm={false}
-                                            disabled={["REMARCADO", "FINALIZADO", "CANCELADO", "CONFIRMADO", "EM_ANDAMENTO", "AGUARDANDO", "ENVIADO"].includes(consultaForm.status)}
+                                            disabled={["REMARCADO", "FINALIZADO", "CANCELADO", "CONFIRMADO", "EM_ANDAMENTO", "ENVIADO"].includes(consultaForm.status)}
                                             slotProps={{ 
                                                 textField: { 
                                                     placeholder: 'Horário de término',

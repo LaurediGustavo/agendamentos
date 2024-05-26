@@ -1,5 +1,6 @@
 package br.com.tcc.model.request;
 
+import br.com.tcc.validation.doutor.interfaces.ValidCpfDoutor;
 import br.com.tcc.validation.funcionario.interfaces.ValidFuncionarioId;
 import br.com.tcc.validation.generic.interfaces.ValidObrigatorio;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -8,6 +9,7 @@ import lombok.Data;
 import java.util.List;
 
 @Data
+@ValidCpfDoutor
 public class DoutorRequest {
 
     @JsonProperty(required = false)

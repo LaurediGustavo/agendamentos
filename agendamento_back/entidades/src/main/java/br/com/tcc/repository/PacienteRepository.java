@@ -40,4 +40,6 @@ public interface PacienteRepository extends JpaRepository<Paciente, Long> {
 
     Optional<Paciente> findByChatId(Long chatId);
 
+    boolean existsByCpf(String cpf);
+
 }

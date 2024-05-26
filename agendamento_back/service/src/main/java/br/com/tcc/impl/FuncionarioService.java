@@ -105,4 +105,8 @@ public class FuncionarioService {
         funcionarioRepository.save(funcionario);
     }
 
+    public boolean existsByCpf(String cpf) {
+        return funcionarioRepository.existsByCpf(cpf);
+    }
+
 }

@@ -2,12 +2,14 @@ import React from "react";
 import Doutores from "./scenes/doctors/Doctors";
 import Pacientes from './scenes/patients/Patients';
 import Procedimentos from './scenes/procedures/Procedures';
-import Employees from './scenes/employees/Employees'; // Importando o componente de funcionários
-import Profile from './scenes/account/profile/Profile'; // Importe o componente de perfil
+import Employees from './scenes/employees/Employees'; 
+import Profile from './scenes/account/profile/Profile';
 import { Navbar } from "./scenes/global/navbar/Navbar";
 import { Home } from "./scenes/home/Home"
 import  Sidebar  from './scenes/global/sidebar/Sidebar';
 import {Login} from './scenes/auth/login/Login';
+import { ForgotPassword } from './scenes/auth/forgotPassword/ForgotPassword'; 
+import { ResetPassword } from './scenes/auth/resetPassword/ResetPassword';
 import { Footer } from './scenes/global/footer/Footer';
 import { ProtectedRoute } from './components/protectedRoute/ProtectedRoute';
 import "./assets/global.scss"
@@ -39,6 +41,14 @@ function App() {
     {
       path:"/login",
       element:<Login/>
+    },
+    {
+      path:"/forgot-password",
+      element:<ForgotPassword/>
+    },
+    {
+      path: "/reset-password",
+      element: <ResetPassword />
     },
     {
       path: "/",

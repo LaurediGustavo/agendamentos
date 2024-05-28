@@ -1,14 +1,15 @@
 import { React, forwardRef, useState, useEffect } from "react";
 import Typography from "@mui/material/Typography";
 import { ThemeProvider, createTheme } from "@mui/material/styles";
-import { Avatar, Box, Button, Container, Grid, Snackbar, TextField } from "@mui/material";
+import { Avatar, Box, Button, Container, Grid, Snackbar, TextField, InputAdornment, IconButton } from "@mui/material";
 import Stack from "@mui/material/Stack";
 import { useNavigate } from "react-router-dom";
 import loginImage from '../../../assets/login.png';
 import MuiAlert from '@mui/material/Alert';
 import Slide from '@mui/material/Slide';
+import { Visibility, VisibilityOff } from '@mui/icons-material';
 import api from '../../../services/api';
-import { login, isAuthenticated } from '../../../services/auth_service'; // Adicionado isAuthenticated
+import { login, isAuthenticated } from '../../../services/auth_service';
 import './login.scss';
 
 const Alert = forwardRef(function Alert(props, ref) {
@@ -27,14 +28,16 @@ export const Login = () => {
     const vertical = "top";
     const horizontal = "right";
     const [errorMessage, setErrorMessage] = useState("");
+    const [showPassword, setShowPassword] = useState(false);
+    const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
     function TransitionLeft(props) {
         return <Slide {...props} direction="left" />
     }
 
-    useEffect(() => { // Adicionado para verificar se o usuário está autenticado e redirecionar
+    useEffect(() => {
         if (isAuthenticated()) {
-            navigate("/"); // Redirecionar para a página inicial se o usuário já estiver autenticado
+            navigate("/");
         }
     }, []);
 
@@ -44,7 +47,6 @@ export const Login = () => {
         const username = event.target.username.value;
         const password = event.target.password.value;
 
-        // Validar o formato do e-mail
         const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
         if (!username || !password) {
@@ -58,9 +60,9 @@ export const Login = () => {
                 userName: username,
                 password: password
             });
-            login(result.data.userName ,result.data.usuarioId ,result.data.tokenJwt, result.data.roles);
-            // Verificar os papéis do usuário e redirecionar para a página apropriada
-            const roles = result.data.roles; // Obtém os papéis do usuário do resultado do login
+            login(result.data.userName, result.data.usuarioId, result.data.tokenJwt, result.data.roles);
+
+            const roles = result.data.roles;
             if (roles.includes("ROLE_DOUTOR")) {
                 navigate("/");
             } else {
@@ -83,6 +85,14 @@ export const Login = () => {
         setOpen(false);
     }
 
+    const handleClickShowPassword = () => {
+        setShowPassword(!showPassword);
+    };
+
+    const handleMouseDownPassword = (event) => {
+        event.preventDefault();
+    };
+
     return (
         <>
             <Snackbar
@@ -99,7 +109,7 @@ export const Login = () => {
 
             <div
                 style={{
-                    backgroundColor: "#c5edf5",
+                    backgroundColor: "#F5FDFC",
                     height: "100vh",
                     color: "#f5f5f5"
                 }}
@@ -111,10 +121,16 @@ export const Login = () => {
                                 className="backgroundImage"
                                 style={{
                                     backgroundImage: `url(${loginImage})`,
+                                    backgroundSize: 'cover',
+                                    backgroundPosition: 'center',
+                                    backgroundRepeat: 'no-repeat',
+                                    height: '100%',
+                                    width: '100%',
                                 }}
                             >
                             </Box>
                         </Grid>
+
                         <Grid item xs={12} sm={12} lg={5}>
                             <Box className="rightBox">
                                 <ThemeProvider theme={darkTheme}>
@@ -126,7 +142,7 @@ export const Login = () => {
                                             alignItems="center"
                                             marginBottom="20px"
                                         >
-                                            <Avatar sx={{ mb: "4px", bgcolor: "#ffffff" }} />
+                                            <Avatar sx={{ mb: "4px", bgcolor: "#e8f9f7" }} />
                                             <Typography component="h1" variant="h4">
                                                 Login
                                             </Typography>
@@ -138,13 +154,39 @@ export const Login = () => {
                                             sx={{ mt: 2 }}
                                         >
                                             <Grid container spacing={1}>
-                                                <Grid item xs={12} sx={{ ml: "3em", mr: "3em", mb: "5px" }}>
+                                                <Grid item xs={12} sx={{ ml: "3em", mr: "3em", mb: "5px", }}>
                                                     <TextField
                                                         fullWidth
                                                         id="username"
                                                         label="E-mail"
                                                         name="username"
+                                                        required
                                                         autoComplete="email"
+                                                        sx={{
+                                                            '& label': {
+                                                                color: '#2c9cac',
+                                                            },
+                                                            '& label.Mui-focused': {
+                                                                color: '#2c9cac',
+                                                            },
+                                                            '& .MuiInput-underline:after': {
+                                                                borderBottomColor: '#2c9cac',
+                                                            },
+                                                            '& .MuiOutlinedInput-root': {
+                                                                '& fieldset': {
+                                                                    borderColor: '#2c9cac',
+                                                                },
+                                                                '&:hover fieldset': {
+                                                                    borderColor: '#2c9cac',
+                                                                },
+                                                                '&.Mui-focused fieldset': {
+                                                                    borderColor: '#308C8F',
+                                                                },
+                                                            },
+                                                            '& .MuiInputBase-input': {
+                                                                color: '#308C8F',
+                                                            }
+                                                        }}
                                                     />
                                                 </Grid>
                                                 <Grid item xs={12} sx={{ ml: "3em", mr: "3em" }}>
@@ -153,8 +195,46 @@ export const Login = () => {
                                                         id="password"
                                                         label="Senha"
                                                         name="password"
-                                                        autoComplete="password"
-                                                        type="password"
+                                                        type={showPassword ? 'text' : 'password'}
+                                                        required
+                                                        InputProps={{
+                                                            endAdornment: (
+                                                                <InputAdornment position="end">
+                                                                    <IconButton
+                                                                        aria-label="toggle password visibility"
+                                                                        onClick={handleClickShowPassword}
+                                                                        onMouseDown={handleMouseDownPassword}
+                                                                    >
+                                                                        {showPassword ? <VisibilityOff style={{ color: '#2c9cac' }} /> : <Visibility style={{ color: '#2c9cac' }} />}
+                                                                    </IconButton>
+                                                                </InputAdornment>
+                                                            ),
+                                                        }}
+                                                        sx={{
+                                                            '& label': {
+                                                                color: '#2c9cac',
+                                                            },
+                                                            '& label.Mui-focused': {
+                                                                color: '#2c9cac',
+                                                            },
+                                                            '& .MuiInput-underline:after': {
+                                                                borderBottomColor: '#2c9cac',
+                                                            },
+                                                            '& .MuiOutlinedInput-root': {
+                                                                '& fieldset': {
+                                                                    borderColor: '#2c9cac',
+                                                                },
+                                                                '&:hover fieldset': {
+                                                                    borderColor: '#2c9cac',
+                                                                },
+                                                                '&.Mui-focused fieldset': {
+                                                                    borderColor: '#308C8F',
+                                                                },
+                                                            },
+                                                            '& .MuiInputBase-input': {
+                                                                color: '#308C8F',
+                                                            }
+                                                        }}
                                                     />
                                                 </Grid>
                                                 <Grid item xs={12} sx={{ ml: "3em", mr: "3em" }}>
@@ -163,7 +243,7 @@ export const Login = () => {
                                                             variant="body2"
                                                             component="span"
                                                             onClick={() => {
-                                                                navigate("/reset-password")
+                                                                navigate("/forgot-password");
                                                             }}
                                                             style={{ marginTop: "10px", cursor: "pointer" }}
                                                         >
@@ -181,9 +261,13 @@ export const Login = () => {
                                                             mt: "10px",
                                                             mr: "20px",
                                                             borderRadius: 28,
-                                                            color: "#ffffff",
+                                                            color: "#fff",
                                                             minWidth: "170px",
-                                                            backgroundColor: "#7B68EE",
+                                                            backgroundColor: "#2c9cac",
+                                                            "&:hover": {
+                                                                backgroundColor: "#1b819b",
+                                                            },
+
                                                         }}
                                                     >
                                                         Login

@@ -1,10 +1,11 @@
 import React, { useState } from 'react';
-import { Typography, TextField, Button, Dialog, DialogTitle, DialogContent, DialogActions } from '@mui/material';
+import { Typography, TextField, Button, Dialog, DialogTitle, DialogContent, DialogActions, IconButton, InputAdornment } from '@mui/material';
 import { useTheme } from '@mui/material/styles';
 import useMediaQuery from '@mui/material/useMediaQuery';
 import { Formik, Field, Form } from 'formik';
 import * as Yup from 'yup';
 import api from '../../../services/api';
+import { Visibility, VisibilityOff } from '@mui/icons-material';
 
 const ChangePassword = () => {
     const theme = useTheme();
@@ -13,6 +14,9 @@ const ChangePassword = () => {
     const [form, setForm] = useState();
     const [serverError, setServerError] = useState(null);
     const [successDialogOpen, setSuccessDialogOpen] = useState(false);
+    const [showCurrentPassword, setShowCurrentPassword] = useState(false);
+    const [showNewPassword, setShowNewPassword] = useState(false);
+    const [showConfirmNewPassword, setShowConfirmNewPassword] = useState(false);
 
     const validationSchema = Yup.object().shape({
         currentPassword: Yup.string().required('Senha atual é obrigatória'),
@@ -22,7 +26,7 @@ const ChangePassword = () => {
 
     const handleCloseDialog = () => {
         setOpenDialog(false);
-        setSuccessDialogOpen(false); 
+        setSuccessDialogOpen(false);
     };
 
     const handleConfirmDialog = async () => {
@@ -35,7 +39,7 @@ const ChangePassword = () => {
             setServerError(null);
             setOpenDialog(false);
             setSuccessDialogOpen(true);
-        } catch  (error) {
+        } catch (error) {
             if (error.response && error.response.status === 400) {
                 setServerError("A senha atual não é válida");
             } else {
@@ -44,6 +48,22 @@ const ChangePassword = () => {
         }
 
         setOpenDialog(false);
+    };
+
+    const handleClickShowPassword = (field) => {
+        switch (field) {
+            case 'currentPassword':
+                setShowCurrentPassword(!showCurrentPassword);
+                break;
+            case 'newPassword':
+                setShowNewPassword(!showNewPassword);
+                break;
+            case 'confirmNewPassword':
+                setShowConfirmNewPassword(!showConfirmNewPassword);
+                break;
+            default:
+                break;
+        }
     };
 
     return (
@@ -55,15 +75,15 @@ const ChangePassword = () => {
                 onSubmit={(values, { setSubmitting }) => {
                     console.log(values);
                     setForm(values)
-                    setOpenDialog(true); 
+                    setOpenDialog(true);
                     setSubmitting(false);
                 }}
             >
                 {({ isSubmitting, errors }) => (
                     <Form>
-                        <ProfileField name="currentPassword" label="Senha atual" isMobile={isMobile} serverError={serverError} />
-                        <ProfileField name="newPassword" label="Nova Senha" isMobile={isMobile} />
-                        <ProfileField name="confirmNewPassword" label="Confirmar Nova Senha" isMobile={isMobile} />
+                        <ProfileField name="currentPassword" label="Senha atual" isMobile={isMobile} serverError={serverError} showPassword={showCurrentPassword} handleClickShowPassword={handleClickShowPassword} />
+                        <ProfileField name="newPassword" label="Nova Senha" isMobile={isMobile} serverError={serverError} showPassword={showNewPassword} handleClickShowPassword={handleClickShowPassword} />
+                        <ProfileField name="confirmNewPassword" label="Confirmar Nova Senha" isMobile={isMobile} serverError={serverError} showPassword={showConfirmNewPassword} handleClickShowPassword={handleClickShowPassword} />
                         <div className="text-center">
                             <Button type="submit" variant="contained" color="primary" style={{ height: '50px', backgroundColor: '#3fbabf', borderRadius: '8px', width: '200px' }} disabled={isSubmitting}>Alterar a senha</Button>
                         </div>
@@ -94,7 +114,7 @@ const ChangePassword = () => {
     );
 };
 
-const ProfileField = ({ name, label, isMobile, serverError }) => {
+const ProfileField = ({ name, label, isMobile, serverError, showPassword, handleClickShowPassword }) => {
     return (
         <div style={{ display: 'flex', flexDirection: isMobile ? 'column' : 'row', alignItems: 'center', marginBottom: '2em' }}>
             <div style={{ flexBasis: isMobile ? '100%' : '30%', color: 'rgba(1, 41, 112, 0.6)', fontSize: '1.25em' }}>{label}</div>
@@ -104,12 +124,24 @@ const ProfileField = ({ name, label, isMobile, serverError }) => {
                         <div>
                             <TextField
                                 {...field}
-                                type="password"
+                                type={showPassword ? 'text' : 'password'}
                                 variant="outlined"
                                 style={{ width: '100%' }}
                                 error={(form.touched[name] && Boolean(form.errors[name])) || (serverError && name === "currentPassword")} // Adicionando condição para erro de senha atual
                                 helperText={(form.touched[name] && form.errors[name]) || (serverError && name === "currentPassword" && serverError)} // Exibindo mensagem de erro de senha atual
-                                FormHelperTextProps={{ style: { marginLeft: 0 } }} 
+                                FormHelperTextProps={{ style: { marginLeft: 0 } }}
+                                InputProps={{ 
+                                    endAdornment: (
+                                        <InputAdornment position="end">
+                                            <IconButton
+                                                onClick={() => handleClickShowPassword(name)}
+                                                edge="end"
+                                            >
+                                                {showPassword ? <Visibility /> : <VisibilityOff />}
+                                            </IconButton>
+                                        </InputAdornment>
+                                    ),
+                                }}
                             />
                         </div>
                     )}

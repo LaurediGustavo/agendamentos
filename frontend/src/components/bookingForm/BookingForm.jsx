@@ -32,7 +32,10 @@ export const BookingForm = forwardRef(({ modalOpen, handleCloseModal, selectedEv
     const [situacaoOriginal, setSituacaoOriginal] = useState(null);
     const [consultaContinua, setConsultaContinua] = useState(false); //novo
     const [consultasEmAndamento, setConsultasEmAndamento] = useState([]); //novo
-    const [consultaSelecionada, setConsultaSelecionada] = useState({});
+    const [consultaSelecionada, setConsultaSelecionada] = useState(null);
+    const [manual, setManual] = useState(false);
+
+
 
 
     // Estado local do componente
@@ -168,6 +171,7 @@ export const BookingForm = forwardRef(({ modalOpen, handleCloseModal, selectedEv
             console.error("Ops! Ocorreu um erro: " + error);
         }
     };
+    
 
     const statusOpcoes = [
         { key: 'AGUARDANDO', label: 'Aguardando' },
@@ -254,8 +258,18 @@ export const BookingForm = forwardRef(({ modalOpen, handleCloseModal, selectedEv
     };
 
     useEffect(() => {
-        atualizarConsulta('dataHoraFim', calcularHorarioTermino(consultaForm.dataHoraInicio));
-    }, [consultaForm.dataHoraInicio, consultaForm.tempoAproximado]);
+        if (!manual) {
+            atualizarConsulta('dataHoraFim', calcularHorarioTermino(consultaForm.dataHoraInicio));
+        }
+    }, [consultaForm.dataHoraInicio, consultaForm.tempoAproximado, manual]);
+
+    useEffect(() => {
+        if (Number.isInteger(consultaId) && consultaId > 0) {
+            setManual(true);
+        } else {
+            setManual(false);
+        }
+    }, [consultaId]);
 
     useEffect(() => {
         setNovoHorarioTermino(calcularHorarioTermino(novoHorarioInicio));
@@ -565,11 +579,9 @@ export const BookingForm = forwardRef(({ modalOpen, handleCloseModal, selectedEv
     // Função para lidar com a seleção de uma consulta em andamento
     const handleSelecionarConsulta = (consulta) => {
         setConsultaSelecionada(consulta);
-        console.log(consultaSelecionada)
-
-        atualizarConsulta('procedimentosIds', consulta.procedimentos.map(p => p.id))
-        // Aqui eu vou habilitar novamente o campo procedimento e preencher ele com os dados da consulta selecionada
+        atualizarConsulta('procedimentosIds', consulta.procedimentos.map(p => p.id));
     };
+    
 
     const buscarProcedimentoSelecionado = async (ids) => {
         const procedimentosBusca = await buscarProcedimentos();
@@ -709,7 +721,7 @@ export const BookingForm = forwardRef(({ modalOpen, handleCloseModal, selectedEv
                                             </div>
                                             <Select
                                                 fullWidth
-                                                value={consultaSelecionada}
+                                                 value={consultaSelecionada || ''} 
                                                 onChange={(e) => handleSelecionarConsulta(e.target.value)}
                                                 label="Consulta Estendida"
                                                 sx={{ my: 2, color: '#333' }}
@@ -925,7 +937,10 @@ export const BookingForm = forwardRef(({ modalOpen, handleCloseModal, selectedEv
                                     <LocalizationProvider dateAdapter={AdapterDateFns}>
                                         <TimePicker
                                             value={consultaForm.dataHoraInicio}
-                                            onChange={(newTime) => atualizarConsulta('dataHoraInicio', newTime)}
+                                            onChange={(newTime) => {
+                                                atualizarConsulta('dataHoraInicio', newTime);
+                                                setManual(false);
+                                            }}
                                             ampm={false}
                                             disabled={["REMARCADO", "FINALIZADO", "CANCELADO", "CONFIRMADO", "EM_ANDAMENTO", "ENVIADO"].includes(consultaForm.status)}
                                             slotProps={{ 

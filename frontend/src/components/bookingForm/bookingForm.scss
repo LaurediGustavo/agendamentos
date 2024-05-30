@@ -1,43 +1,42 @@
 /* BookingForm.css */
 
 .md {
-    width: 550px;
-    padding: 16px;
-    background-color: #fff;
-    box-shadow: 4px 4px 4px rgba(0, 0, 0, 0.2);
-    border-radius: 10px; /* Aumentei o valor do border-radius */
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    background-color: #f5f5f5;
-    border: 1px solid #e0e0e0;
-  }
+  width: 550px;
+  padding: 16px;
+  background-color: #fff;
+  box-shadow: 4px 4px 4px rgba(0, 0, 0, 0.2);
+  border-radius: 10px;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background-color: #f5f5f5;
+  border: 1px solid #e0e0e0;
+}
 
-  .md h1 {
-    margin-bottom: 40px;
-    font-size: 26px;
-    text-align: center;
-  }
-  
-  .close {
-    position: absolute;
-    top: 10px;
-    right: 10px;
-    cursor: pointer;
-  }
-  
+.md h1 {
+  margin-bottom: 40px;
+  font-size: 26px;
+  text-align: center;
+}
 
-  form .btn{
-    margin-top: 30px;
-  }
+.close {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  cursor: pointer;
+}
+
+
+form .btn {
+  margin-top: 30px;
+}
 
 .item-container {
   display: flex;
   justify-content: space-between;
   margin-bottom: 10px;
 }
-
 
 .dp-full-width {
   width: 100%;
@@ -50,11 +49,11 @@
   margin-top: 10px;
 }
 
-.item2{
+.item2 {
   margin-right: 5px;
 }
 
-.label{
+.label {
   display: flex;
   align-items: center;
 }
@@ -72,40 +71,45 @@
   color: red;
 }
 
-
-
 @media screen and (max-width: 767px) {
   .md {
-    width: calc(100% - 32px); /* Definindo a largura máxima para a tela, com espaço nas laterais */
+    width: calc(100% - 32px);
+    /* Definindo a largura máxima para a tela, com espaço nas laterais */
     margin: 0;
   }
 
   .item-container {
-    flex-direction: column; /* Empilhar os elementos ao invés de dispor lado a lado */
-    margin-bottom: 0; /* Remover a margem inferior */
+    flex-direction: column;
+    margin-bottom: 0;
   }
 
   .item2 {
-    margin-right: 0; /* Remover a margem direita */
-    margin-top: 10px; /* Adicionar um espaço entre os elementos */
+    margin-right: 0;
+    margin-top: 10px;
+    /* Adicionar um espaço entre os elementos */
   }
 
   .label {
-    margin-bottom: 10px; /* Adicionar um espaço entre os elementos */
+    margin-bottom: 10px;
+    /* Adicionar um espaço entre os elementos */
   }
 
   .label label {
-    margin-right: 0; /* Remover a margem direita */
+    margin-right: 0;
+    /* Remover a margem direita */
   }
 
   .error-message {
-    margin-top: 5px; /* Adicionar um espaço acima da mensagem de erro */
+    margin-top: 5px;
+    /* Adicionar um espaço acima da mensagem de erro */
   }
 }
 
 .md {
-  max-height: 80vh; /* Define a altura máxima como 80% da altura da viewport */
-  overflow-y: auto; /* Adiciona uma barra de rolagem vertical se o conteúdo exceder a altura máxima */
+  max-height: 80vh;
+  /* Define a altura máxima como 80% da altura da viewport */
+  overflow-y: auto;
+  /* Adiciona uma barra de rolagem vertical se o conteúdo exceder a altura máxima */
 }
 
 
@@ -116,20 +120,41 @@
   margin: 10px 0;
 }
 
-/* Estiliza os botões dentro de elementos com a classe "md" */
-.md .btn{
+.consultaContinua {
+  background-color: #8fd6d96c;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  padding: 12px;
+  margin-top: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.consultaContinua .label {
+  font-size: 16px;
+  font-weight: bold;
+  color: #333;
+}
+
+.consultaContinua .date {
+  font-size: 16px;
+  color: #555;
+  margin-left: 8px;
+  align-items: center;
+}
+
+.md .btn {
   width: 100%;
   padding: 10px;
   cursor: pointer;
   background-color: #3fbabf;
 }
 
-/* Quando o mouse passa sobre o botão dentro de um elemento com a classe "md" */
 .md .btn:hover {
-  background-color: #2d8f92; 
+  background-color: #2d8f92;
 }
 
 .MuiButtonBase-root.MuiCheckbox-root.Mui-checked {
-  color: #3fbabf; /* Define a cor do checkbox quando está marcado */
+  color: #3fbabf;
 }
-

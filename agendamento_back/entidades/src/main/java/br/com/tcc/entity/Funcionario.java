@@ -75,4 +75,7 @@ public class Funcionario implements Serializable {
 	@Column(name = "email")
 	private String email;
 
+	@Column(name = "codigoemail", length = 35)
+	private String codigoEmail;
+
 }

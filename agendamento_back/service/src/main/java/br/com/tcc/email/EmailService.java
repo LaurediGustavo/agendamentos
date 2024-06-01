@@ -40,4 +40,19 @@ public class EmailService {
         return sb.toString();
     }
 
+    @Async("emailTaskExecutor")
+    public void sendSimpleMessage(String to, String subject, String body) {
+        try {
+            SimpleMailMessage mensagem = new SimpleMailMessage();
+            mensagem.setTo(to);
+            mensagem.setSubject(subject);
+            mensagem.setText(body);
+
+            emailSender.send(mensagem);
+        }
+        catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
 }

@@ -78,7 +78,8 @@ public class FuncionarioService {
                         funcionarioDto.getBloco(),
                         getTipoFuncionario(),
                         funcionario.getDesabilitado(),
-                        funcionarioDto.getEmail()
+                        funcionarioDto.getEmail(),
+                        null
                 ))
                 .orElse(null);
     }

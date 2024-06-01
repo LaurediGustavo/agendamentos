@@ -33,7 +33,7 @@ public class WebSecurityConfig {
 	@Bean
 	public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
 		http.cors().and().csrf().disable().authorizeHttpRequests()
-			.requestMatchers("/auth/**", "/ws/consulta").permitAll().anyRequest().authenticated()
+			.requestMatchers("/auth/**", "/ws/consulta", "/rest-password/**").permitAll().anyRequest().authenticated()
 			.and().exceptionHandling().authenticationEntryPoint((request, response, authException) -> {
 	            Map<String, Object> responseMap = new HashMap<>();
 	            ObjectMapper mapper = new ObjectMapper();

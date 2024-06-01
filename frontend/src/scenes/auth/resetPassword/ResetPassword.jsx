@@ -7,6 +7,8 @@ import Slide from '@mui/material/Slide';
 import './resetPassword.scss';
 import { Link } from 'react-router-dom';
 import { Visibility, VisibilityOff } from '@mui/icons-material';
+import api from '../../../services/api';
+import { useLocation } from 'react-router-dom';
 
 const Alert = forwardRef(function Alert(props, ref) {
     return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />;
@@ -23,6 +25,9 @@ export const ResetPassword = () => {
     const [showPassword, setShowPassword] = useState(false);
     const [showConfirmPassword, setShowConfirmPassword] = useState(false);
     const [success, setSuccess] = useState(false);
+
+    const location = useLocation();
+    const email = location.state?.email || '';
 
     const vertical = "top";
     const horizontal = "right";
@@ -54,8 +59,28 @@ export const ResetPassword = () => {
             return;
         }
 
-        // lógica para redefinir a senha
-        setSuccess(true);
+        restPassword(password, confirmPassword);
+    };
+
+    const restPassword = async (novaSenha, novaSenhaConfirmacao) => {
+        try {            
+            await api.post("/rest-password/reset", {
+                email: email,
+                novaSenha: novaSenha,
+                novaSenhaConfirmacao: novaSenhaConfirmacao
+            });
+
+            setSuccess(true);
+        } catch (error) {
+            if (error.response && error.response.status === 400) {
+                setErrorMessage(error.response.data.errors[0].message);
+                setOpen(true);
+                return;
+            }
+            else {
+                throw new Error("Erro ao resetar a senha: " + error.message);
+            }
+        }
     };
 
     const handleClose = (event, reason) => {

@@ -158,10 +158,9 @@ export const Login = () => {
                                                     <TextField
                                                         fullWidth
                                                         id="username"
-                                                        label="E-mail"
+                                                        label="CPF"
                                                         name="username"
                                                         required
-                                                        autoComplete="email"
                                                         sx={{
                                                             '& label': {
                                                                 color: '#2c9cac',

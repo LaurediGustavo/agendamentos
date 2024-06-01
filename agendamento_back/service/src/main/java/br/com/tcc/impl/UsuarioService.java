@@ -63,7 +63,7 @@ public class UsuarioService {
     private Ususario createUser(Funcionario funcionario) {
         Ususario usuario = new Ususario();
         usuario.setFuncionario(funcionario);
-        usuario.setUserName(funcionario.getEmail());
+        usuario.setUserName(Uteis.removerCaracteresNaoNumericos(funcionario.getCpf()));
         usuario.setEmail(funcionario.getEmail());
 
         List<Role> roles = new ArrayList<>();

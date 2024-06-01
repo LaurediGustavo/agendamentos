@@ -7,6 +7,7 @@ import loginImage from '../../../assets/logo2.png';
 import Slide from '@mui/material/Slide';
 import './forgotPassword.scss';
 import { Link } from 'react-router-dom';
+import api from '../../../services/api';
 
 const Alert = forwardRef(function Alert(props, ref) {
     return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />;
@@ -68,6 +69,7 @@ export const ForgotPassword = () => {
     const vertical = "top";
     const horizontal = "right";
     const [errorMessage, setErrorMessage] = useState("");
+    const [email, setEmail] = useState("");
 
     function TransitionLeft(props) {
         return <Slide {...props} direction="left" />
@@ -75,10 +77,10 @@ export const ForgotPassword = () => {
 
     const handleSubmit = async (event) => {
         event.preventDefault();
-
+        
         if (!success) {
             const email = event.target.email.value;
-
+        
             const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
             if (!emailRegex.test(email)) {
                 setErrorMessage("Formato de e-mail inválido. Por favor, insira um e-mail válido.");
@@ -86,8 +88,7 @@ export const ForgotPassword = () => {
                 return;
             }
 
-            // lógica para enviar o e-mail
-            setSuccess(true);
+            sendEmail(email);
         }  else {
             const token = document.querySelectorAll("[id^='token-field']").values();
             const tokenValue = [...token].map(input => input.value).join('');
@@ -98,11 +99,48 @@ export const ForgotPassword = () => {
                 return;
             }
 
-            console.log("Token:", tokenValue);
+            validatorToken(email, tokenValue)
+        }
+    };
 
-            // lógica para verificar o token
+    const sendEmail = async (email) => {
+        try {
+            await api.post("/rest-password/send-email", {
+                email: email
+            });
+
+            setEmail(email);
+            setSuccess(true);
+        } catch (error) {
+            if (error.response && error.response.status === 400) {
+                setErrorMessage(error.response.data.errors[0].message);
+                setOpen(true);
+                return;
+            }
+            else {
+                throw new Error("Erro ao enviar o e-mail: " + error.message);
+            }
+        }
+    };
+
+    const validatorToken = async (email, token) => {
+        try {
+            await api.post("/rest-password/validator-code", {
+                email: email,
+                codigo: token
+            });
+
             // Se o token for válido, redirecione o usuário para a página de redefinição de senha
-            navigate('/reset-password'); // Redireciona 
+            navigate('/reset-password', { state: { email } }); // Redireciona 
+        } catch (error) {
+            if (error.response && error.response.status === 400) {
+                setErrorMessage(error.response.data.errors[0].message);
+                setOpen(true);
+                return;
+            }
+            else {
+                throw new Error("Erro ao validar o token: " + error.message);
+            }
         }
     };
 

@@ -1,5 +1,6 @@
 package br.com.tcc.exceptions;
 
+import br.com.tcc.exception.ConsistirException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.stereotype.Service;
@@ -19,6 +20,10 @@ public class TratarMensagemExceptions {
 
     public Response getErrorResponse(Exception ex, HttpStatus status, List<MessageError> errors) {
         return new Response("Erro interno", status.value(), null, errors);
+    }
+
+    public Response getErrorResponse(ConsistirException ex, HttpStatus status, List<MessageError> errors) {
+        return new Response("Requisição possui campos inválidos", status.value(), null, errors);
     }
 
     public List<MessageError> getErrors(MethodArgumentNotValidException ex) {
@@ -43,6 +48,15 @@ public class TratarMensagemExceptions {
     }
 
     public List<MessageError> getErrors(Exception ex) {
+        if (ex instanceof ConsistirException) {
+            List<String> erros = ((ConsistirException) ex).getErroSimples();
+
+            return erros.stream()
+                    .filter(erro -> erro != null && !erro.isEmpty())
+                    .map(erro -> new MessageError(null, erro, null))
+                    .collect(Collectors.toList());
+        }
+
         return Collections.singletonList(new MessageError(null, ex.getMessage(), null));
     }
 

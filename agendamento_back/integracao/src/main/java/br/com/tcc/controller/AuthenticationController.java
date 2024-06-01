@@ -27,6 +27,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import uteis.Uteis;
 
 @RestController
 @RequestMapping("/auth")
@@ -52,18 +53,18 @@ public class AuthenticationController {
         HttpStatus status;
 
         Authentication auth = authenticationManager
-                .authenticate(new UsernamePasswordAuthenticationToken(usuarioDto.getUserName(),
+                .authenticate(new UsernamePasswordAuthenticationToken(Uteis.removerCaracteresNaoNumericos(usuarioDto.getUserName()),
                               usuarioDto.getPassword()));
 
         if (auth.isAuthenticated()) {
-            UserDetails userDetails = userDetailsService.loadUserByUsername(usuarioDto.getUserName());
+            UserDetails userDetails = userDetailsService.loadUserByUsername(Uteis.removerCaracteresNaoNumericos(usuarioDto.getUserName()));
             String token = jwtTokenUtil.generateToken(userDetails);
 
             List<String> roles = userDetails.getAuthorities().stream()
                     .map(GrantedAuthority::getAuthority)
                     .collect(Collectors.toList());
 
-            Ususario ususario = userRepository.findByUserName(userDetails.getUsername()).get();
+            Ususario ususario = userRepository.findByUserName(Uteis.removerCaracteresNaoNumericos(userDetails.getUsername())).get();
             loginResponse.setTokenJwt(token);
             loginResponse.setRoles(roles);
             loginResponse.setUsuarioId(ususario.getFuncionario().getId());

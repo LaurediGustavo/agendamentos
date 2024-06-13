@@ -128,3 +128,46 @@
 }
 
 
+@media (max-width: 600px) {
+  .calendar-container {
+    width: 450%; 
+    overflow: auto; 
+  }
+
+  .contentContainer{
+    margin: 20px;
+  }
+
+  .fc-daygrid-day{
+    height: 100px; 
+    width: 100px;
+  }
+
+  .fc-view-harness.fc-view-harness-active {
+    height: 600px !important;
+  }
+
+}
+
+@media (max-width: 350px) {
+  .calendar-container {
+    width: 500%; 
+    overflow: auto; 
+  }
+
+  .contentContainer{
+    margin: 20px;
+  }
+
+  .fc-daygrid-day{
+    height: 100px; 
+    width: 100px;
+  }
+
+  .fc-view-harness.fc-view-harness-active {
+    height: 600px !important; 
+  }
+
+  
+
+}

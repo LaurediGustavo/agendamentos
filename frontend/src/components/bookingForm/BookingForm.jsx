@@ -24,7 +24,7 @@ import {
 import { formatarData_dd_MM_yyyy } from '../../services/dateFormat';
 import { ptBR } from 'date-fns/locale';
 
-export const BookingForm = forwardRef(({ modalOpen, handleCloseModal, selectedEvent, selectedDate, calendarRef }, ref) => {
+export const BookingForm = forwardRef(({ modalOpen, handleCloseModal, selectedEvent, selectedDate, isFutureDate, dataselecionada, calendarRef }, ref) => {
 
     const [novaData, setNovaData] = useState(null);
     const [novoHorarioInicio, setNovoHorarioInicio] = useState(null);
@@ -33,10 +33,8 @@ export const BookingForm = forwardRef(({ modalOpen, handleCloseModal, selectedEv
     const [consultaContinua, setConsultaContinua] = useState(false); //novo
     const [consultasEmAndamento, setConsultasEmAndamento] = useState([]); //novo
     const [consultaSelecionada, setConsultaSelecionada] = useState(null);
+    const isDateSelectedGreaterThanCurrent = dataselecionada > new Date();
     const [manual, setManual] = useState(false);
-
-
-
 
     // Estado local do componente
     const [consultaId, setConsultaId] = useState()
@@ -182,8 +180,8 @@ export const BookingForm = forwardRef(({ modalOpen, handleCloseModal, selectedEv
         { key: 'CONFIRMADO', label: 'Confirmado' },
         { key: 'CANCELADO', label: 'Cancelado' },
         { key: 'REMARCADO', label: 'Remarcado' },
-        { key: 'FINALIZADO', label: 'Finalizado' },
-        { key: 'EM_ANDAMENTO', label: 'Em andamento' }
+        { key: 'FINALIZADO', label: isDateSelectedGreaterThanCurrent ? 'Finalizado (Disponível apenas no dia da consulta.)' : 'Finalizado' },
+        { key: 'EM_ANDAMENTO', label: isDateSelectedGreaterThanCurrent ? 'Em andamento (Disponível apenas no dia da consulta.)' : 'Em andamento' }
     ];
 
     const [erros, setErros] = useState({
@@ -671,7 +669,11 @@ export const BookingForm = forwardRef(({ modalOpen, handleCloseModal, selectedEv
                                     sx={{ my: 2, color: '#333' }}
                                 >
                                     {statusOpcoes.map((option) => (
-                                        <MenuItem key={option.key} value={option.key}>
+                                        <MenuItem
+                                            key={option.key}
+                                            value={option.key}
+                                            disabled={isDateSelectedGreaterThanCurrent && (option.key === 'EM_ANDAMENTO' || option.key === 'FINALIZADO')}
+                                        >
                                             <span
                                                 style={{
                                                     display: 'inline-block',

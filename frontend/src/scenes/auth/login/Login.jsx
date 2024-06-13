@@ -4,6 +4,7 @@ import { ThemeProvider, createTheme } from "@mui/material/styles";
 import { Avatar, Box, Button, Container, Grid, Snackbar, TextField, InputAdornment, IconButton } from "@mui/material";
 import Stack from "@mui/material/Stack";
 import { useNavigate } from "react-router-dom";
+import InputMask from 'react-input-mask';
 import loginImage from '../../../assets/login.png';
 import MuiAlert from '@mui/material/Alert';
 import Slide from '@mui/material/Slide';
@@ -29,10 +30,9 @@ export const Login = () => {
     const horizontal = "right";
     const [errorMessage, setErrorMessage] = useState("");
     const [showPassword, setShowPassword] = useState(false);
-    const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
     function TransitionLeft(props) {
-        return <Slide {...props} direction="left" />
+        return <Slide {...props} direction="left" />;
     }
 
     useEffect(() => {
@@ -44,10 +44,8 @@ export const Login = () => {
     const handleSubmit = async (event) => {
         event.preventDefault();
 
-        const username = event.target.username.value;
+        const username = event.target.username.value.replace(/\D/g, ''); // remove mask
         const password = event.target.password.value;
-
-        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
         if (!username || !password) {
             setErrorMessage("Falha no login! Entre com o usuário e senha corretos.");
@@ -155,38 +153,44 @@ export const Login = () => {
                                         >
                                             <Grid container spacing={1}>
                                                 <Grid item xs={12} sx={{ ml: "3em", mr: "3em", mb: "5px", }}>
-                                                    <TextField
-                                                        fullWidth
-                                                        id="username"
-                                                        label="CPF"
-                                                        name="username"
-                                                        required
-                                                        sx={{
-                                                            '& label': {
-                                                                color: '#2c9cac',
-                                                            },
-                                                            '& label.Mui-focused': {
-                                                                color: '#2c9cac',
-                                                            },
-                                                            '& .MuiInput-underline:after': {
-                                                                borderBottomColor: '#2c9cac',
-                                                            },
-                                                            '& .MuiOutlinedInput-root': {
-                                                                '& fieldset': {
-                                                                    borderColor: '#2c9cac',
+                                                    <InputMask
+                                                        mask="999.999.999-99"
+                                                        value={null}
+                                                        onChange={null}
+                                                    >
+                                                        {() => <TextField
+                                                            fullWidth
+                                                            id="username"
+                                                            label="CPF"
+                                                            name="username"
+                                                            required
+                                                            sx={{
+                                                                '& label': {
+                                                                    color: '#2c9cac',
                                                                 },
-                                                                '&:hover fieldset': {
-                                                                    borderColor: '#2c9cac',
+                                                                '& label.Mui-focused': {
+                                                                    color: '#2c9cac',
                                                                 },
-                                                                '&.Mui-focused fieldset': {
-                                                                    borderColor: '#308C8F',
+                                                                '& .MuiInput-underline:after': {
+                                                                    borderBottomColor: '#2c9cac',
                                                                 },
-                                                            },
-                                                            '& .MuiInputBase-input': {
-                                                                color: '#308C8F',
-                                                            }
-                                                        }}
-                                                    />
+                                                                '& .MuiOutlinedInput-root': {
+                                                                    '& fieldset': {
+                                                                        borderColor: '#2c9cac',
+                                                                    },
+                                                                    '&:hover fieldset': {
+                                                                        borderColor: '#2c9cac',
+                                                                    },
+                                                                    '&.Mui-focused fieldset': {
+                                                                        borderColor: '#308C8F',
+                                                                    },
+                                                                },
+                                                                '& .MuiInputBase-input': {
+                                                                    color: '#308C8F',
+                                                                }
+                                                            }}
+                                                        />}
+                                                    </InputMask>
                                                 </Grid>
                                                 <Grid item xs={12} sx={{ ml: "3em", mr: "3em" }}>
                                                     <TextField

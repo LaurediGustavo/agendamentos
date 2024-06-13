@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Sidebar, Menu, MenuItem } from "react-pro-sidebar";
 import { Box, IconButton, Typography } from "@mui/material";
@@ -13,6 +13,7 @@ import "./sidebar.scss";
 
 const Item = ({ title, to, icon, selected, setSelected }) => {
   const navigate = useNavigate();
+  const mediaQuery = window.matchMedia('(max-width: 600px)');
 
   const handleClick = () => {
     setSelected(title);
@@ -35,7 +36,24 @@ const CustomSidebar = () => {
   const [isCollapsed, setIsCollapsed] = useState(false);
   const [selected, setSelected] = useState("Dashboard");
   const roles = getRoles();
-  
+
+  // Adicione este useEffect
+  useEffect(() => {
+    const mediaQuery = window.matchMedia('(max-width: 600px)');
+    if (mediaQuery.matches) {
+      setIsCollapsed(true);
+    }
+    const handler = (e) => {
+      if (e.matches) {
+        setIsCollapsed(true);
+      } else {
+        setIsCollapsed(false);
+      }
+    };
+    mediaQuery.addEventListener('change', handler);
+    return () => mediaQuery.removeEventListener('change', handler);
+  }, []);
+
   return (
     <Box className="box-sidebar">
       <Sidebar
@@ -43,22 +61,27 @@ const CustomSidebar = () => {
         className="custom-sidebar sidebar-background"
       >
         <Menu iconShape="round">
-          <MenuItem
-            onClick={() => setIsCollapsed(!isCollapsed)}
-            icon={isCollapsed ? <MenuOutlinedIcon /> : undefined}
-            className="menu-item"
-          >
-            {!isCollapsed && (
-              <Box className="menu-item-title">
-                <Typography className="menu-item-title-text">
-                { roles?.split(',')[0]?.replace('ROLE_', '') === "DOUTOR"? "DOUTOR(A)" : roles?.split(',')[0]?.replace('ROLE_', '') }
-                </Typography>
-                <IconButton onClick={() => setIsCollapsed(!isCollapsed)}>
-                  <MenuOutlinedIcon />
-                </IconButton>
-              </Box>
-            )}
-          </MenuItem>
+        <MenuItem
+  onClick={() => {
+    const mediaQuery = window.matchMedia('(max-width: 600px)');
+    if (!mediaQuery.matches) {
+      setIsCollapsed(!isCollapsed);
+    }
+  }}
+  icon={isCollapsed ? <MenuOutlinedIcon /> : undefined}
+  className="menu-item"
+>
+  {!isCollapsed && (
+    <Box className="menu-item-title">
+      <Typography className="menu-item-title-text">
+      { roles?.split(',')[0]?.replace('ROLE_', '') === "DOUTOR"? "DOUTOR(A)" : roles?.split(',')[0]?.replace('ROLE_', '') }
+      </Typography>
+      <IconButton onClick={() => setIsCollapsed(!isCollapsed)}>
+        <MenuOutlinedIcon />
+      </IconButton>
+    </Box>
+  )}
+</MenuItem>
           {/* ITENS DO MENU*/}
           <Box padding={`${isCollapsed ? "0" : "0 8%"}`}>
             <Item

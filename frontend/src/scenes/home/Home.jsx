@@ -11,6 +11,7 @@ export const Home = () => {
   const [modalOpen, setModalOpen] = useState(false);
   const [selectedEvent, setSelectedEvent] = useState(null);
   const [selectedDate, setSelectedDate] = useState(null);
+  const [dataselecionada, setDataselecionada] = useState(null);
   const calendarRef = useRef();
   const childRef = useRef(null);
 
@@ -22,11 +23,16 @@ export const Home = () => {
     setModalOpen(false);
   }
 
-  const handleEventClick = (arg) => {
-    setSelectedEvent(arg.event);
+  const handleEventClick = (info) => {
+    setSelectedEvent(info.event);
     handleOpenModal();
+  
+    const dataselecionada = new Date(info.event.start);
+    dataselecionada.setHours(0, 0, 0, 0);
+    setDataselecionada(dataselecionada);
   };
-
+  
+  
   useEffect(() => {
     if (calendarRef.current) {
       const calendarApi = calendarRef.current.getApi();
@@ -47,19 +53,23 @@ export const Home = () => {
   const handleEventSelect = (arg) => {
     const selectedDate = new Date(arg.start);
     selectedDate.setHours(0, 0, 0, 0);
-
+  
     const currentDate = new Date();
     currentDate.setHours(0, 0, 0, 0);
-
+  
     if (selectedDate >= currentDate) {
       setSelectedDate(arg.startStr);
-      handleEventClick(arg);
+      
+      // Mova a lógica de handleEventClick para cá
+      setSelectedEvent(arg.event);
+      setModalOpen(true);
   
       if (childRef.current) {
         childRef.current.limparDados();
       }
     }
   };
+  
 
   return (
     <Box m="20px">
@@ -79,6 +89,7 @@ export const Home = () => {
         selectedEvent={selectedEvent}
         calendarRef={calendarRef}
         selectedDate={selectedDate}
+        dataselecionada={dataselecionada}
         ref={childRef}
       />
     </Box>

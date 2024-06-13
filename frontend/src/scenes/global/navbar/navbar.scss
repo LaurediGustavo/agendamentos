@@ -28,3 +28,9 @@
 
   }
   
+  @media only screen and (max-width: 600px) {
+    .navbar-username-text {
+      display: none;
+    }
+  }
+  

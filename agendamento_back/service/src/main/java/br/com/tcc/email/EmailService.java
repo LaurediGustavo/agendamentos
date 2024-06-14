@@ -18,7 +18,7 @@ public class EmailService {
         try {
             SimpleMailMessage mensagem = new SimpleMailMessage();
             mensagem.setTo(usuario.getEmail());
-            mensagem.setSubject("Senha do Sistema de Agendamentos");
+            mensagem.setSubject("Smallclinic - Acesso ao sistema");
             mensagem.setText(getText(usuario));
 
             emailSender.send(mensagem);
@@ -31,7 +31,7 @@ public class EmailService {
     private static String getText(Ususario ususario) {
         StringBuilder sb = new StringBuilder();
 
-        sb.append("Olá, seu cadastro foi realizado com sucesso!")
+        sb.append("Bem vindo(a) a Smallclinic!")
                 .append("\n\n")
                 .append("Usuário: " + ususario.getUsername())
                 .append("\n")

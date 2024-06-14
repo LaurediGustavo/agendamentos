@@ -37,7 +37,7 @@ public class ResetPasswordService {
         String code = String.format("%05d", new Random().nextInt(100000));
 
         funcionarioOptional.ifPresentOrElse(
-                funcionario -> emailService.sendSimpleMessage(funcionario.getEmail(), "Alteração de Senha", getBodyEmail(funcionario, code)),
+                funcionario -> emailService.sendSimpleMessage(funcionario.getEmail(), "Smallclinic - Alteração de Senha", getBodyEmail(funcionario, code)),
                 () -> { throw new RuntimeException("Funcionário não encontrado"); }
         );
 

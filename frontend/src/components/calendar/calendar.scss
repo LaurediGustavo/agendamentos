@@ -171,3 +171,25 @@
   
 
 }
+
+/* Estilos para tablet */
+@media (max-width: 850px) {
+
+  .calendar-container {
+    width: 200%; 
+    overflow: auto;
+  }
+
+  .contentContainer {
+    margin: 10px;
+  }
+
+  .fc-daygrid-day {
+    height: 80px;
+    width: 80px; 
+  }
+
+  .fc-view-harness.fc-view-harness-active {
+    height: 500px !important; 
+  }
+}

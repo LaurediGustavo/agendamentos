@@ -20,7 +20,7 @@ public class MenuChatBot {
 
     public void montarMensagem(SendMessage message, Long chatId) {
         String string = """
-                Olá! Sou o Odo, o robô de atendimento da clinica odontológida Xpto.
+                Olá! Sou o Odo, o robô de atendimento da clinica odontológida Smallclinic.
                 
                 Como eu poderia te ajudar?
                 1. Cadastro;
